@@ -218,2074 +218,2948 @@ def api_mine():
 _HTML = r'''<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#080c1a">
-<title>唯一 — 享受今晚</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#010308" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>唯一 · 星尘</title>
+  <style>
+/* ============================================================
+   Stardust — 紫色系深空主题 · 移动端优先 480px
+   设计令牌系统 · 所有值通过 var() 引用 · 零硬编码
+   ============================================================ */
 
-<!-- Fonts: 系统字体栈，无需外部加载 -->
-<style>
-/* ═══════════════════════════════════════════════════════
-   「唯一」 Design System v4 — Premium
-   核心隐喻：星尘·宇宙·漂流
-   ═══════════════════════════════════════════════════════ */
-
-/* ═══ Design Tokens ═══ */
+/* ═══════════════════════════════════════════════════════════
+   0. 设计令牌系统
+   ═══════════════════════════════════════════════════════════ */
 :root {
-  /* 暗色宇宙调色板 */
-  --space-deep: #010308;
-  --space: #060b18;
-  --space-light: #0d1530;
-  --surface: rgba(9, 16, 40, 0.65);
-  --surface-hover: rgba(18, 28, 58, 0.82);
-  --glass: rgba(12, 18, 40, 0.75);
-  --glass-border: rgba(212, 168, 83, 0.08);
+  /* ── 背景层级 ── */
+  --bg-void: #050714;
+  --bg-deep: #0a0e23;
+  --bg-card: rgba(255, 255, 255, 0.04);
 
-  /* 文字层级 */
-  --text-primary: #ece6d5;
-  --text-secondary: #a4a6b8;
-  --text-tertiary: #72758a;
-  --text-muted: #4e5164;
+  /* ── 文本层级 ── */
+  --text-primary: rgba(255, 255, 255, 0.92);
+  --text-secondary: rgba(255, 255, 255, 0.60);
+  --text-tertiary: rgba(255, 255, 255, 0.35);
 
-  /* 强调色 */
-  --gold: #c9a045;
-  --gold-light: #e4c36a;
-  --gold-soft: rgba(201, 160, 69, 0.08);
-  --rose: #c97a82;
-  --rose-soft: rgba(201, 122, 130, 0.06);
-  --rose-deep: #a65c64;
+  /* ── 强调色 ── */
+  --accent-purple: #a78bfa;
+  --accent-blue: #60a5fa;
 
-  /* 分类色 */
-  --cat-poetry: #e4c36a;
-  --cat-quote: #7bb8d4;
-  --cat-essay: #9b8ec4;
-  --cat-music: #c97a82;
-  --cat-film: #8ba5a5;
+  /* ── 边框 ── */
+  --border-subtle: rgba(255, 255, 255, 0.08);
 
-  /* 间距与圆角 */
+  /* ── 间距 (基数 4px) ── */
   --space-xs: 4px;
   --space-sm: 8px;
-  --space-md: 20px;
-  --space-lg: 32px;
-  --space-xl: 48px;
-  --space-2xl: 72px;
-  --radius-sm: 10px;
-  --radius: 18px;
-  --radius-lg: 26px;
-  --radius-xl: 36px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* ── 圆角 ── */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
   --radius-full: 9999px;
 
-  /* 阴影 */
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
-  --shadow-md: 0 4px 24px rgba(0,0,0,0.35);
-  --shadow-lg: 0 8px 48px rgba(0,0,0,0.45);
-  --shadow-gold: 0 0 80px rgba(201, 160, 69, 0.05);
-  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.2);
+  /* ── 字体 ── */
+  --font-system: system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji";
 
-  /* 动效 */
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-  --duration-fast: 180ms;
-  --duration-normal: 400ms;
-  --duration-slow: 700ms;
+  /* ── 字号 ── */
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 15px;
+  --font-size-lg: 18px;
+  --font-size-xl: 22px;
 
-  /* 字体 */
-  --font-serif: 'SimSun', 'STSong', 'Noto Serif SC', serif;
-  --font-sans: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
-  --font-mono: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+  /* ── 行高 ── */
+  --line-height-tight: 1.4;
+  --line-height-normal: 1.7;
+  --line-height-relaxed: 1.85;
+
+  /* ── 动效 ── */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 0.2s;
+  --duration-normal: 0.35s;
+  --duration-slow: 0.5s;
+
+  /* ── 组件尺寸 ── */
+  --nav-height: 64px;
+  --fab-size: 56px;
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
 }
 
-/* ═══ Reset ═══ */
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+/* ═══════════════════════════════════════════════════════════
+   1. 全局 Reset + Body 基础样式
+   ═══════════════════════════════════════════════════════════ */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 html {
-  font-size: 16px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
   scroll-behavior: smooth;
 }
 
 body {
-  font-family: var(--font-sans);
-  background: var(--space-deep);
+  font-family: var(--font-system);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
   color: var(--text-primary);
+  background-color: var(--bg-void);
   min-height: 100vh;
   min-height: 100dvh;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  line-height: 1.6;
-  letter-spacing: 0.01em;
+  /* 底部导航占位 */
+  padding-bottom: calc(var(--nav-height) + var(--safe-area-inset-bottom) + var(--space-md));
 }
 
-::selection {
-  background: rgba(212, 168, 83, 0.2);
-  color: var(--text-primary);
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
 }
 
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(212, 168, 83, 0.12); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(212, 168, 83, 0.25); }
-
-/* ═══ Canvas 星空 ═══ */
-.stars-bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-#starCanvas { width: 100%; height: 100%; }
-
-/* ═══ App 容器 ═══ */
-.app {
-  position: relative;
-  z-index: 1;
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-/* ═══════════════════ Hero ═══════════════════ */
-.hero {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  min-height: 100dvh;
-  padding: var(--space-xl);
-  text-align: center;
-  overflow: hidden;
-}
-.hero::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0; right: 0;
-  height: 180px;
-  background: linear-gradient(transparent, var(--space-deep));
-  z-index: 3;
-  pointer-events: none;
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+  border: none;
+  background: none;
+  outline: none;
 }
 
-.hero-constellation {
-  position: absolute;
-  inset: 0;
-  opacity: 0.6;
-}
-.hero-constellation canvas { width: 100%; height: 100%; }
-
-.hero-content {
-  position: relative;
-  z-index: 2;
-  animation: heroReveal 1.4s var(--ease-out) both;
-}
-
-@keyframes heroReveal {
-  from { opacity: 0; transform: translateY(48px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.hero-title {
-  font-family: var(--font-serif);
-  font-size: clamp(56px, 10vw, 96px);
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  display: flex;
-  gap: 0.2em;
-  justify-content: center;
-  margin-bottom: var(--space-lg);
-  text-shadow: 0 0 80px rgba(201,160,69,0.25);
-}
-
-.hero-char {
-  display: inline-block;
-  background: linear-gradient(180deg, #f0d78c 0%, var(--gold) 35%, #8a5c1e 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: charFloat 4s ease-in-out infinite;
-}
-.hero-char:nth-child(1) { animation-delay: 0s; }
-.hero-char:nth-child(2) { animation-delay: 0.2s; }
-
-@keyframes charFloat {
-  0%, 100% { transform: translateY(0); filter: brightness(1); }
-  50% { transform: translateY(-8px); filter: brightness(1.2); }
-}
-
-.hero-subtitle {
-  font-family: var(--font-serif);
-  font-size: clamp(16px, 2.8vw, 22px);
-  color: var(--text-secondary);
-  font-weight: 400;
-  letter-spacing: 0.18em;
-  margin-bottom: var(--space-2xl);
-  opacity: 0;
-  animation: subtitleReveal 1.2s 0.6s var(--ease-out) forwards;
-}
-
-@keyframes subtitleReveal {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 0.7; transform: translateY(0); }
-}
-
-.hero-daily {
-  display: inline-block;
-  font-family: var(--font-serif);
-  font-size: 15px;
-  font-style: italic;
-  color: var(--gold-light);
-  opacity: 0.65;
-  letter-spacing: 0.08em;
-  line-height: 1.8;
-  max-width: 420px;
-  padding: var(--space-md) var(--space-lg);
-  background: var(--gold-soft);
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(212, 168, 83, 0.08);
-  animation: dailyPulse 4s ease-in-out infinite;
-}
-
-@keyframes dailyPulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 0.8; }
-}
-
-.hero-scroll {
-  position: absolute;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: var(--text-tertiary);
+button {
   cursor: pointer;
-  animation: scrollBounce 2s ease-in-out infinite;
-  opacity: 0.5;
-  transition: opacity var(--duration-fast);
-}
-.hero-scroll:hover { opacity: 1; }
-
-@keyframes scrollBounce {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(8px); }
-}
-
-/* ═══════════════════ Navigation ═══════════════════ */
-.nav {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px var(--space-lg);
-  background: rgba(6, 9, 20, 0.78);
-  backdrop-filter: saturate(180%) blur(24px);
-  -webkit-backdrop-filter: saturate(180%) blur(24px);
-  border-bottom: 1px solid rgba(212, 168, 83, 0.06);
-  transition: all var(--duration-normal);
-}
-
-.nav.scrolled {
-  box-shadow: 0 1px 20px rgba(0,0,0,0.3);
-}
-
-.nav-brand {
-  font-family: var(--font-serif);
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
 }
 
-.nav-tabs {
-  display: flex;
-  gap: 2px;
-  background: rgba(255,255,255,0.02);
-  border-radius: var(--radius-full);
-  padding: 3px;
+ul, ol {
+  list-style: none;
 }
 
-.nav-tab {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background: none;
-  border: none;
-  color: var(--text-tertiary);
-  font-size: 13px;
-  font-weight: 500;
-  padding: 8px 16px;
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  font-family: inherit;
-  transition: all var(--duration-normal);
-  white-space: nowrap;
-}
-.nav-tab:hover { color: var(--text-secondary); }
-.nav-tab:active { transform: scale(0.96); }
-.nav-tab.active {
-  color: var(--gold-light);
-  background: var(--gold-soft);
-  font-weight: 600;
-}
-.nav-tab-icon { font-size: 15px; line-height: 1; }
-.nav-tab-label { letter-spacing: 0.04em; }
-
-.nav-bottle {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: rgba(212, 132, 140, 0.08);
-  border: 1px solid rgba(212, 132, 140, 0.15);
-  color: var(--rose);
-  font-size: 18px;
-  cursor: pointer;
-  transition: all var(--duration-normal);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.nav-bottle:hover {
-  background: rgba(212, 132, 140, 0.15);
-  transform: scale(1.08);
-}
-.nav-bottle:active { transform: scale(0.92); }
-
-/* ═══════════════════ Main Content ═══════════════════ */
-.main {
-  flex: 1;
-  padding: var(--space-md) var(--space-lg) 120px;
-  position: relative;
-  z-index: 1;
+::selection {
+  background: var(--accent-purple);
+  color: var(--bg-void);
 }
 
-.tab-content {
-  display: none;
-  animation: tabEnter 0.45s var(--ease-out);
-}
-.tab-content.active { display: block; }
-
-@keyframes tabEnter {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ═══════════════════ Category Bar ═══════════════════ */
-.category-bar {
-  display: flex;
-  gap: var(--space-sm);
-  padding: var(--space-sm) 0 var(--space-lg);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  mask: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
-  -webkit-mask: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
-}
-.category-bar::-webkit-scrollbar { display: none; }
-
-.category-chip {
-  flex-shrink: 0;
-  padding: 7px 18px;
-  border-radius: var(--radius-full);
-  border: 1px solid rgba(255,255,255,0.06);
-  background: var(--surface);
-  color: var(--text-tertiary);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all var(--duration-normal);
-  white-space: nowrap;
-}
-.category-chip:hover {
-  border-color: rgba(212, 168, 83, 0.2);
-  color: var(--text-secondary);
-}
-.category-chip.active {
-  background: var(--gold-soft);
-  border-color: var(--gold);
-  color: var(--gold-light);
-  font-weight: 600;
-}
-
-/* ═══════════════════ Masonry Grid ═══════════════════ */
-.masonry {
-  columns: 1;
-  column-gap: var(--space-lg);
-}
-@media (min-width: 640px) { .masonry { columns: 2; } }
-@media (min-width: 1024px) { .masonry { columns: 3; column-gap: var(--space-xl); } }
-
-/* ═══════════════════ Cards Premium Magazine System ═══════════════════ */
-
-/* ── 基础卡片 ── */
-.post-card {
-  break-inside: avoid;
-  margin-bottom: var(--space-lg);
-  background: var(--surface);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: var(--radius);
-  border: 1px solid var(--glass-border);
-  padding: 0;
-  transition: all 0.45s var(--ease-smooth);
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--shadow-card);
-  animation: cardAppear 0.6s var(--ease-out) both;
-}
-.post-card:hover {
-  background: var(--surface-hover);
-  border-color: rgba(201, 160, 69, 0.2);
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg), 0 0 70px rgba(201, 160, 69, 0.04);
-}
-@keyframes cardAppear {
-  from { opacity: 0; transform: translateY(36px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* 分类左色条 */
-.post-card::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 2px; opacity: 0.45;
-  transition: width 0.35s var(--ease-smooth), opacity 0.35s;
-}
-.post-card:hover::before { width: 4px; opacity: 0.8; }
-
-/* ── Featured 大卡片 ── */
-.post-card.featured {
-  column-span: all;
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 0;
-  min-height: 320px;
-  border: 1px solid rgba(201, 160, 69, 0.15);
-}
-.post-card.featured .post-card-image {
-  grid-row: 1 / -1;
-  margin: 0; border-radius: 0;
-  height: 100%;
-}
-.post-card.featured .post-card-image img {
-  height: 100%; max-height: none;
-  object-fit: cover;
-}
-.post-card.featured .post-card-inner {
-  padding: 32px 28px;
-  display: flex; flex-direction: column; justify-content: center;
-}
-.post-card.featured::after {
-  content: '✦ 精选';
-  position: absolute; top: 14px; right: 18px;
-  font-size: 10px; color: var(--gold-light);
-  letter-spacing: 0.12em; opacity: 0.6; z-index: 2;
-}
-@media (max-width: 640px) {
-  .post-card.featured {
-    grid-template-columns: 1fr;
-    min-height: auto;
-  }
-  .post-card.featured .post-card-image { max-height: 220px; }
-}
-
-/* ── 卡片内部 ── */
-.post-card-inner { padding: 26px 22px; }
-.post-card-header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 10px;
-}
-.post-card-meta { display: flex; align-items: center; gap: 10px; }
-.post-card-mood { font-size: 18px; line-height: 1; }
-.post-card-author { font-size: 12.5px; font-weight: 500; color: var(--text-secondary); letter-spacing: 0.03em; }
-.post-card-badge {
-  font-size: 10px; padding: 2px 10px; border-radius: var(--radius-full);
-  background: var(--gold-soft); color: var(--gold-light);
-  font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
-}
-.post-card-badge.poetry { background: rgba(228,195,106,0.1); color: var(--cat-poetry); }
-.post-card-badge.quote { background: rgba(123,184,212,0.1); color: var(--cat-quote); }
-.post-card-badge.essay { background: rgba(155,142,196,0.1); color: var(--cat-essay); }
-.post-card-badge.music { background: rgba(201,122,130,0.1); color: var(--cat-music); }
-.post-card-badge.film { background: rgba(139,165,165,0.1); color: var(--cat-film); }
-.post-card-time { font-size: 11px; color: var(--text-muted); letter-spacing: 0.02em; }
-
-.post-card-body {
-  font-size: 15px; line-height: 1.9; color: var(--text-primary);
-  white-space: pre-wrap; word-break: break-word;
-  font-weight: 400; letter-spacing: 0.02em;
-}
-
-.post-card-image {
-  margin: 14px -22px -26px;
-  overflow: hidden;
-}
-.post-card-image img {
-  width: 100%; max-height: 360px; object-fit: cover; display: block;
-  transition: transform 0.6s ease;
-}
-.post-card:hover .post-card-image img { transform: scale(1.04); }
-
-.post-card-source {
-  margin-top: 10px; font-size: 11px; color: var(--text-muted);
-  font-style: italic; opacity: 0.5; text-align: right;
-}
-
-.post-card-actions {
-  display: flex; gap: 14px; margin-top: 14px;
-  padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.03);
-}
-.post-action {
-  display: flex; align-items: center; gap: 5px;
-  background: none; border: none; color: var(--text-tertiary);
-  font-size: 13px; font-weight: 500; cursor: pointer;
-  padding: 5px 8px; border-radius: 6px;
-  transition: all var(--duration-fast); font-family: inherit;
-}
-.post-action:hover { background: rgba(255,255,255,0.04); color: var(--text-secondary); }
-.post-action:active { transform: scale(0.94); }
-.post-action.liked { color: var(--rose); background: var(--rose-soft); }
-.post-action.hugged { color: var(--gold-light); background: var(--gold-soft); }
-.post-action.just-liked { animation: heartBurst 0.4s var(--ease-spring); }
-.post-action-count { font-size: 12px; min-width: 16px; text-align: center; font-variant-numeric: tabular-nums; }
-@keyframes heartBurst {
-  0% { transform: scale(1); } 30% { transform: scale(1.3); }
-  60% { transform: scale(0.95); } 100% { transform: scale(1); }
-}
-
-/* ═══ 5 分类 5 种视觉身份 ═══ */
-
-/* ── 诗歌 Poetry ── */
-.post-card.cat-poetry { padding: 36px 32px; text-align: center; }
-.post-card.cat-poetry .post-card-inner { padding: 0; }
-.post-card.cat-poetry .post-card-body {
-  font-family: var(--font-serif);
-  font-size: 15px; line-height: 2.2; letter-spacing: 0.05em;
-}
-.post-card.cat-poetry .post-card-source { text-align: center; margin-top: 18px; font-style: italic; font-size: 12px; }
-.post-card.cat-poetry::before { background: var(--cat-poetry); opacity: 0.35; }
-
-/* ── 语录 Quote ── */
-.post-card.cat-quote { padding: 30px 26px 26px; }
-.post-card.cat-quote .post-card-inner { padding: 0; }
-.post-card.cat-quote .post-card-body {
-  font-size: 16px; font-weight: 500; line-height: 2.0;
-  letter-spacing: 0.03em; position: relative; padding-left: 28px;
-}
-.post-card.cat-quote .post-card-body::before {
-  content: '「'; position: absolute; left: -6px; top: -6px;
-  font-size: 48px; font-family: var(--font-serif);
-  color: var(--cat-quote); opacity: 0.3; line-height: 1;
-}
-.post-card.cat-quote::before { background: var(--cat-quote); opacity: 0.35; }
-
-/* ── 随笔 Essay ── */
-.post-card.cat-essay { padding: 28px 26px; background: rgba(14, 20, 38, 0.72); }
-.post-card.cat-essay .post-card-inner { padding: 0; }
-.post-card.cat-essay .post-card-body {
-  font-size: 14.5px; line-height: 2.05; letter-spacing: 0.03em; color: #d6d2c6;
-}
-.post-card.cat-essay .post-card-source { text-align: right; font-style: italic; opacity: 0.4; }
-.post-card.cat-essay::before { background: var(--cat-essay); opacity: 0.3; }
-
-/* ── 音乐 Music ── */
-.post-card.cat-music { padding: 22px 20px 20px; }
-.post-card.cat-music .post-card-inner { padding: 0; }
-.post-card.cat-music .post-card-body { font-size: 14px; line-height: 1.85; }
-.post-card.cat-music::after {
-  content: '♪'; position: absolute; top: 8px; right: 14px;
-  font-size: 15px; color: var(--cat-music); opacity: 0.15;
-}
-.post-card.cat-music::before { background: var(--cat-music); opacity: 0.3; }
-
-/* ── 光影 Film ── */
-.post-card.cat-film { padding: 0; overflow: hidden; }
-.post-card.cat-film .post-card-image { margin: 0; border-radius: 0; aspect-ratio: 16/9; }
-.post-card.cat-film .post-card-image img { max-height: none; height: 100%; }
-.post-card.cat-film .post-card-inner { padding: 18px 24px 20px; }
-.post-card.cat-film .post-card-body { font-size: 15px; line-height: 1.85; }
-.post-card.cat-film .post-card-source { text-align: right; font-style: italic; opacity: 0.35; font-size: 11px; }
-.post-card.cat-film::before { display: none; }
-
-.post-card-time {
-  font-size: 11px;
-  color: var(--text-muted);
-  letter-spacing: 0.02em;
-}
-
-.post-card-body {
-  font-size: 15px;
-  line-height: 1.9;
-  color: var(--text-primary);
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-weight: 400;
-  letter-spacing: 0.02em;
-}
-
-.post-card-image {
-  margin-top: 12px;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.04);
-}
-.post-card-image img {
+/* ── 主容器：移动端全宽，480px 居中 ── */
+.app-container {
   width: 100%;
-  max-height: 400px;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.5s ease;
-}
-.post-card:hover .post-card-image img {
-  transform: scale(1.03);
-}
-
-.post-card-source {
-  margin-top: 8px;
-  font-size: 11px;
-  color: var(--text-muted);
-  font-style: italic;
-  text-align: right;
-  opacity: 0.6;
-}
-
-.post-card-actions {
-  display: flex;
-  gap: 14px;
-  margin-top: 14px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(255,255,255,0.03);
-}
-
-.post-action {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background: none;
-  border: none;
-  color: var(--text-tertiary);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 5px 8px;
-  border-radius: 6px;
-  transition: all var(--duration-fast);
-  font-family: inherit;
-}
-.post-action:hover {
-  background: rgba(255,255,255,0.04);
-  color: var(--text-secondary);
-}
-.post-action:active { transform: scale(0.94); }
-.post-action.liked { color: var(--rose); background: var(--rose-soft); }
-.post-action.hugged { color: var(--gold-light); background: var(--gold-soft); }
-.post-action-count {
-  font-size: 12px;
-  min-width: 16px;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Like 动画 */
-@keyframes heartBurst {
-  0% { transform: scale(1); }
-  30% { transform: scale(1.3); }
-  60% { transform: scale(0.95); }
-  100% { transform: scale(1); }
-}
-.post-action.just-liked { animation: heartBurst 0.4s var(--ease-spring); }
-
-/* 情绪图标 */
-.post-card-mood-icon {
-  position: absolute;
-  top: 22px;
-  right: 20px;
-  width: 26px;
-  height: 26px;
-  opacity: 0.45;
-  z-index: 2;
-  filter: drop-shadow(0 0 8px rgba(201,160,69,0.25));
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-}
-.post-card:hover .post-card-mood-icon { opacity: 0.65; }
-
-/* 图片放大 lightbox */
-.image-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.88);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  cursor: zoom-out;
-  animation: fadeIn 0.25s ease;
-}
-.image-overlay img {
-  max-width: 92%;
-  max-height: 88vh;
-  border-radius: var(--radius-sm);
-  box-shadow: 0 24px 64px rgba(0,0,0,0.55);
-}
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-/* ═══════════════════ Curated Page ═══════════════════ */
-.curated-intro {
-  text-align: center;
-  padding: var(--space-xl) var(--space-lg) var(--space-2xl);
-}
-.curated-title {
-  font-family: var(--font-serif);
-  font-size: clamp(24px, 4vw, 36px);
-  font-weight: 700;
-  color: var(--gold-light);
-  letter-spacing: 0.1em;
-  margin-bottom: var(--space-sm);
-}
-.curated-desc {
-  font-size: 14px;
-  color: var(--text-secondary);
-  max-width: 420px;
+  max-width: 480px;
   margin: 0 auto;
-  line-height: 1.7;
-  opacity: 0.7;
-}
-
-.curated-section {
-  margin-bottom: var(--space-2xl);
-}
-.curated-section-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
-  padding-bottom: var(--space-sm);
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-}
-.curated-section-icon { font-size: 20px; }
-.curated-section-title {
-  font-family: var(--font-serif);
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: 0.06em;
-}
-.curated-section-count {
-  font-size: 12px;
-  color: var(--text-tertiary);
-  margin-left: auto;
-}
-
-.curated-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-md);
-}
-@media (min-width: 640px) { .curated-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1024px) { .curated-grid { grid-template-columns: repeat(3, 1fr); } }
-
-/* ═══════════════════ Write Panel ═══════════════════ */
-.write-panel {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: var(--space-lg) 0;
-}
-
-.write-header {
-  text-align: center;
-  margin-bottom: var(--space-lg);
-}
-.write-header h2 {
-  font-family: var(--font-serif);
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--gold-light);
-  letter-spacing: 0.08em;
-  margin-bottom: var(--space-xs);
-}
-.write-header p {
-  font-size: 13px;
-  color: var(--text-tertiary);
-}
-
-.write-panel textarea {
-  width: 100%;
-  min-height: 200px;
-  background: var(--surface);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius);
-  color: var(--text-primary);
-  padding: 18px 20px;
-  font-size: 15px;
-  line-height: 1.9;
-  resize: vertical;
-  font-family: inherit;
-  transition: all var(--duration-normal);
-  letter-spacing: 0.02em;
-}
-.write-panel textarea:focus {
-  outline: none;
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px var(--gold-soft);
-}
-.write-panel textarea::placeholder {
-  color: var(--text-muted);
-  opacity: 0.4;
-  font-style: italic;
-}
-
-.write-char-count {
-  text-align: right;
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: var(--space-xs);
-  padding-right: 4px;
-}
-
-.write-image-row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-  margin: var(--space-md) 0;
-}
-.write-image-name {
-  font-size: 12px;
-  color: var(--text-tertiary);
-  max-width: 160px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.write-image-preview {
-  display: block;
-  max-width: 100%;
-  border-radius: var(--radius-sm);
-  margin-bottom: var(--space-md);
-  border: 1px solid rgba(255,255,255,0.06);
-}
-
-/* Mood Picker */
-.mood-picker {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
-}
-.mood-chip {
-  padding: 8px 16px;
-  border-radius: var(--radius-full);
-  border: 1px solid rgba(255,255,255,0.06);
-  background: var(--surface);
-  color: var(--text-tertiary);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all var(--duration-normal);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.mood-chip:hover {
-  border-color: rgba(212, 168, 83, 0.25);
-  color: var(--text-secondary);
-}
-.mood-chip:active { transform: scale(0.95); }
-.mood-chip.selected {
-  border-color: var(--gold);
-  color: var(--gold-light);
-  background: var(--gold-soft);
-  font-weight: 600;
-}
-
-.input-nickname {
-  width: 100%;
-  background: var(--surface);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: var(--radius-sm);
-  color: var(--text-primary);
-  padding: 12px 16px;
-  font-size: 14px;
-  margin-bottom: var(--space-lg);
-  font-family: inherit;
-  transition: all var(--duration-normal);
-}
-.input-nickname:focus {
-  outline: none;
-  border-color: rgba(212, 168, 83, 0.3);
-}
-
-/* Buttons */
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--surface);
-  border: 1px dashed rgba(212, 168, 83, 0.2);
-  border-radius: var(--radius-sm);
-  color: var(--text-secondary);
-  padding: 9px 16px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all var(--duration-fast);
-}
-.btn-ghost:hover {
-  border-color: var(--gold);
-  color: var(--gold-light);
-  background: rgba(212, 168, 83, 0.06);
-}
-.btn-ghost:active { transform: scale(0.97); }
-.btn-ghost-danger { border-color: rgba(212,132,140,0.2); color: var(--rose); }
-.btn-ghost-danger:hover { border-color: var(--rose); background: var(--rose-soft); }
-
-.btn-send {
-  width: 100%;
-  padding: 15px;
-  background: linear-gradient(135deg, var(--gold), #b88530);
-  border: none;
-  border-radius: var(--radius);
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  letter-spacing: 0.1em;
-  font-family: inherit;
-  transition: all var(--duration-normal);
-  box-shadow: 0 4px 24px rgba(212, 168, 83, 0.18);
+  padding: var(--safe-area-inset-top) var(--space-md) 0;
   position: relative;
-  overflow: hidden;
-}
-.btn-send::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent, rgba(255,255,255,0.1), transparent);
-  opacity: 0;
-  transition: opacity var(--duration-fast);
-}
-.btn-send:hover::after { opacity: 1; }
-.btn-send:hover { box-shadow: 0 6px 32px rgba(212, 168, 83, 0.3); }
-.btn-send:active { transform: scale(0.97); }
-.btn-send:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  transform: none;
+  min-height: 100dvh;
 }
 
-/* ═══════════════════ Modal ═══════════════════ */
-.modal-overlay {
+/* ═══════════════════════════════════════════════════════════
+   2. 底部导航栏 (64px, 毛玻璃, 安全区)
+   ═══════════════════════════════════════════════════════════ */
+.bottom-nav {
   position: fixed;
-  inset: 0;
-  background: rgba(4, 8, 18, 0.94);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  z-index: 300;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-lg);
-  animation: fadeIn 0.25s ease;
-}
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-.modal-card {
-  background: var(--glass);
-  backdrop-filter: blur(32px);
-  -webkit-backdrop-filter: blur(32px);
-  border-radius: var(--radius-xl);
-  padding: var(--space-xl) var(--space-lg);
-  max-width: 440px;
-  width: 100%;
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-lg);
-  animation: modalEnter 0.45s var(--ease-spring);
-  position: relative;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-@keyframes modalEnter {
-  from { opacity: 0; transform: translateY(48px) scale(0.94); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.modal-close {
-  position: absolute;
-  top: 14px;
-  right: 16px;
-  background: rgba(255,255,255,0.04);
-  border: none;
-  color: var(--text-tertiary);
-  font-size: 16px;
-  cursor: pointer;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--duration-fast);
-}
-.modal-close:hover { background: rgba(255,255,255,0.1); color: var(--text-primary); }
-
-/* ═══════════════════ Toast ═══════════════════ */
-.toast-container {
-  position: fixed;
-  top: 80px;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 400;
-  pointer-events: none;
+  width: 100%;
+  max-width: 480px;
+  height: var(--nav-height);
+  padding-bottom: var(--safe-area-inset-bottom);
+  background: rgba(10, 14, 35, 0.82);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 100;
+}
+
+.nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  flex: 1;
+  height: 100%;
+  color: var(--text-tertiary);
+  font-size: var(--font-size-xs);
+  transition: color var(--duration-fast) var(--ease-out);
+  position: relative;
+}
+
+.nav-item.active {
+  color: var(--accent-purple);
+}
+
+.nav-item.active::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 3px;
+  border-radius: var(--radius-full);
+  background: var(--accent-purple);
+}
+
+.nav-item .nav-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-lg);
+  line-height: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   3. FAB 浮动按钮 (右下角, 紫色渐变, 旋转 hover)
+   ═══════════════════════════════════════════════════════════ */
+.fab {
+  position: fixed;
+  bottom: calc(var(--nav-height) + var(--safe-area-inset-bottom) + var(--space-lg));
+  right: var(--space-lg);
+  width: var(--fab-size);
+  height: var(--fab-size);
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+  box-shadow:
+    0 var(--space-sm) var(--space-lg) rgba(167, 139, 250, 0.35),
+    0 var(--space-xs) var(--space-sm) rgba(96, 165, 250, 0.20);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: var(--font-size-xl);
+  z-index: 90;
+  transition:
+    transform var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fab:hover {
+  transform: rotate(90deg) scale(1.08);
+  box-shadow:
+    0 var(--space-md) var(--space-xl) rgba(167, 139, 250, 0.45),
+    0 var(--space-sm) var(--space-lg) rgba(96, 165, 250, 0.30);
+}
+
+.fab:active {
+  transform: rotate(90deg) scale(0.94);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   4. 星尘流布局 (单列卡片流)
+   ═══════════════════════════════════════════════════════════ */
+.stardust-feed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  padding-bottom: calc(var(--nav-height) + var(--safe-area-inset-bottom) + var(--space-xl));
+}
+
+.stardust-feed > .card {
+  width: 100%;
+}
+
+/* 交错入场动画 */
+.stardust-feed > .card {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: card-enter var(--duration-slow) var(--ease-out) forwards;
+}
+
+.stardust-feed > .card:nth-child(1) { animation-delay: 0.05s; }
+.stardust-feed > .card:nth-child(2) { animation-delay: 0.10s; }
+.stardust-feed > .card:nth-child(3) { animation-delay: 0.15s; }
+.stardust-feed > .card:nth-child(4) { animation-delay: 0.20s; }
+.stardust-feed > .card:nth-child(5) { animation-delay: 0.25s; }
+.stardust-feed > .card:nth-child(6) { animation-delay: 0.30s; }
+.stardust-feed > .card:nth-child(7) { animation-delay: 0.35s; }
+.stardust-feed > .card:nth-child(8) { animation-delay: 0.40s; }
+.stardust-feed > .card:nth-child(9) { animation-delay: 0.45s; }
+.stardust-feed > .card:nth-child(10) { animation-delay: 0.50s; }
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   5. 策展页面布局
+   ═══════════════════════════════════════════════════════════ */
+.curation-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-md) 0;
+}
+
+/* 策展头部 */
+.curation-header {
+  padding: var(--space-lg) var(--space-md) var(--space-md);
+  text-align: center;
+}
+
+.curation-header .curation-title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  line-height: var(--line-height-tight);
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--space-xs);
+}
+
+.curation-header .curation-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
+  line-height: var(--line-height-normal);
+}
+
+/* 策展分区 */
+.curation-section {
+  padding: 0 var(--space-md);
+}
+
+.curation-section .section-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-sm);
+  padding-left: var(--space-xs);
+}
+
+.curation-section .section-cards {
+  display: flex;
+  flex-direction: column;
   gap: var(--space-sm);
 }
-.toast-item {
-  background: rgba(212, 168, 83, 0.9);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: #0a0f24;
-  padding: 10px 24px;
+
+/* ═══════════════════════════════════════════════════════════
+   6. 书写页布局 (输入区 + 工具栏 + 发布按钮)
+   ═══════════════════════════════════════════════════════════ */
+.write-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: var(--space-md);
+  padding-bottom: calc(var(--nav-height) + var(--safe-area-inset-bottom) + var(--space-xl));
+}
+
+/* 输入区 */
+.write-input {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.write-input textarea {
+  flex: 1;
+  min-height: 200px;
+  padding: var(--space-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  resize: none;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.write-input textarea:focus {
+  border-color: var(--accent-purple);
+  box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.15);
+}
+
+.write-input textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* 工具栏 */
+.write-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.write-toolbar::-webkit-scrollbar {
+  display: none;
+}
+
+.toolbar-btn {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.toolbar-btn:hover,
+.toolbar-btn:active {
+  background: rgba(167, 139, 250, 0.12);
+  color: var(--accent-purple);
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border-subtle);
+  flex-shrink: 0;
+  margin: 0 var(--space-xs);
+}
+
+/* 发布按钮 */
+.publish-btn {
+  margin-top: var(--space-lg);
+  padding: var(--space-md) var(--space-xl);
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
   border-radius: var(--radius-full);
-  font-size: 13px;
+  color: #fff;
+  font-size: var(--font-size-base);
   font-weight: 600;
-  box-shadow: 0 4px 20px rgba(212, 168, 83, 0.25);
-  animation: toastIn 0.3s var(--ease-spring),
-             toastOut 0.25s 2s ease forwards;
-  letter-spacing: 0.04em;
-}
-@keyframes toastIn {
-  from { opacity: 0; transform: translateY(-12px) scale(0.9); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-@keyframes toastOut {
-  from { opacity: 1; }
-  to { opacity: 0; transform: translateY(-8px); }
+  text-align: center;
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+  box-shadow: 0 var(--space-sm) var(--space-lg) rgba(167, 139, 250, 0.30);
 }
 
-/* ═══════════════════ Load More ═══════════════════ */
-.load-more {
-  text-align: center;
-  padding: var(--space-lg);
+.publish-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 var(--space-md) var(--space-xl) rgba(167, 139, 250, 0.40);
 }
-.load-more-btn {
-  background: none;
-  border: 1px solid rgba(212, 168, 83, 0.15);
+
+.publish-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   7. 我的页布局 (头像 + 统计 + 菜单)
+   ═══════════════════════════════════════════════════════════ */
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-lg) var(--space-md);
+  padding-bottom: calc(var(--nav-height) + var(--safe-area-inset-bottom) + var(--space-xl));
+}
+
+/* 头像区域 */
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-lg) 0;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
   border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: #fff;
+  box-shadow: 0 var(--space-sm) var(--space-lg) rgba(167, 139, 250, 0.25);
+}
+
+.profile-name {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.profile-bio {
+  font-size: var(--font-size-sm);
   color: var(--text-tertiary);
-  padding: 10px 28px;
-  font-size: 13px;
-  font-weight: 500;
+  text-align: center;
+  max-width: 280px;
+}
+
+/* 统计区 */
+.profile-stats {
+  display: flex;
+  justify-content: space-around;
+  padding: var(--space-md) 0;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.stat-value {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--accent-purple);
+}
+
+.stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+/* 菜单列表 */
+.profile-menu {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background var(--duration-fast) var(--ease-out);
   cursor: pointer;
-  font-family: inherit;
-  letter-spacing: 0.06em;
-  transition: all var(--duration-fast);
-}
-.load-more-btn:hover {
-  border-color: var(--gold);
-  color: var(--gold-light);
-  background: var(--gold-soft);
 }
 
-/* ═══════════════════ Empty State ═══════════════════ */
-.empty-state {
-  text-align: center;
-  padding: 80px var(--space-lg);
+.menu-item:last-child {
+  border-bottom: none;
 }
-.empty-state-icon { font-size: 52px; margin-bottom: var(--space-lg); opacity: 0.6; }
-.empty-state-text {
-  font-family: var(--font-serif);
-  font-size: 15px;
+
+.menu-item:hover,
+.menu-item:active {
+  background: rgba(167, 139, 250, 0.06);
+}
+
+.menu-item .menu-icon {
+  margin-right: var(--space-sm);
+  color: var(--text-secondary);
+  font-size: var(--font-size-base);
+}
+
+.menu-item .menu-arrow {
   color: var(--text-tertiary);
-  line-height: 1.8;
-  letter-spacing: 0.04em;
+  font-size: var(--font-size-xs);
 }
 
-/* ═══════════════════ Loading ═══════════════════ */
-.loading-state {
-  text-align: center;
-  padding: 48px;
+/* ═══════════════════════════════════════════════════════════
+   8. 卡片样式 — 情绪图标(右上) + 时间(左上) + 正文 + 图片 + 互动区
+   ═══════════════════════════════════════════════════════════ */
+.card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition:
+    border-color var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out),
+    transform var(--duration-normal) var(--ease-out);
+}
+
+.card:hover {
+  border-color: rgba(167, 139, 250, 0.25);
+  box-shadow:
+    0 var(--space-sm) var(--space-xl) rgba(167, 139, 250, 0.08),
+    0 var(--space-md) var(--space-2xl) rgba(5, 7, 20, 0.40);
+  transform: translateY(-2px);
+}
+
+.card:active {
+  transform: scale(0.985);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+/* ── 卡片头部：左上时间 + 右上情绪图标 ── */
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-md) 0;
+}
+
+.card-time {
+  font-size: var(--font-size-xs);
   color: var(--text-tertiary);
-  font-size: 13px;
-  letter-spacing: 0.04em;
-}
-.loading-dots {
-  display: inline-flex;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-.loading-dots span {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: var(--gold);
-  animation: dotBounce 1.2s infinite ease-in-out;
-}
-.loading-dots span:nth-child(2) { animation-delay: 0.15s; }
-.loading-dots span:nth-child(3) { animation-delay: 0.3s; }
-@keyframes dotBounce {
-  0%, 80%, 100% { transform: scale(0.5); opacity: 0.3; }
-  40% { transform: scale(1); opacity: 1; }
+  letter-spacing: 0.03em;
+  line-height: var(--line-height-tight);
 }
 
-/* ═══════════════════ End Marker ═══════════════════ */
-.end-marker {
-  text-align: center;
-  padding: var(--space-lg);
-  color: var(--text-muted);
-  font-size: 12px;
-  opacity: 0.4;
-  letter-spacing: 0.06em;
+.card-mood {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background: rgba(167, 139, 250, 0.10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  line-height: 1;
+  flex-shrink: 0;
 }
 
-/* ═══════════════════ Responsive ═══════════════════ */
-@media (max-width: 360px) {
-  .nav { padding: 10px 12px; }
-  .nav-tab { padding: 6px 10px; font-size: 12px; }
-  .nav-tab-label { display: none; }
-  .hero-title { font-size: 36px; }
-  .post-card { padding: 16px 14px; }
-  .post-card-body { font-size: 13.5px; }
+/* ── 卡片正文 ── */
+.card-body {
+  padding: var(--space-sm) var(--space-md) var(--space-md);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  color: var(--text-primary);
+  word-break: break-word;
 }
 
-@media (min-width: 640px) {
-  .nav { padding: 14px var(--space-xl); }
-  .nav-tab { font-size: 14px; padding: 9px 20px; }
-  .post-card { padding: 22px 20px; }
-  .post-card-body { font-size: 15px; }
+.card-body p + p {
+  margin-top: var(--space-sm);
 }
 
+/* ── 卡片图片 ── */
+.card-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: var(--bg-deep);
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+.card:hover .card-image {
+  transform: scale(1.03);
+}
+
+.card-image-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg,
+    rgba(167, 139, 250, 0.05),
+    rgba(96, 165, 250, 0.05));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  font-size: var(--font-size-xl);
+}
+
+/* ── 卡片互动区 ── */
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  padding: var(--space-sm) var(--space-md) var(--space-md);
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--text-tertiary);
+  font-size: var(--font-size-sm);
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.action-btn:hover {
+  color: var(--accent-purple);
+}
+
+.action-btn:active {
+  transform: scale(0.90);
+}
+
+.action-btn .action-icon {
+  font-size: var(--font-size-base);
+  line-height: 1;
+}
+
+.action-btn .action-count {
+  font-size: var(--font-size-xs);
+}
+
+/* 点赞激活态 */
+.action-btn.liked {
+  color: var(--accent-purple);
+}
+
+.action-btn.liked .action-icon {
+  animation: heart-pop var(--duration-normal) var(--ease-out);
+}
+
+@keyframes heart-pop {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.35); }
+  60%  { transform: scale(0.90); }
+  100% { transform: scale(1); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   9. 骨架屏动画
+   ═══════════════════════════════════════════════════════════ */
+.skeleton {
+  pointer-events: none;
+  user-select: none;
+}
+
+.skeleton .card-header,
+.skeleton .card-body,
+.skeleton .card-image,
+.skeleton .card-actions {
+  position: relative;
+}
+
+.skeleton .card-image {
+  background: var(--bg-deep);
+}
+
+/* 骨架占位条 */
+.skeleton-line {
+  height: 14px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+  margin-bottom: var(--space-sm);
+}
+
+.skeleton-line.short {
+  width: 60%;
+}
+
+.skeleton-line.medium {
+  width: 80%;
+}
+
+.skeleton-line.long {
+  width: 100%;
+}
+
+.skeleton-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* 骨架卡片结构 */
+.skeleton-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+
+.skeleton-card .skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.skeleton-card .skeleton-row:last-child {
+  margin-bottom: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   10. Toast 提示
+   ═══════════════════════════════════════════════════════════ */
+.toast-container {
+  position: fixed;
+  top: calc(var(--safe-area-inset-top) + var(--space-md));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  pointer-events: none;
+  width: calc(100% - var(--space-xl));
+  max-width: 480px;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(10, 14, 35, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  box-shadow:
+    0 var(--space-sm) var(--space-xl) rgba(5, 7, 20, 0.50),
+    0 var(--space-xs) var(--space-sm) rgba(0, 0, 0, 0.30);
+  pointer-events: auto;
+  animation: toast-in var(--duration-normal) var(--ease-out) forwards;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  line-height: var(--line-height-tight);
+}
+
+.toast.toast-out {
+  animation: toast-out var(--duration-normal) var(--ease-out) forwards;
+}
+
+.toast .toast-icon {
+  flex-shrink: 0;
+  font-size: var(--font-size-base);
+  line-height: 1;
+}
+
+/* 变体 */
+.toast-success .toast-icon { color: #34d399; }
+.toast-error .toast-icon   { color: #f87171; }
+.toast-info .toast-icon    { color: var(--accent-blue); }
+.toast-warning .toast-icon { color: #fbbf24; }
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toast-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.92);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   11. 星空背景 (纯 CSS box-shadow 星点 + twinkle 动画)
+   ═══════════════════════════════════════════════════════════ */
+.starry-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+/* 星点层 — 用伪元素 + box-shadow 画星 */
+.starry-bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 2px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  box-shadow:
+    /* 第1组 — 慢闪烁 */
+    15vw 8vh  0 0 rgba(255, 255, 255, 0.70),
+    23vw 12vh 0 0 rgba(255, 255, 255, 0.55),
+    31vw 5vh  0 0 rgba(255, 255, 255, 0.80),
+    42vw 18vh 0 0 rgba(255, 255, 255, 0.45),
+    55vw 9vh  0 0 rgba(255, 255, 255, 0.65),
+    68vw 14vh 0 0 rgba(255, 255, 255, 0.50),
+    77vw 6vh  0 0 rgba(255, 255, 255, 0.75),
+    88vw 20vh 0 0 rgba(255, 255, 255, 0.40),
+    8vw  28vh 0 0 rgba(255, 255, 255, 0.60),
+    19vw 35vh 0 0 rgba(255, 255, 255, 0.35),
+    33vw 42vh 0 0 rgba(255, 255, 255, 0.55),
+    48vw 38vh 0 0 rgba(255, 255, 255, 0.70),
+    62vw 30vh 0 0 rgba(255, 255, 255, 0.45),
+    75vw 45vh 0 0 rgba(255, 255, 255, 0.50),
+    85vw 33vh 0 0 rgba(255, 255, 255, 0.65),
+    /* 第2组 */
+    11vw 55vh 0 0 rgba(255, 255, 255, 0.40),
+    25vw 62vh 0 0 rgba(255, 255, 255, 0.75),
+    37vw 50vh 0 0 rgba(255, 255, 255, 0.60),
+    50vw 68vh 0 0 rgba(255, 255, 255, 0.35),
+    64vw 55vh 0 0 rgba(255, 255, 255, 0.55),
+    79vw 72vh 0 0 rgba(255, 255, 255, 0.70),
+    90vw 60vh 0 0 rgba(255, 255, 255, 0.45),
+    5vw  78vh 0 0 rgba(255, 255, 255, 0.50),
+    20vw 85vh 0 0 rgba(255, 255, 255, 0.65),
+    40vw 80vh 0 0 rgba(255, 255, 255, 0.40),
+    58vw 90vh 0 0 rgba(255, 255, 255, 0.55),
+    72vw 82vh 0 0 rgba(255, 255, 255, 0.70),
+    83vw 75vh 0 0 rgba(255, 255, 255, 0.35),
+    95vw 88vh 0 0 rgba(255, 255, 255, 0.60);
+
+  animation: twinkle-group1 3.6s ease-in-out infinite alternate;
+}
+
+/* 第2层星星 — 不同节奏 */
+.starry-bg::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  box-shadow:
+    6vw  3vh  0 0 rgba(167, 139, 250, 0.50),
+    18vw 10vh 0 0 rgba(167, 139, 250, 0.35),
+    28vw 2vh  0 0 rgba(96, 165, 250, 0.55),
+    38vw 15vh 0 0 rgba(167, 139, 250, 0.40),
+    52vw 7vh  0 0 rgba(96, 165, 250, 0.60),
+    65vw 11vh 0 0 rgba(167, 139, 250, 0.30),
+    73vw 4vh  0 0 rgba(96, 165, 250, 0.50),
+    82vw 17vh 0 0 rgba(167, 139, 250, 0.45),
+    92vw 8vh  0 0 rgba(96, 165, 250, 0.35),
+    9vw  23vh 0 0 rgba(167, 139, 250, 0.55),
+    22vw 32vh 0 0 rgba(96, 165, 250, 0.40),
+    35vw 40vh 0 0 rgba(167, 139, 250, 0.30),
+    47vw 35vh 0 0 rgba(96, 165, 250, 0.50),
+    60vw 28vh 0 0 rgba(167, 139, 250, 0.45),
+    76vw 42vh 0 0 rgba(96, 165, 250, 0.55),
+    89vw 30vh 0 0 rgba(167, 139, 250, 0.35),
+    14vw 52vh 0 0 rgba(96, 165, 250, 0.40),
+    30vw 58vh 0 0 rgba(167, 139, 250, 0.60),
+    44vw 65vh 0 0 rgba(96, 165, 250, 0.35),
+    57vw 52vh 0 0 rgba(167, 139, 250, 0.50),
+    69vw 70vh 0 0 rgba(96, 165, 250, 0.45),
+    81vw 58vh 0 0 rgba(167, 139, 250, 0.30),
+    94vw 65vh 0 0 rgba(96, 165, 250, 0.55),
+    7vw  75vh 0 0 rgba(167, 139, 250, 0.40),
+    24vw 82vh 0 0 rgba(96, 165, 250, 0.50),
+    41vw 78vh 0 0 rgba(167, 139, 250, 0.35),
+    55vw 88vh 0 0 rgba(96, 165, 250, 0.45),
+    70vw 80vh 0 0 rgba(167, 139, 250, 0.55),
+    86vw 72vh 0 0 rgba(96, 165, 250, 0.40);
+
+  animation: twinkle-group2 2.8s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle-group1 {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1.0; }
+}
+
+@keyframes twinkle-group2 {
+  0%, 100% { opacity: 0.35; }
+  50%      { opacity: 0.85; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   12. 涟漪效果
+   ═══════════════════════════════════════════════════════════ */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-effect {
+  position: absolute;
+  border-radius: var(--radius-full);
+  background: rgba(167, 139, 250, 0.30);
+  transform: scale(0);
+  animation: ripple-expand 0.7s var(--ease-out) forwards;
+  pointer-events: none;
+}
+
+@keyframes ripple-expand {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* 兼容 prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .ripple-effect {
+    animation: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   13. 响应式布局
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── 480px：居中容器 ── */
+@media (min-width: 480px) {
+  .app-container {
+    padding-left: var(--space-lg);
+    padding-right: var(--space-lg);
+  }
+
+  .stardust-feed {
+    gap: var(--space-lg);
+  }
+
+  .write-page {
+    padding-left: var(--space-lg);
+    padding-right: var(--space-lg);
+  }
+
+  .profile-page {
+    padding-left: var(--space-lg);
+    padding-right: var(--space-lg);
+  }
+}
+
+/* ── >769px：桌面端背景渐变 + 卡片双列 ── */
+@media (min-width: 769px) {
+  body {
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -10%,
+        rgba(167, 139, 250, 0.08) 0%,
+        transparent 60%
+      ),
+      radial-gradient(ellipse 60% 50% at 80% 80%,
+        rgba(96, 165, 250, 0.05) 0%,
+        transparent 60%
+      ),
+      var(--bg-void);
+  }
+
+  .app-container {
+    max-width: 720px;
+    padding-left: var(--space-xl);
+    padding-right: var(--space-xl);
+  }
+
+  /* 双列卡片流 */
+  .stardust-feed {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+  }
+
+  .stardust-feed > .card:first-child {
+    grid-column: span 2;
+  }
+
+  /* 策展页双列 */
+  .curation-section .section-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+  }
+
+  /* 调整 FAB 位置 */
+  .fab {
+    right: calc(50% - 360px + var(--space-lg));
+    bottom: var(--space-2xl);
+  }
+}
+
+/* ── >1024px：宽屏三列 ── */
 @media (min-width: 1024px) {
-  .nav { padding: 16px var(--space-2xl); }
-  .post-card { padding: 26px 22px; }
-  .post-card:hover { transform: translateY(-4px); }
-  .post-card-body { font-size: 15px; line-height: 1.9; }
-  .write-panel textarea { min-height: 240px; font-size: 16px; }
+  .app-container {
+    max-width: 960px;
+  }
+
+  .stardust-feed {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .stardust-feed > .card:first-child {
+    grid-column: span 2;
+  }
+
+  .fab {
+    right: calc(50% - 480px + var(--space-lg));
+  }
 }
 
-/* 暗色模式下表单自动填充 */
-input:-webkit-autofill,
-textarea:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0 30px var(--space) inset !important;
-  -webkit-text-fill-color: var(--text-primary) !important;
+/* ── 横屏适配 ── */
+@media (orientation: landscape) and (max-height: 500px) {
+  body {
+    padding-bottom: 0;
+  }
+
+  .bottom-nav {
+    position: static;
+    height: auto;
+    padding: var(--space-sm) 0;
+    transform: none;
+    left: auto;
+    max-width: none;
+    background: var(--bg-deep);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .fab {
+    bottom: var(--space-md);
+    right: var(--space-md);
+  }
+
+  .app-container {
+    max-width: 100%;
+    padding-bottom: var(--space-md);
+  }
+
+  .stardust-feed {
+    padding-bottom: var(--space-md);
+  }
+
+  /* 横屏书写页 */
+  .write-input textarea {
+    min-height: 120px;
+  }
+}
+
+/* ── 大横屏优化 ── */
+@media (orientation: landscape) and (min-width: 769px) {
+  .stardust-feed {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-lg);
+  }
+
+  .write-page {
+    flex-direction: row;
+    gap: var(--space-lg);
+    align-items: flex-start;
+  }
+
+  .write-page .write-input {
+    flex: 1;
+  }
+
+  .write-page .publish-btn {
+    flex-shrink: 0;
+    margin-top: 0;
+    align-self: flex-end;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   14. 安全区适配
+   ═══════════════════════════════════════════════════════════ */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-nav {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  body {
+    padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + var(--space-md));
+  }
+
+  .app-container {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .toast-container {
+    top: calc(env(safe-area-inset-top) + var(--space-md));
+  }
+}
+
+/* ── 减少动画偏好 ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 </style>
 </head>
-<body>
+<body class="theme-deep-space">
 
-<!-- ═══ 星空背景 ═══ -->
-<div class="stars-bg">
-  <canvas id="starCanvas"></canvas>
-</div>
+  <!-- ============================================================
+       Layer 0: 星空背景 (纯CSS box-shadow星点)
+       ============================================================ -->
+  <div class="stars-container" aria-hidden="true">
+    <div class="stars-layer stars-layer--1"></div>
+    <div class="stars-layer stars-layer--2"></div>
+    <div class="stars-layer stars-layer--3"></div>
+  </div>
 
-<!-- ═══ 全局容器 ═══ -->
-<div class="app">
+  <!-- ============================================================
+       Layer 1: 主应用容器 (max-width: 480px, 居中)
+       ============================================================ -->
+  <div class="app-shell" id="appShell">
 
-  <!-- ═══ Hero 区 ═══ -->
-  <header class="hero" id="hero">
-    <div class="hero-constellation" id="heroConstellation"></div>
-    <div class="hero-content">
-      <h1 class="hero-title">
-        <span class="hero-char">唯</span><span class="hero-char">一</span>
-      </h1>
-      <p class="hero-subtitle">每一粒星尘，都是一个宇宙</p>
-      <div class="hero-daily" id="heroDaily">...</div>
-    </div>
-    <div class="hero-scroll" onclick="document.getElementById('mainContent').scrollIntoView({behavior:'smooth'})">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-    </div>
-  </header>
-
-  <!-- ═══ 主导航 ═══ -->
-  <nav class="nav" id="mainNav">
-    <div class="nav-brand" onclick="window.scrollTo({top:0,behavior:'smooth'})">唯一</div>
-    <div class="nav-tabs">
-      <button class="nav-tab active" data-tab="stardust">
-        <span class="nav-tab-icon">🌌</span>
-        <span class="nav-tab-label">星尘</span>
-      </button>
-      <button class="nav-tab" data-tab="curated">
-        <span class="nav-tab-icon">📖</span>
-        <span class="nav-tab-label">策展</span>
-      </button>
-      <button class="nav-tab" data-tab="write">
-        <span class="nav-tab-icon">✨</span>
-        <span class="nav-tab-label">书写</span>
-      </button>
-      <button class="nav-tab" data-tab="mine">
-        <span class="nav-tab-icon">📜</span>
-        <span class="nav-tab-label">我的</span>
-      </button>
-    </div>
-    <button class="nav-bottle" id="navBottle" title="漂流瓶">🏺</button>
-  </nav>
-
-  <!-- ═══ 主内容区 ═══ -->
-  <main class="main" id="mainContent">
-
-    <!-- ═══ 星尘广场 Tab ═══ -->
-    <section class="tab-content active" id="tab-stardust">
-      <!-- 分类标签 -->
-      <div class="category-bar" id="categoryBar">
-        <button class="category-chip active" data-cat="all">全部</button>
-        <button class="category-chip" data-cat="诗歌">诗歌</button>
-        <button class="category-chip" data-cat="语录">语录</button>
-        <button class="category-chip" data-cat="随笔">随笔</button>
-        <button class="category-chip" data-cat="音乐">音乐</button>
+    <!-- ── Hero 区 (缩小版，非全屏) ── -->
+    <header class="hero" id="heroSection">
+      <div class="hero__brand">
+        <h1 class="hero__title">
+          <span class="hero__title-cn">唯一</span>
+          <span class="hero__title-sub">The One</span>
+        </h1>
       </div>
-      <!-- 瀑布流 -->
-      <div class="masonry" id="masonryGrid"></div>
-      <div class="load-more" id="loadMore"></div>
-    </section>
-
-    <!-- ═══ 策展 Tab ═══ -->
-    <section class="tab-content" id="tab-curated">
-      <div class="curated-intro">
-        <h2 class="curated-title">星尘策展</h2>
-        <p class="curated-desc">由编辑精心挑选的文艺内容，诗歌、语录、随笔、音乐……让好文字遇见你。</p>
+      <div class="hero__daily" id="dailyMessage">
+        <div class="hero__daily-quote">
+          <span class="hero__daily-icon">✦</span>
+          <p class="hero__daily-text">正在接收今天的宇宙信号…</p>
+        </div>
+        <p class="hero__daily-attribution" id="dailyAttribution"></p>
       </div>
-      <div id="curatedContent"></div>
-    </section>
+    </header>
 
-    <!-- ═══ 书写 Tab ═══ -->
-    <section class="tab-content" id="tab-write">
-      <div class="write-panel">
-        <div class="write-header">
-          <h2>化作星尘</h2>
-          <p>把你的心事写下来。不完美也没关系。</p>
-        </div>
-        <textarea id="writeContent" placeholder="写下你的心事、一首诗、一句话……每一粒星尘都值得被看见" maxlength="1000"></textarea>
-        <div class="write-char-count"><span id="charCount">0</span>/1000</div>
-        <div class="write-image-row">
-          <input type="file" id="imageInput" accept="image/*" hidden>
-          <button class="btn-ghost" id="imageBtn">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-            添加图片
-          </button>
-          <span class="write-image-name" id="imageName"></span>
-          <button class="btn-ghost btn-ghost-danger" id="imageClear" style="display:none">✕ 清除</button>
-        </div>
-        <img id="imagePreview" class="write-image-preview" style="display:none">
-        <div class="mood-picker" id="moodPicker"></div>
-        <input class="input-nickname" id="writeNickname" placeholder="署名（不填则为「匿名星尘」）" maxlength="20">
-        <button class="btn-send" id="sendBtn">
-          <span>✨ 化作星尘</span>
+    <!-- ════════════════════════════════════════════════════════
+         Page Views (通过 data-view 控制显示/隐藏)
+         ════════════════════════════════════════════════════════ -->
+
+    <!-- ── View 1: 星尘流 ── -->
+    <main class="page-view page-view--active" data-view="stardust" id="viewStardust">
+      <!-- 顶部操作栏 -->
+      <div class="view-header">
+        <h2 class="view-header__title">星尘流</h2>
+        <button class="btn-icon btn-icon--ghost drift-bottle-btn" id="driftBottleBtn" aria-label="漂流瓶 - 随机一篇" title="捞一颗星星">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3c-2.5 4-2.5 10 0 14 2.5-4 2.5-10 0-14Z"/>
+            <path d="M12 3c2.5 4 2.5 10 0 14"/>
+            <line x1="12" y1="3" x2="12" y2="17"/>
+            <circle cx="12" cy="10" r="1.5"/>
+            <path d="M5 10h14"/>
+          </svg>
         </button>
       </div>
-    </section>
 
-    <!-- ═══ 我的 Tab ═══ -->
-    <section class="tab-content" id="tab-mine">
-      <div id="myPostsContainer"></div>
-    </section>
+      <!-- 骨架屏 (加载状态) -->
+      <div class="skeleton-list" id="skeletonStardust">
+        <div class="skeleton-card">
+          <div class="skeleton-line skeleton-line--title"></div>
+          <div class="skeleton-line skeleton-line--body"></div>
+          <div class="skeleton-line skeleton-line--body skeleton-line--short"></div>
+          <div class="skeleton-line skeleton-line--meta"></div>
+        </div>
+        <div class="skeleton-card">
+          <div class="skeleton-line skeleton-line--title"></div>
+          <div class="skeleton-line skeleton-line--body"></div>
+          <div class="skeleton-line skeleton-line--body skeleton-line--short"></div>
+          <div class="skeleton-line skeleton-line--meta"></div>
+        </div>
+        <div class="skeleton-card">
+          <div class="skeleton-line skeleton-line--title"></div>
+          <div class="skeleton-line skeleton-line--body"></div>
+          <div class="skeleton-line skeleton-line--meta"></div>
+        </div>
+      </div>
 
-  </main>
+      <!-- 帖子卡片列表 (真实数据填充区) -->
+      <div class="post-feed" id="postFeedStardust">
+        <!-- JS动态渲染 post-card -->
+      </div>
 
-</div>
+      <!-- 空状态 -->
+      <div class="empty-state" id="emptyStardust" style="display:none;">
+        <div class="empty-state__icon">🌌</div>
+        <p class="empty-state__text">星尘尚未洒落</p>
+        <p class="empty-state__hint">成为第一个留下痕迹的人</p>
+      </div>
 
-<!-- ═══ 漂流瓶弹窗 ═══ -->
-<div class="modal-overlay" id="bottleModal" style="display:none">
-  <div class="modal-card" id="bottleContent"></div>
-</div>
+      <!-- 加载更多指示器 -->
+      <div class="load-more" id="loadMoreStardust" style="display:none;">
+        <div class="load-more__spinner"></div>
+        <span>正在捕捉更多星尘…</span>
+      </div>
+    </main>
 
-<!-- ═══ Toast ═══ -->
-<div class="toast-container" id="toastContainer"></div>
+    <!-- ── View 2: 策展 ── -->
+    <main class="page-view" data-view="curated" id="viewCurated">
+      <div class="view-header">
+        <h2 class="view-header__title">策展</h2>
+      </div>
 
+      <!-- 骨架屏 -->
+      <div class="skeleton-curated" id="skeletonCurated">
+        <div class="skeleton-category">
+          <div class="skeleton-line skeleton-line--title"></div>
+          <div class="skeleton-category__cards">
+            <div class="skeleton-line skeleton-line--body"></div>
+            <div class="skeleton-line skeleton-line--body skeleton-line--short"></div>
+          </div>
+        </div>
+        <div class="skeleton-category">
+          <div class="skeleton-line skeleton-line--title"></div>
+          <div class="skeleton-category__cards">
+            <div class="skeleton-line skeleton-line--body"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 分类区块容器 -->
+      <div class="curated-sections" id="curatedSections">
+        <!-- JS动态渲染分类区块 .curated-section -->
+      </div>
+
+      <!-- 空状态 -->
+      <div class="empty-state" id="emptyCurated" style="display:none;">
+        <div class="empty-state__icon">📜</div>
+        <p class="empty-state__text">策展区暂无内容</p>
+        <p class="empty-state__hint">策展人正在精心挑选</p>
+      </div>
+    </main>
+
+    <!-- ── View 3: 书写 ── -->
+    <main class="page-view" data-view="write" id="viewWrite">
+      <div class="view-header">
+        <h2 class="view-header__title">书写</h2>
+      </div>
+
+      <form class="write-form" id="writeForm" autocomplete="off">
+        <!-- 文本输入区 -->
+        <div class="write-form__body">
+          <textarea
+            class="write-form__textarea"
+            id="writeContent"
+            name="content"
+            placeholder="此刻，你想留下什么…"
+            maxlength="2000"
+            rows="6"
+          ></textarea>
+          <div class="write-form__char-count">
+            <span id="charCount">0</span><span>/2000</span>
+          </div>
+        </div>
+
+        <!-- 情绪标签选择器 -->
+        <div class="write-form__moods" id="moodSelector">
+          <span class="write-form__label">此刻情绪</span>
+          <div class="mood-chips">
+            <button type="button" class="mood-chip" data-mood="calm" data-emoji="🌿" data-color="#7ca87c">🌿 平静</button>
+            <button type="button" class="mood-chip" data-mood="happy" data-emoji="🌟" data-color="#e4c36a">🌟 喜悦</button>
+            <button type="button" class="mood-chip" data-mood="melancholy" data-emoji="🌙" data-color="#7b8fce">🌙 忧郁</button>
+            <button type="button" class="mood-chip" data-mood="passionate" data-emoji="🔥" data-color="#c97a82">🔥 热烈</button>
+            <button type="button" class="mood-chip" data-mood="thoughtful" data-emoji="🪐" data-color="#a38cc9">🪐 沉思</button>
+            <button type="button" class="mood-chip" data-mood="wistful" data-emoji="🍂" data-color="#c99f6a">🍂 怀念</button>
+            <button type="button" class="mood-chip" data-mood="lonely" data-emoji="🕯️" data-color="#8a9bb5">🕯️ 孤独</button>
+            <button type="button" class="mood-chip" data-mood="hopeful" data-emoji="✨" data-color="#c9a045">✨ 期待</button>
+          </div>
+        </div>
+
+        <!-- 图片上传区 -->
+        <div class="write-form__image" id="imageUpload">
+          <span class="write-form__label">配图（可选）</span>
+          <div class="image-upload-area" id="imageUploadArea">
+            <input
+              type="file"
+              id="imageInput"
+              name="image"
+              accept="image/*"
+              class="image-upload-area__input"
+            />
+            <div class="image-upload-area__placeholder" id="imagePlaceholder">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <span>点击添加图片</span>
+            </div>
+            <div class="image-upload-area__preview" id="imagePreview" style="display:none;">
+              <img id="previewImg" src="" alt="预览" />
+              <button type="button" class="image-upload-area__remove" id="removeImage" aria-label="移除图片">&times;</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 分类选择 -->
+        <div class="write-form__category" id="categorySelector">
+          <span class="write-form__label">分类</span>
+          <div class="category-select">
+            <button type="button" class="category-option category-option--active" data-category="poem">诗歌</button>
+            <button type="button" class="category-option" data-category="quote">语录</button>
+            <button type="button" class="category-option" data-category="essay">随笔</button>
+            <button type="button" class="category-option" data-category="letter">书信</button>
+            <button type="button" class="category-option" data-category="moment">瞬间</button>
+          </div>
+        </div>
+
+        <!-- 发布按钮 -->
+        <button type="submit" class="btn-publish" id="publishBtn">
+          <span class="btn-publish__icon">✦</span>
+          <span class="btn-publish__text">撒向星尘</span>
+        </button>
+      </form>
+    </main>
+
+    <!-- ── View 4: 我的 ── -->
+    <main class="page-view" data-view="profile" id="viewProfile">
+      <div class="view-header">
+        <h2 class="view-header__title">我的</h2>
+      </div>
+
+      <!-- 匿名头像区 (渐变圆形) -->
+      <div class="profile-avatar-section">
+        <div class="profile-avatar" id="profileAvatar">
+          <div class="profile-avatar__gradient"></div>
+          <span class="profile-avatar__initial">?</span>
+        </div>
+        <div class="profile-nickname" id="profileNickname">
+          <span class="profile-nickname__text">匿名旅人</span>
+          <button class="btn-icon btn-icon--small" id="editNicknameBtn" aria-label="编辑昵称">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 统计区 -->
+      <div class="profile-stats" id="profileStats">
+        <div class="stat-item">
+          <span class="stat-item__value" id="statPosts">0</span>
+          <span class="stat-item__label">星尘</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-item__value" id="statLikes">0</span>
+          <span class="stat-item__label">被喜欢</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-item__value" id="statHugs">0</span>
+          <span class="stat-item__label">被拥抱</span>
+        </div>
+      </div>
+
+      <!-- 我的帖子列表 -->
+      <div class="profile-posts" id="myPostsFeed">
+        <!-- JS动态渲染 -->
+      </div>
+
+      <!-- 空状态 -->
+      <div class="empty-state" id="emptyMyPosts" style="display:none;">
+        <div class="empty-state__icon">📭</div>
+        <p class="empty-state__text">还没有留下星尘</p>
+        <p class="empty-state__hint">去书写你的第一颗星星吧</p>
+      </div>
+
+      <!-- 菜单区 -->
+      <div class="profile-menu">
+        <button class="menu-item" id="menuMyPosts">
+          <span class="menu-item__icon">📝</span>
+          <span class="menu-item__label">我的星尘</span>
+          <svg class="menu-item__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <button class="menu-item" id="menuTheme">
+          <span class="menu-item__icon">🌓</span>
+          <span class="menu-item__label">主题设置</span>
+          <svg class="menu-item__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <button class="menu-item" id="menuAbout">
+          <span class="menu-item__icon">💫</span>
+          <span class="menu-item__label">关于唯一</span>
+          <svg class="menu-item__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </main>
+
+    <!-- ════════════════════════════════════════════════════════
+         FAB (浮动发布按钮，右下角)
+         ════════════════════════════════════════════════════════ -->
+    <button class="fab" id="fabPublish" aria-label="发布星尘">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+    </button>
+
+    <!-- ════════════════════════════════════════════════════════
+         底部 Tab 导航 (毛玻璃效果)
+         ════════════════════════════════════════════════════════ -->
+    <nav class="tab-bar" id="tabBar">
+      <button class="tab-bar__item tab-bar__item--active" data-tab="stardust" aria-label="星尘">
+        <svg class="tab-bar__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"/>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+        </svg>
+        <span class="tab-bar__label">星尘</span>
+      </button>
+      <button class="tab-bar__item" data-tab="curated" aria-label="策展">
+        <svg class="tab-bar__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+          <rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        <span class="tab-bar__label">策展</span>
+      </button>
+      <button class="tab-bar__item" data-tab="write" aria-label="书写">
+        <svg class="tab-bar__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h9"/>
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+        </svg>
+        <span class="tab-bar__label">书写</span>
+      </button>
+      <button class="tab-bar__item" data-tab="profile" aria-label="我的">
+        <svg class="tab-bar__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span class="tab-bar__label">我的</span>
+      </button>
+    </nav>
+
+    <!-- ════════════════════════════════════════════════════════
+         Toast 通知容器
+         ════════════════════════════════════════════════════════ -->
+    <div class="toast-container" id="toastContainer" aria-live="polite">
+      <!-- JS动态注入 .toast-item -->
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════
+         Modal 通用弹窗容器
+         ════════════════════════════════════════════════════════ -->
+    <div class="modal-overlay" id="modalOverlay" style="display:none;">
+      <div class="modal-content" id="modalContent">
+        <!-- JS动态渲染 -->
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════
+         漂流瓶弹窗 (随机帖子)
+         ════════════════════════════════════════════════════════ -->
+    <div class="drift-bottle-modal" id="driftBottleModal" style="display:none;">
+      <div class="drift-bottle-modal__backdrop"></div>
+      <div class="drift-bottle-modal__card" id="driftBottleCard">
+        <button class="drift-bottle-modal__close" id="driftBottleClose" aria-label="关闭">&times;</button>
+        <div class="drift-bottle-modal__content" id="driftBottleContent">
+          <!-- JS动态渲染随机帖子 -->
+        </div>
+        <button class="drift-bottle-modal__refresh" id="driftBottleRefresh" aria-label="再来一颗">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"/>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
+          <span>换一颗星星</span>
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /app-shell -->
+
+  <!-- ============================================================
+       外部JS引用（最终将内联）
+       ============================================================ -->
 <script>
 /**
- * 「唯一」— 前端应用逻辑
- * 星空画布 · 瀑布流 · 策展交互 · 漂流瓶
+ * ============================================================
+ * 「唯一」文艺社区 — 应用主逻辑 (app.js)
+ * ============================================================
+ * 深空宇宙主题 · 五分类卡片 · 瀑布流 · 互动 · 漂流瓶
+ * 纯 Vanilla JS · async/await · 无框架依赖
+ * ============================================================
  */
 
-// ═══ Constants ═══
-const API = '';
-const MOODS = {
-  '开心': { emoji: '😊', color: '#e8c76a' },
-  '难过': { emoji: '😢', color: '#7b9ec7' },
-  '愤怒': { emoji: '😡', color: '#c47a6e' },
-  '焦虑': { emoji: '😰', color: '#9b8ec4' },
-  '迷茫': { emoji: '🤔', color: '#8ba5a5' },
-  '感恩': { emoji: '🙏', color: '#e0b088' },
-  '其他': { emoji: '✨', color: '#c8963e' },
+// ═══════════════════════════════════════════════════════════
+// 0. 配置常量
+// ═══════════════════════════════════════════════════════════
+
+const API_BASE = '';
+const CONFIG = {
+  // 无限滚动阈值（距底部多少px时触发加载）
+  scrollThreshold: 300,
+  // 每页帖子数
+  pageSize: 20,
+  // featured 卡片间隔（每N张放1张featured）
+  featuredInterval: 6,
+  // skeleton 骨架屏数量
+  skeletonCount: 6,
+  // Toast 持续时间 (ms)
+  toastDuration: 2800,
+  // 图片压缩配置
+  imageMaxWidth: 1200,
+  imageMaxHeight: 1200,
+  imageQuality: 0.75,
+  // 昵称长度限制
+  nicknameMaxLen: 12,
+  // 内容长度限制
+  contentMaxLen: 5000,
+  // 心情列表
+  moods: [
+    { id: 'calm',     emoji: '🌙', color: '#7eb8da', label: '平静' },
+    { id: 'thoughtful', emoji: '🌿', color: '#a8c97e', label: '沉思' },
+    { id: 'inspired', emoji: '✨', color: '#c9a045', label: '灵感' },
+    { id: 'melancholy', emoji: '🌧️', color: '#9b8ec4', label: '感怀' },
+    { id: 'passionate', emoji: '🔥', color: '#d4876e', label: '热烈' },
+    { id: 'lonely',  emoji: '🌌', color: '#8ba5a5', label: '寂寥' },
+    { id: 'grateful', emoji: '🙏', color: '#e4c36a', label: '感恩' },
+    { id: 'hopeful', emoji: '🌅', color: '#c97a82', label: '期待' },
+  ],
+  // 分类映射
+  categoryMap: {
+    '诗歌': 'poetry',
+    '语录': 'quote',
+    '随笔': 'essay',
+    '音乐': 'music',
+    '光影': 'film',
+  },
 };
 
-// 情绪SVG微光图标
-const MOOD_ICONS = {
-  '开心': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(232,199,106,0.8)" stroke-width="1.5"><circle cx="12" cy="12" r="4" fill="rgba(232,199,106,0.2)"/><path d="M12 1v2M12 21v2M1 12h2M21 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
-  '难过': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(123,158,199,0.7)" stroke-width="1.5"><path d="M12 3l2 5h5l-4 3 1.5 5L12 18l-4.5 2L9 11 5 8h5z" fill="rgba(123,158,199,0.15)"/></svg>',
-  '愤怒': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(196,122,110,0.7)" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M8 15c1.5 2 4 2 4 2s2.5 0 4-2"/><circle cx="8.5" cy="9" r="1.5" fill="rgba(196,122,110,0.5)"/><circle cx="15.5" cy="9" r="1.5" fill="rgba(196,122,110,0.5)"/></svg>',
-  '焦虑': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(155,142,196,0.7)" stroke-width="1.5"><path d="M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z" fill="rgba(155,142,196,0.12)"/></svg>',
-  '迷茫': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(139,165,165,0.7)" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5" fill="rgba(139,165,165,0.3)"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg>',
-  '感恩': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(224,176,136,0.7)" stroke-width="1.5"><path d="M12 4l2 5h5l-4 3 1.5 5L12 14l-4.5 3L9 12l-4-3h5z" fill="rgba(224,176,136,0.15)"/></svg>',
-  '其他': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(200,150,62,0.7)" stroke-width="1.5"><circle cx="12" cy="12" r="3" fill="rgba(200,150,62,0.2)"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/></svg>',
-};
+// ═══════════════════════════════════════════════════════════
+// 1. 浏览器指纹 (Canvas Fingerprinting)
+// ═══════════════════════════════════════════════════════════
 
-// 图片点击放大
-function zoomImage(e, src) {
-  e.stopPropagation();
-  const overlay = document.createElement('div');
-  overlay.className = 'image-overlay';
-  overlay.innerHTML = `<img src="${src}" alt="放大预览">`;
-  overlay.addEventListener('click', () => overlay.remove());
-  document.body.appendChild(overlay);
+function generateFingerprint() {
+  return new Promise((resolve) => {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 280;
+      canvas.height = 60;
+      const ctx = canvas.getContext('2d');
+
+      // 绘制多层文本 + 几何图形
+      ctx.textBaseline = 'top';
+      ctx.font = '14px "Noto Serif SC", "PingFang SC", serif';
+      ctx.fillStyle = '#c9a045';
+      ctx.fillText('唯一 ✦ 星尘', 4, 4);
+
+      ctx.font = '11px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#7eb8da';
+      ctx.fillText(navigator.userAgent.slice(0, 40), 4, 26);
+
+      ctx.beginPath();
+      ctx.arc(230, 30, 8, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(201,160,69,0.4)';
+      ctx.fill();
+
+      ctx.font = '10px "PingFang SC", sans-serif';
+      ctx.fillStyle = '#a4a6b8';
+      const extras = [
+        navigator.language || '',
+        screen.colorDepth || '',
+        screen.width + 'x' + screen.height,
+        new Date().getTimezoneOffset(),
+      ].join('|');
+      ctx.fillText(extras.slice(0, 60), 4, 46);
+
+      const dataURL = canvas.toDataURL();
+      let hash = 0;
+      for (let i = 0; i < dataURL.length; i++) {
+        const ch = dataURL.charCodeAt(i);
+        hash = ((hash << 5) - hash) + ch;
+        hash |= 0;
+      }
+      const fp = 'fp_' + Math.abs(hash).toString(36).padStart(8, '0');
+      resolve(fp);
+    } catch (e) {
+      // 降级：基于 navigator 属性
+      const raw = [
+        navigator.userAgent,
+        navigator.language,
+        screen.colorDepth,
+        screen.width,
+        screen.height,
+        new Date().getTimezoneOffset(),
+      ].join('|');
+      let h = 0;
+      for (let i = 0; i < raw.length; i++) {
+        h = ((h << 5) - h) + raw.charCodeAt(i);
+        h |= 0;
+      }
+      resolve('fp_' + Math.abs(h).toString(36).padStart(8, '0'));
+    }
+  });
 }
 
-// ═══ State ═══
-const state = {
-  fp: getFingerprint(),
-  currentTab: 'stardust',
-  currentCategory: 'all',
-  stardustPage: 1,
-  hasMoreStardust: true,
-  isLoading: false,
-  cardCounter: 0,
-  selectedMood: '其他',
-  uploadImageData: '',
-};
-
-// ═══ Fingerprint ═══
-function getFingerprint() {
-  let fp = localStorage.getItem('weiyi_fp');
+async function getOrCreateFingerprint() {
+  let fp = localStorage.getItem('onlyone_fingerprint');
   if (!fp) {
-    fp = 'fp_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
-    localStorage.setItem('weiyi_fp', fp);
+    fp = await generateFingerprint();
+    localStorage.setItem('onlyone_fingerprint', fp);
   }
   return fp;
 }
 
-// ═══ Init ═══
-document.addEventListener('DOMContentLoaded', () => {
-  initStarCanvas();
-  initHeroConstellation();
-  initNav();
-  initTabs();
-  initCategoryBar();
-  initDailyMessage();
-  initMoodPicker();
-  initImageUpload();
-  initWriteForm();
-  initBottle();
-  initScrollEffects();
-  loadStardustPosts(true);
-});
+// ═══════════════════════════════════════════════════════════
+// 2. Toast 通知系统
+// ═══════════════════════════════════════════════════════════
 
-// ═══════════════════ Star Canvas ═══════════════════
-function initStarCanvas() {
-  const canvas = document.getElementById('starCanvas');
-  const ctx = canvas.getContext('2d');
-  let stars = [];
-  let animFrame;
+let toastTimer = null;
 
-  function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
 
-  function createStars() {
-    const count = Math.floor((canvas.width * canvas.height) / 3800);
-    stars = [];
-    for (let i = 0; i < count; i++) {
-      const r = Math.random() * 1.3 + 0.2;
-      stars.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        r: r,
-        baseR: r,
-        vx: (Math.random() - 0.5) * 0.08,
-        vy: (Math.random() - 0.5) * 0.08,
-        twinkleSpeed: Math.random() * 0.012 + 0.005,
-        twinkleOffset: Math.random() * Math.PI * 2,
-        hue: Math.random() < 0.20 ? 38 + Math.random() * 18 : 0,
-        alpha: Math.random() * 0.55 + 0.25,
-      });
-    }
-  }
+  // 清除上一个定时器
+  if (toastTimer) clearTimeout(toastTimer);
 
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const t = Date.now() * 0.001;
-
-    for (const s of stars) {
-      // 缓慢漂移
-      s.x += s.vx; s.y += s.vy;
-      if (s.x < 0 || s.x > canvas.width) s.vx *= -1;
-      if (s.y < 0 || s.y > canvas.height) s.vy *= -1;
-
-      const alpha = s.alpha + Math.sin(t * s.twinkleSpeed * 60 + s.twinkleOffset) * 0.35;
-      const clampedAlpha = Math.max(0.08, Math.min(0.9, alpha));
-      const pulseR = s.baseR * (1 + Math.sin(t * s.twinkleSpeed * 60 + s.twinkleOffset) * 0.3);
-
-      if (s.hue > 0) {
-        ctx.fillStyle = `hsla(${s.hue}, 60%, 75%, ${clampedAlpha})`;
-      } else {
-        ctx.fillStyle = `rgba(220,220,235,${clampedAlpha})`;
-      }
-
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, pulseR, 0, Math.PI * 2);
-      ctx.fill();
-
-      // 偶尔加辉光
-      if (clampedAlpha > 0.6) {
-        ctx.fillStyle = s.hue > 0
-          ? `hsla(${s.hue}, 60%, 75%, ${clampedAlpha * 0.15})`
-          : `rgba(220,220,235,${clampedAlpha * 0.12})`;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, pulseR * 3, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    animFrame = requestAnimationFrame(draw);
-  }
-
-  resize();
-  createStars();
-  draw();
-  window.addEventListener('resize', () => { resize(); createStars(); });
-}
-
-// ═══════════════════ Hero Constellation ═══════════════════
-function initHeroConstellation() {
-  const container = document.getElementById('heroConstellation');
-  const canvas = document.createElement('canvas');
-  container.appendChild(canvas);
-  const ctx = canvas.getContext('2d');
-
-  let points = [];
-  const CONNECT_DIST = 120;
-
-  function resize() {
-    canvas.width = container.offsetWidth;
-    canvas.height = container.offsetHeight;
-  }
-
-  function createPoints() {
-    const count = 25;
-    points = [];
-    for (let i = 0; i < count; i++) {
-      points.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        r: Math.random() * 1.5 + 0.5,
-        alpha: Math.random() * 0.5 + 0.2,
-      });
-    }
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // 连线
-    for (let i = 0; i < points.length; i++) {
-      for (let j = i + 1; j < points.length; j++) {
-        const dx = points[i].x - points[j].x;
-        const dy = points[i].y - points[j].y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < CONNECT_DIST) {
-          const alpha = (1 - dist / CONNECT_DIST) * 0.12;
-          ctx.strokeStyle = `rgba(212,168,83,${alpha})`;
-          ctx.lineWidth = 0.5;
-          ctx.beginPath();
-          ctx.moveTo(points[i].x, points[i].y);
-          ctx.lineTo(points[j].x, points[j].y);
-          ctx.stroke();
-        }
-      }
-    }
-
-    // 点
-    for (const p of points) {
-      ctx.fillStyle = `rgba(232,199,106,${p.alpha})`;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fill();
-
-      // 移动
-      p.x += p.vx;
-      p.y += p.vy;
-      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-    }
-
-    requestAnimationFrame(draw);
-  }
-
-  resize();
-  createPoints();
-  draw();
-  window.addEventListener('resize', () => { resize(); createPoints(); });
-}
-
-// ═══════════════════ Navigation ═══════════════════
-function initNav() {
-  const nav = document.getElementById('mainNav');
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 60);
-  }, { passive: true });
-}
-
-function initTabs() {
-  document.querySelectorAll('.nav-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      const tabName = tab.dataset.tab;
-      switchTab(tabName);
-    });
-  });
-}
-
-function switchTab(name) {
-  state.currentTab = name;
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
-  document.querySelectorAll('.tab-content').forEach(tc => tc.classList.toggle('active', tc.id === `tab-${name}`));
-
-  // 重新触发动画
-  const activeTC = document.getElementById(`tab-${name}`);
-  if (activeTC) {
-    activeTC.style.animation = 'none';
-    activeTC.offsetHeight;
-    activeTC.style.animation = '';
-  }
-
-  if (name === 'stardust' && document.getElementById('masonryGrid').children.length === 0) {
-    loadStardustPosts(true);
-  }
-  if (name === 'curated') loadCuratedContent();
-  if (name === 'mine') loadMyPosts();
-}
-
-// ═══════════════════ Category Filter ═══════════════════
-function initCategoryBar() {
-  document.querySelectorAll('.category-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      state.currentCategory = chip.dataset.cat;
-      document.querySelectorAll('.category-chip').forEach(c => c.classList.toggle('active', c === chip));
-      loadStardustPosts(true);
-    });
-  });
-}
-
-// ═══════════════════ Daily Message ═══════════════════
-async function initDailyMessage() {
-  try {
-    const r = await fetch(API + '/api/daily-message');
-    const d = await r.json();
-    const el = document.getElementById('heroDaily');
-    const parts = [];
-    parts.push('「' + d.message + '」');
-    if (d.author) parts.push('—— ' + d.author);
-    if (d.source) {
-      const src = d.source;
-      const hasBrackets = src.startsWith('《') && src.endsWith('》');
-      parts.push(hasBrackets ? src : '《' + src + '》');
-    }
-    el.textContent = parts.join('\n');
-  } catch (e) {
-    document.getElementById('heroDaily').textContent = '「享受今晚。」';
-  }
-}
-
-// ═══════════════════ Stardust Posts ═══════════════════
-async function loadStardustPosts(reset = false) {
-  if (state.isLoading) return;
-  if (reset) {
-    state.stardustPage = 1;
-    state.hasMoreStardust = true;
-    state.cardCounter = 0;
-    document.getElementById('masonryGrid').innerHTML = '';
-    document.getElementById('loadMore').innerHTML = '';
-  }
-  if (!state.hasMoreStardust) return;
-
-  state.isLoading = true;
-  const grid = document.getElementById('masonryGrid');
-
-  try {
-    const r = await fetch(API + '/api/posts?page=' + state.stardustPage + '&fingerprint=' + encodeURIComponent(state.fp));
-    const d = await r.json();
-
-    let posts = d.posts;
-    // 分类过滤（前端）
-    if (state.currentCategory !== 'all') {
-      posts = posts.filter(p => p.category === state.currentCategory || p.mood === state.currentCategory);
-    }
-
-    if (posts.length === 0 && reset) {
-      grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🌌</div><p class="empty-state-text">这个分类还没有星尘<br>去写点什么吧</p></div>';
-    } else {
-      posts.forEach((p, i) => {
-        // 分配卡片变体：每6张1张featured
-        if (i === 0 || (i > 0 && i % 6 === 0)) p.variant = 'featured';
-        const card = createPostCard(p);
-        card.style.animationDelay = (state.cardCounter * 0.05) + 's';
-        state.cardCounter++;
-        grid.appendChild(card);
-      });
-    }
-
-    state.hasMoreStardust = d.has_more;
-    state.stardustPage++;
-
-    const loadMore = document.getElementById('loadMore');
-    if (state.hasMoreStardust) {
-      loadMore.innerHTML = '<div class="load-more"><button class="load-more-btn" id="loadMoreBtn">✨ 更多星尘</button></div>';
-      document.getElementById('loadMoreBtn')?.addEventListener('click', () => loadStardustPosts());
-    } else {
-      loadMore.innerHTML = Array.from(grid.children).length > 0
-        ? '<div class="end-marker">— 已经到底啦 —</div>'
-        : '';
-    }
-  } catch (e) {
-    if (reset) grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🛰️</div><p class="empty-state-text">连接星尘失败<br>请检查网络</p></div>';
-  }
-
-  state.isLoading = false;
-}
-
-function createPostCard(p) {
-  const card = document.createElement('div');
-  const catClassMap = { '诗歌': 'cat-poetry', '语录': 'cat-quote', '随笔': 'cat-essay', '音乐': 'cat-music', '光影': 'cat-film' };
-  const catClass = catClassMap[p.category] || '';
-  const hasImg = p.image ? ' has-image' : '';
-  const shortTxt = p.content && p.content.length < 50 ? ' short-text' : '';
-  card.className = 'post-card' + (p.is_curated ? ' curated' : '') + (catClass ? ' ' + catClass : '') + hasImg + shortTxt + (p.variant ? ' ' + p.variant : '');
-
-  // Badge 类名映射
-  const badgeClassMap = { '诗歌': 'poetry', '语录': 'quote', '随笔': 'essay', '音乐': 'music', '光影': 'film' };
-  const badgeClass = badgeClassMap[p.category] || '';
-
-  // 情绪图标
-  const moodIcon = MOOD_ICONS[p.mood] || MOOD_ICONS['其他'];
-
-  card.innerHTML = `
-    ${p.image ? `<div class="post-card-image"><img src="${p.image.replace(/'/g, "\\'")}" alt="" loading="lazy"></div>` : ''}
-    <div class="post-card-inner">
-      <div class="post-card-header">
-        <div class="post-card-meta">
-          <span class="post-card-mood">${p.mood_emoji}</span>
-          <span class="post-card-author">${escHtml(p.nickname)}</span>
-          ${p.is_curated && p.category ? `<span class="post-card-badge ${badgeClass}">${p.category}</span>` : ''}
-        </div>
-        <span class="post-card-time">${timeAgo(p.created_at)}</span>
-      </div>
-      <div class="post-card-body">${escHtml(p.content)}</div>
-      ${p.source ? `<div class="post-card-source">—— ${escHtml(p.source)}</div>` : ''}
-      <div class="post-card-actions">
-        <button class="post-action like-btn${p.liked_by_me ? ' liked' : ''}" data-id="${p.id}">
-          ❤️ <span class="post-action-count">${p.like_count || 0}</span>
-        </button>
-        <button class="post-action hug-btn${p.hugged_by_me ? ' hugged' : ''}" data-id="${p.id}">
-          🫂 <span class="post-action-count">${p.hug_count || 0}</span>
-        </button>
-      </div>
-    </div>
+  const toast = document.createElement('div');
+  toast.className = `toast toast--${type}`;
+  toast.innerHTML = `
+    <span class="toast__icon">${type === 'success' ? '✦' : type === 'error' ? '✧' : '·'}</span>
+    <span class="toast__text">${escapeHTML(message)}</span>
   `;
 
-  // Like
-  card.querySelector('.like-btn')?.addEventListener('click', async function(e) {
-    e.stopPropagation();
-    const id = this.dataset.id;
-    this.classList.add('just-liked');
-    setTimeout(() => this.classList.remove('just-liked'), 400);
-    try {
-      const r = await fetch(API + '/api/post/' + id + '/like', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fingerprint: state.fp })
-      });
-      const d = await r.json();
-      this.classList.toggle('liked', d.action === 'liked');
-      this.querySelector('.post-action-count').textContent = d.like_count;
-    } catch (e) {}
+  container.appendChild(toast);
+
+  // 入场动画
+  requestAnimationFrame(() => {
+    toast.classList.add('toast--visible');
   });
 
-  // Hug
-  card.querySelector('.hug-btn')?.addEventListener('click', async function(e) {
-    e.stopPropagation();
-    const id = this.dataset.id;
-    try {
-      const r = await fetch(API + '/api/post/' + id + '/hug', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fingerprint: state.fp })
-      });
-      const d = await r.json();
-      this.classList.toggle('hugged', d.action === 'hugged');
-      this.querySelector('.post-action-count').textContent = d.hug_count;
-    } catch (e) {}
-  });
-
-  return card;
+  // 自动消失
+  toastTimer = setTimeout(() => {
+    toast.classList.remove('toast--visible');
+    setTimeout(() => {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 300);
+  }, CONFIG.toastDuration);
 }
 
-// ═══════════════════ Curated Content ═══════════════════
-async function loadCuratedContent() {
-  const container = document.getElementById('curatedContent');
-  if (container.children.length > 0) return; // 已加载
+// ═══════════════════════════════════════════════════════════
+// 3. 工具函数
+// ═══════════════════════════════════════════════════════════
 
-  container.innerHTML = '<div class="loading-state"><div class="loading-dots"><span></span><span></span><span></span></div><div>正在策展星尘……</div></div>';
-
-  try {
-    const r = await fetch(API + '/api/posts/curated?fingerprint=' + encodeURIComponent(state.fp));
-    const d = await r.json();
-    container.innerHTML = '';
-
-    const categoryIcons = {
-      '诗歌': '🌸', '语录': '💡', '随笔': '📝', '音乐': '🎵', '光影': '🎬'
-    };
-
-    for (const [category, posts] of Object.entries(d.categories)) {
-      if (posts.length === 0) continue;
-
-      const section = document.createElement('div');
-      section.className = 'curated-section';
-      section.innerHTML = `
-        <div class="curated-section-header">
-          <span class="curated-section-icon">${categoryIcons[category] || '✨'}</span>
-          <h3 class="curated-section-title">${category}</h3>
-          <span class="curated-section-count">${posts.length} 篇</span>
-        </div>
-        <div class="curated-grid"></div>
-      `;
-
-      const grid = section.querySelector('.curated-grid');
-      posts.forEach((p, i) => {
-        if (i === 0) p.variant = 'featured';
-        const card = createPostCard(p);
-        grid.appendChild(card);
-      });
-
-      container.appendChild(section);
-    }
-
-    if (Object.keys(d.categories).length === 0) {
-      container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📖</div><p class="empty-state-text">策展内容正在筹备中</p></div>';
-    }
-  } catch (e) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🛰️</div><p class="empty-state-text">加载策展内容失败</p></div>';
-  }
+function escapeHTML(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
 }
 
-// ═══════════════════ Write Form ═══════════════════
-function initMoodPicker() {
-  const container = document.getElementById('moodPicker');
-  container.innerHTML = Object.entries(MOODS).map(([k, v]) =>
-    `<span class="mood-chip${k === state.selectedMood ? ' selected' : ''}" data-mood="${k}">${v.emoji} ${k}</span>`
-  ).join('');
+function formatTime(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  const now = new Date();
+  const diff = now - d;
+  const mins = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
 
-  container.querySelectorAll('.mood-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      state.selectedMood = chip.dataset.mood;
-      container.querySelectorAll('.mood-chip').forEach(c => c.classList.remove('selected'));
-      chip.classList.add('selected');
-    });
-  });
+  if (mins < 1) return '刚刚';
+  if (mins < 60) return `${mins}分钟前`;
+  if (hours < 24) return `${hours}小时前`;
+  if (days < 7) return `${days}天前`;
+
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
-function initImageUpload() {
-  const input = document.getElementById('imageInput');
-  const btn = document.getElementById('imageBtn');
-  const nameEl = document.getElementById('imageName');
-  const clearBtn = document.getElementById('imageClear');
-  const preview = document.getElementById('imagePreview');
+function getCategoryClass(category) {
+  const map = {
+    '诗歌': 'cat-poetry',
+    '语录': 'cat-quote',
+    '随笔': 'cat-essay',
+    '音乐': 'cat-music',
+    '光影': 'cat-film',
+    'poetry': 'cat-poetry',
+    'quote': 'cat-quote',
+    'essay': 'cat-essay',
+    'music': 'cat-music',
+    'film': 'cat-film',
+    'photo': 'cat-film',
+  };
+  return map[category] || 'cat-essay';
+}
 
-  btn.addEventListener('click', () => input.click());
+function getCardModifierClass(category) {
+  const map = {
+    '诗歌': 'post-card--poetry',
+    '语录': 'post-card--quote',
+    '随笔': 'post-card--essay',
+    '音乐': 'post-card--music',
+    '光影': 'post-card--photo',
+    'poetry': 'post-card--poetry',
+    'quote': 'post-card--quote',
+    'essay': 'post-card--essay',
+    'music': 'post-card--music',
+    'film': 'post-card--photo',
+    'photo': 'post-card--photo',
+  };
+  return map[category] || 'post-card--essay';
+}
 
-  input.addEventListener('change', () => {
-    const file = input.files[0];
-    if (!file) return;
-    nameEl.textContent = file.name;
-    clearBtn.style.display = 'inline-flex';
+function getCategoryLabel(category) {
+  const map = {
+    'poetry': '诗歌',
+    'quote': '语录',
+    'essay': '随笔',
+    'music': '音乐',
+    'film': '光影',
+    'photo': '光影',
+  };
+  return map[category] || category || '随笔';
+}
+
+// 图片 base64 压缩
+function compressImage(file) {
+  return new Promise((resolve, reject) => {
+    if (!file) { resolve(null); return; }
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = (e) => {
       const img = new Image();
-      img.onload = function() {
+      img.onload = () => {
+        let { width, height } = img;
+        // 等比缩放
+        if (width > CONFIG.imageMaxWidth) {
+          height = Math.round((height * CONFIG.imageMaxWidth) / width);
+          width = CONFIG.imageMaxWidth;
+        }
+        if (height > CONFIG.imageMaxHeight) {
+          width = Math.round((width * CONFIG.imageMaxHeight) / height);
+          height = CONFIG.imageMaxHeight;
+        }
+
         const canvas = document.createElement('canvas');
-        let w = img.width, h = img.height;
-        const maxW = 800;
-        if (w > maxW) { h = h * maxW / w; w = maxW; }
-        canvas.width = w; canvas.height = h;
+        canvas.width = width;
+        canvas.height = height;
         const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, w, h);
-        state.uploadImageData = canvas.toDataURL('image/jpeg', 0.65);
-        preview.src = state.uploadImageData;
-        preview.style.display = 'block';
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const dataURL = canvas.toDataURL('image/jpeg', CONFIG.imageQuality);
+        resolve(dataURL);
       };
+      img.onerror = () => reject(new Error('图片加载失败'));
       img.src = e.target.result;
     };
+    reader.onerror = () => reject(new Error('文件读取失败'));
     reader.readAsDataURL(file);
   });
-
-  clearBtn.addEventListener('click', () => {
-    state.uploadImageData = '';
-    input.value = '';
-    nameEl.textContent = '';
-    clearBtn.style.display = 'none';
-    preview.style.display = 'none';
-  });
 }
 
-function initWriteForm() {
-  const textarea = document.getElementById('writeContent');
-  const charCount = document.getElementById('charCount');
+// 防抖
+function debounce(fn, delay) {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
 
-  textarea.addEventListener('input', () => {
-    charCount.textContent = textarea.value.length;
-    charCount.style.color = textarea.value.length > 900 ? 'var(--rose)' : 'var(--text-muted)';
-  });
-
-  document.getElementById('sendBtn').addEventListener('click', async () => {
-    const content = textarea.value.trim();
-    if (!content) { toast('写点什么吧 ✨'); return; }
-
-    const btn = document.getElementById('sendBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span>正在化作星尘……</span>';
-
-    try {
-      const r = await fetch(API + '/api/post', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          content,
-          image: state.uploadImageData,
-          mood: state.selectedMood,
-          nickname: document.getElementById('writeNickname').value.trim(),
-          fingerprint: state.fp,
-        })
-      });
-      const d = await r.json();
-      if (d.success) {
-        textarea.value = '';
-        document.getElementById('writeNickname').value = '';
-        state.uploadImageData = '';
-        document.getElementById('imageInput').value = '';
-        document.getElementById('imageName').textContent = '';
-        document.getElementById('imageClear').style.display = 'none';
-        document.getElementById('imagePreview').style.display = 'none';
-        charCount.textContent = '0';
-        charCount.style.color = 'var(--text-muted)';
-        toast('✨ 已化作星尘');
-        // 切回星尘页面
-        switchTab('stardust');
-        state.currentCategory = 'all';
-        document.querySelectorAll('.category-chip').forEach(c => c.classList.toggle('active', c.dataset.cat === 'all'));
-        loadStardustPosts(true);
-      } else {
-        toast(d.error || '发送失败');
-      }
-    } catch (e) {
-      toast('发送失败，请重试');
+// 节流
+function throttle(fn, interval) {
+  let last = 0;
+  return function (...args) {
+    const now = Date.now();
+    if (now - last >= interval) {
+      last = now;
+      fn.apply(this, args);
     }
+  };
+}
 
-    btn.disabled = false;
-    btn.innerHTML = '<span>✨ 化作星尘</span>';
+// ═══════════════════════════════════════════════════════════
+// 4. API 层 (async/await + fetch)
+// ═══════════════════════════════════════════════════════════
+
+let fingerprint = null;
+
+async function apiGet(path) {
+  const url = API_BASE + path + (path.includes('?') ? '&' : '?') + 'fingerprint=' + fingerprint;
+  const res = await fetch(url, {
+    headers: { 'Accept': 'application/json' },
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(text || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+async function apiPost(path, body = {}) {
+  const payload = { ...body, fingerprint: fingerprint };
+  const res = await fetch(API_BASE + path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(text || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+async function apiDelete(path) {
+  const res = await fetch(API_BASE + path + '?fingerprint=' + fingerprint, {
+    method: 'DELETE',
+    headers: { 'Accept': 'application/json' },
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(text || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+// -- 具体 API 方法 --
+
+async function fetchDailyMessage() {
+  return apiGet('/api/daily-message');
+}
+
+async function fetchPosts(page = 1) {
+  return apiGet(`/api/posts?page=${page}`);
+}
+
+async function fetchCurated() {
+  return apiGet('/api/posts/curated');
+}
+
+async function fetchRandomPost() {
+  return apiGet('/api/posts/random');
+}
+
+async function createPost(data) {
+  return apiPost('/api/post', data);
+}
+
+async function likePost(id) {
+  return apiPost(`/api/post/${id}/like`);
+}
+
+async function hugPost(id) {
+  return apiPost(`/api/post/${id}/hug`);
+}
+
+async function deletePost(id) {
+  return apiDelete(`/api/post/${id}`);
+}
+
+async function fetchMyPosts() {
+  return apiGet('/api/my-posts');
+}
+
+// ═══════════════════════════════════════════════════════════
+// 5. 状态管理
+// ═══════════════════════════════════════════════════════════
+
+const state = {
+  currentTab: 'stardust',   // stardust | curated | compose | mine
+  stardust: {
+    page: 1,
+    hasMore: true,
+    loading: false,
+    posts: [],
+  },
+  curated: {
+    categories: null,
+  },
+  mine: {
+    posts: [],
+  },
+};
+
+// ═══════════════════════════════════════════════════════════
+// 6. 涟漪点击效果
+// ═══════════════════════════════════════════════════════════
+
+function createRipple(e, el) {
+  const ripple = document.createElement('span');
+  ripple.className = 'ripple';
+  const rect = el.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  ripple.style.width = ripple.style.height = size + 'px';
+  ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+  ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+  el.appendChild(ripple);
+
+  ripple.addEventListener('animationend', () => {
+    if (ripple.parentNode) ripple.parentNode.removeChild(ripple);
   });
 }
 
-// ═══════════════════ Drift Bottle ═══════════════════
-function initBottle() {
-  document.getElementById('navBottle').addEventListener('click', openBottle);
-  document.getElementById('bottleModal').addEventListener('click', function(e) {
-    if (e.target === this) closeBottle();
-  });
+// ═══════════════════════════════════════════════════════════
+// 7. 骨架屏
+// ═══════════════════════════════════════════════════════════
+
+function showSkeletons(container, count = CONFIG.skeletonCount) {
+  container.innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    const sk = document.createElement('div');
+    sk.className = 'skeleton-card';
+    sk.innerHTML = `
+      <div class="skeleton-line skeleton-line--title"></div>
+      <div class="skeleton-line skeleton-line--body"></div>
+      <div class="skeleton-line skeleton-line--body skeleton-line--short"></div>
+      <div class="skeleton-line skeleton-line--meta"></div>
+    `;
+    container.appendChild(sk);
+  }
 }
 
-async function openBottle() {
-  const modal = document.getElementById('bottleModal');
-  const content = document.getElementById('bottleContent');
+function hideSkeletons(container) {
+  container.innerHTML = '';
+}
 
-  modal.style.display = 'flex';
-  content.innerHTML = `
-    <div style="text-align:center;padding:48px 0">
-      <div style="font-size:52px;animation:bottleFloat 1.5s ease-in-out infinite alternate">🏺</div>
-      <div style="margin-top:18px;color:var(--text-tertiary);font-size:14px">正在海面上搜寻漂流瓶……</div>
-    </div>
+// ═══════════════════════════════════════════════════════════
+// 8. 卡片渲染
+// ═══════════════════════════════════════════════════════════
+
+/**
+ * 渲染单张卡片 HTML 结构:
+ *   时间左上 + 情绪(mood)右上 + 正文 + 图片(可选) + 互动区
+ */
+function renderCard(post, index = 0) {
+  const catClass = getCategoryClass(post.category);
+  const modClass = getCardModifierClass(post.category);
+  const catLabel = getCategoryLabel(post.category);
+
+  // featured 变体: 每 6 张中的第 0 张
+  const isFeatured = (index % CONFIG.featuredInterval === 0);
+  const featuredClass = isFeatured ? 'post-card--featured' : '';
+  const spansClass = isFeatured ? 'post-card--spans' : '';
+
+  const timeStr = formatTime(post.created_at);
+  const moodEmoji = post.mood_emoji || '';
+  const moodColor = post.mood_color || 'rgba(201,160,69,0.6)';
+  const moodLabel = post.mood || '';
+  const contentHTML = escapeHTML(post.content || '').replace(/
+/g, '<br>');
+  const nickname = escapeHTML(post.nickname || '匿名星尘');
+
+  const hasImage = post.image && post.image.trim().length > 0;
+  const imageHTML = hasImage
+    ? `<div class="post-card__image-wrap"><img class="post-card__image lazyload" data-src="${escapeHTML(post.image)}" alt="" loading="lazy" /></div>`
+    : '';
+
+  const likeActive = post.liked_by_me ? 'post-card__action--active' : '';
+  const hugActive = post.hugged_by_me ? 'post-card__action--active' : '';
+
+  // 精选标记
+  const curatedBadge = post.is_curated
+    ? '<span class="post-card__badge">✦ 精选</span>'
+    : '';
+
+  return `
+    <article
+      class="post-card ${modClass} ${catClass} ${featuredClass} ${spansClass}"
+      data-id="${post.id}"
+      data-category="${catLabel}"
+    >
+      ${curatedBadge}
+      <div class="post-card__header">
+        <span class="post-card__time">${timeStr}</span>
+        <span class="post-card__mood" style="color:${moodColor}" title="${escapeHTML(moodLabel)}">
+          ${moodEmoji}
+        </span>
+      </div>
+
+      <div class="post-card__body">
+        <div class="post-card__content">${contentHTML}</div>
+        ${imageHTML}
+      </div>
+
+      <div class="post-card__meta">
+        <span class="post-card__nickname">— ${nickname}</span>
+        ${post.source ? `<span class="post-card__source">${escapeHTML(post.source)}</span>` : ''}
+      </div>
+
+      <div class="post-card__actions">
+        <button class="post-card__action post-card__like ${likeActive}" data-action="like" data-id="${post.id}" aria-label="喜欢">
+          <span class="post-card__action-icon">♡</span>
+          <span class="post-card__action-count">${post.like_count || 0}</span>
+        </button>
+        <button class="post-card__action post-card__hug ${hugActive}" data-action="hug" data-id="${post.id}" aria-label="拥抱">
+          <span class="post-card__action-icon">◉</span>
+          <span class="post-card__action-count">${post.hug_count || 0}</span>
+        </button>
+      </div>
+    </article>
   `;
+}
+
+/**
+ * 渲染帖子列表到容器
+ */
+function renderFeed(container, posts, startIndex = 0, append = false) {
+  if (!append) {
+    container.innerHTML = '';
+  }
+
+  const fragment = document.createDocumentFragment();
+  posts.forEach((post, i) => {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = renderCard(post, startIndex + i);
+    fragment.appendChild(wrapper.firstElementChild);
+  });
+
+  container.appendChild(fragment);
+
+  // 懒加载图片
+  lazyLoadImages();
+}
+
+/**
+ * 策展视图：按分类分组渲染
+ */
+function renderCurated(container, categoriesData) {
+  if (!categoriesData) return;
+
+  container.innerHTML = '';
+
+  const categoryOrder = ['诗歌', '语录', '随笔', '音乐', '光影'];
+
+  categoryOrder.forEach((catName) => {
+    const posts = categoriesData[catName];
+    if (!posts || posts.length === 0) return;
+
+    const catKey = CONFIG.categoryMap[catName] || 'essay';
+    const catClass = `cat-${catKey}`;
+
+    const section = document.createElement('section');
+    section.className = `curated-section ${catClass}`;
+    section.innerHTML = `
+      <h2 class="curated-section__title">
+        <span class="curated-section__icon"></span>
+        ${escapeHTML(catName)}
+        <span class="curated-section__count">${posts.length}篇</span>
+      </h2>
+    `;
+
+    const grid = document.createElement('div');
+    grid.className = 'post-grid post-grid--curated';
+
+    posts.forEach((post, i) => {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = renderCard(post, i);
+      grid.appendChild(wrapper.firstElementChild);
+    });
+
+    section.appendChild(grid);
+    container.appendChild(section);
+  });
+
+  lazyLoadImages();
+}
+
+/**
+ * 我的帖子列表渲染（含删除按钮）
+ */
+function renderMyPosts(container, posts) {
+  if (!posts || posts.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state__icon">◈</div>
+        <p class="empty-state__text">你还没有发布过帖子</p>
+        <p class="empty-state__sub">在星尘中留下你的痕迹吧</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = '';
+
+  posts.forEach((post, i) => {
+    const catClass = getCategoryClass(post.category);
+    const modClass = getCardModifierClass(post.category);
+    const timeStr = formatTime(post.created_at);
+    const moodEmoji = post.mood_emoji || '';
+    const moodColor = post.mood_color || 'rgba(201,160,69,0.6)';
+    const contentHTML = escapeHTML(post.content || '').replace(/
+/g, '<br>');
+    const hasImage = post.image && post.image.trim().length > 0;
+
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = `
+      <article class="post-card ${modClass} ${catClass}" data-id="${post.id}">
+        <div class="post-card__header">
+          <span class="post-card__time">${timeStr}</span>
+          <span class="post-card__mood" style="color:${moodColor}">${moodEmoji}</span>
+        </div>
+        <div class="post-card__body">
+          <div class="post-card__content">${contentHTML}</div>
+          ${hasImage ? `<div class="post-card__image-wrap"><img class="post-card__image lazyload" data-src="${escapeHTML(post.image)}" alt="" loading="lazy" /></div>` : ''}
+        </div>
+        <div class="post-card__actions">
+          <span class="post-card__stat">♡ ${post.like_count || 0}</span>
+          <span class="post-card__stat">◉ ${post.hug_count || 0}</span>
+          <button class="post-card__delete-btn" data-action="delete" data-id="${post.id}" aria-label="删除">
+            ✕ 删除
+          </button>
+        </div>
+      </article>
+    `;
+    container.appendChild(wrapper.firstElementChild);
+  });
+
+  lazyLoadImages();
+}
+
+// ═══════════════════════════════════════════════════════════
+// 9. 图片懒加载
+// ═══════════════════════════════════════════════════════════
+
+function lazyLoadImages() {
+  const images = document.querySelectorAll('img.lazyload[data-src]');
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          img.src = img.dataset.src;
+          img.classList.remove('lazyload');
+          observer.unobserve(img);
+        }
+      });
+    }, { rootMargin: '100px' });
+
+    images.forEach((img) => observer.observe(img));
+  } else {
+    // 降级：直接加载
+    images.forEach((img) => {
+      img.src = img.dataset.src;
+      img.classList.remove('lazyload');
+    });
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 10. 星尘流 (Tab 1): 首屏加载 + 无限滚动
+// ═══════════════════════════════════════════════════════════
+
+async function loadStardust(append = false) {
+  const container = document.getElementById('stardust-feed');
+  if (!container) return;
+
+  if (!append) {
+    state.stardust.page = 1;
+    state.stardust.hasMore = true;
+    state.stardust.posts = [];
+    showSkeletons(container);
+  }
+
+  if (state.stardust.loading || !state.stardust.hasMore) return;
+
+  state.stardust.loading = true;
 
   try {
-    const r = await fetch(API + '/api/posts/random?fingerprint=' + encodeURIComponent(state.fp));
-    if (r.status === 404) {
-      content.innerHTML = `
-        <button class="modal-close" onclick="closeBottle()">✕</button>
-        <div style="text-align:center;padding:48px 0">
-          <div style="font-size:40px;margin-bottom:16px">🏺</div>
-          <div style="color:var(--text-tertiary);font-size:14px">${(await r.json()).error}</div>
-          <button class="load-more-btn" style="margin-top:20px" onclick="openBottle()">🫧 再捞一个</button>
+    const data = await fetchPosts(state.stardust.page);
+
+    if (!append) {
+      hideSkeletons(container);
+    }
+
+    const posts = data.posts || [];
+    state.stardust.hasMore = data.has_more !== false;
+    state.stardust.page = data.page || state.stardust.page;
+
+    if (posts.length > 0) {
+      state.stardust.posts = append
+        ? [...state.stardust.posts, ...posts]
+        : posts;
+      renderFeed(container, posts, state.stardust.posts.length - posts.length, append);
+    } else if (!append) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state__icon">✦</div>
+          <p class="empty-state__text">暂无星尘</p>
+          <p class="empty-state__sub">成为第一个留下光芒的人</p>
         </div>
       `;
-      return;
     }
-    const p = await r.json();
 
-    content.innerHTML = `
-      <button class="modal-close" onclick="closeBottle()">✕</button>
-      <div style="text-align:center;margin-bottom:16px">
-        <div style="font-size:36px">🏺</div>
-        <div style="font-size:13px;color:var(--text-tertiary);margin-top:4px">你捡到了一个漂流瓶</div>
-      </div>
-      <div class="post-card" style="margin:0;box-shadow:none;background:rgba(255,255,255,0.02)">
-        <div class="post-card-header">
-          <div class="post-card-meta">
-            <span class="post-card-mood">${p.mood_emoji}</span>
-            <span class="post-card-author">${escHtml(p.nickname)}</span>
-          </div>
-          <span class="post-card-time">${timeAgo(p.created_at)}</span>
+    // 没有更多内容时追加提示
+    if (!state.stardust.hasMore && state.stardust.posts.length > 0) {
+      const end = document.createElement('div');
+      end.className = 'feed-end';
+      end.innerHTML = '<span>— 已到达星尘尽头 —</span>';
+      container.appendChild(end);
+    }
+
+  } catch (err) {
+    if (!append) hideSkeletons(container);
+    showToast('加载失败: ' + err.message, 'error');
+  } finally {
+    state.stardust.loading = false;
+  }
+}
+
+// 无限滚动处理
+const handleScroll = throttle(() => {
+  if (state.currentTab !== 'stardust') return;
+  if (!state.stardust.hasMore || state.stardust.loading) return;
+
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  const windowHeight = window.innerHeight;
+  const docHeight = document.documentElement.scrollHeight;
+
+  if (scrollTop + windowHeight >= docHeight - CONFIG.scrollThreshold) {
+    state.stardust.page++;
+    loadStardust(true);
+  }
+}, 200);
+
+// ═══════════════════════════════════════════════════════════
+// 11. 策展 (Tab 2): 分类分组展示
+// ═══════════════════════════════════════════════════════════
+
+async function loadCurated() {
+  const container = document.getElementById('curated-feed');
+  if (!container) return;
+
+  showSkeletons(container, 4);
+
+  try {
+    const data = await fetchCurated();
+    hideSkeletons(container);
+
+    state.curated.categories = data.categories || data;
+    renderCurated(container, state.curated.categories);
+
+    if (!state.curated.categories || Object.keys(state.curated.categories).length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state__icon">✦</div>
+          <p class="empty-state__text">暂无策展内容</p>
+          <p class="empty-state__sub">编辑正在精心挑选中...</p>
         </div>
-        <div class="post-card-body">${escHtml(p.content)}</div>
-        ${p.image ? `<div class="post-card-image"><img src="${p.image}" alt="漂流瓶图片" loading="lazy"></div>` : ''}
-        <div style="text-align:center;margin-top:16px;color:var(--text-tertiary);font-size:13px">
-          ❤️ ${p.like_count || 0} · 🫂 ${p.hug_count || 0}
-        </div>
-      </div>
-      <div style="text-align:center;margin-top:20px">
-        <button class="load-more-btn" onclick="openBottle()">🫧 再捞一个</button>
-      </div>
-    `;
-  } catch (e) {
-    content.innerHTML = `
-      <button class="modal-close" onclick="closeBottle()">✕</button>
-      <div style="text-align:center;padding:48px;color:var(--text-tertiary)">漂流瓶漂远了……再试一次吧</div>
-    `;
+      `;
+    }
+  } catch (err) {
+    hideSkeletons(container);
+    showToast('策展加载失败: ' + err.message, 'error');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 12. 书写 (Tab 3): 发布表单
+// ═══════════════════════════════════════════════════════════
+
+function initComposeForm() {
+  const form = document.getElementById('compose-form');
+  const contentInput = document.getElementById('compose-content');
+  const charCount = document.getElementById('compose-charcount');
+  const moodSelector = document.getElementById('compose-mood-selector');
+  const imageInput = document.getElementById('compose-image');
+  const imagePreview = document.getElementById('compose-image-preview');
+  const submitBtn = document.getElementById('compose-submit');
+  const nicknameInput = document.getElementById('compose-nickname');
+
+  if (!form) return;
+
+  // 字数统计
+  if (contentInput && charCount) {
+    contentInput.addEventListener('input', () => {
+      const len = contentInput.value.length;
+      charCount.textContent = `${len} / ${CONFIG.contentMaxLen}`;
+      charCount.className = len > CONFIG.contentMaxLen
+        ? 'compose__charcount compose__charcount--over'
+        : 'compose__charcount';
+    });
+  }
+
+  // 情绪选择器构建
+  if (moodSelector) {
+    CONFIG.moods.forEach((mood) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'mood-btn';
+      btn.dataset.mood = mood.id;
+      btn.dataset.emoji = mood.emoji;
+      btn.dataset.color = mood.color;
+      btn.innerHTML = `<span class="mood-btn__emoji">${mood.emoji}</span><span class="mood-btn__label">${mood.label}</span>`;
+      btn.addEventListener('click', () => {
+        moodSelector.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('mood-btn--selected'));
+        btn.classList.add('mood-btn--selected');
+      });
+      moodSelector.appendChild(btn);
+    });
+    // 默认选中第一个
+    const firstBtn = moodSelector.querySelector('.mood-btn');
+    if (firstBtn) firstBtn.classList.add('mood-btn--selected');
+  }
+
+  // 图片预览
+  if (imageInput && imagePreview) {
+    imageInput.addEventListener('change', async () => {
+      const file = imageInput.files[0];
+      if (!file) { imagePreview.innerHTML = ''; return; }
+
+      if (!file.type.startsWith('image/')) {
+        showToast('请选择图片文件', 'error');
+        imageInput.value = '';
+        return;
+      }
+
+      imagePreview.innerHTML = '<div class="compose__image-loading">压缩中...</div>';
+
+      try {
+        const dataURL = await compressImage(file);
+        imagePreview.innerHTML = `<img src="${dataURL}" alt="预览" class="compose__image-thumb" />`;
+        // 存储 base64 到 data 属性供提交时使用
+        imagePreview.dataset.base64 = dataURL;
+      } catch (err) {
+        imagePreview.innerHTML = '';
+        showToast('图片处理失败', 'error');
+      }
+    });
+  }
+
+  // 提交
+  if (submitBtn) {
+    submitBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await handlePublish();
+    });
+  }
+
+  // Enter 提交 (Ctrl+Enter)
+  if (contentInput) {
+    contentInput.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        handlePublish();
+      }
+    });
+  }
+}
+
+async function handlePublish() {
+  const contentInput = document.getElementById('compose-content');
+  const moodSelector = document.getElementById('compose-mood-selector');
+  const imagePreview = document.getElementById('compose-image-preview');
+  const submitBtn = document.getElementById('compose-submit');
+  const nicknameInput = document.getElementById('compose-nickname');
+
+  const content = (contentInput?.value || '').trim();
+  if (!content) {
+    showToast('请写下你想说的话', 'error');
+    contentInput?.focus();
+    return;
+  }
+
+  if (content.length > CONFIG.contentMaxLen) {
+    showToast(`内容不能超过${CONFIG.contentMaxLen}字`, 'error');
+    return;
+  }
+
+  // 获取选中的情绪
+  const selectedMood = moodSelector?.querySelector('.mood-btn--selected');
+  const mood = selectedMood?.dataset.mood || 'calm';
+  const moodEmoji = selectedMood?.dataset.emoji || '🌙';
+  const moodColor = selectedMood?.dataset.color || '#7eb8da';
+
+  // 获取图片 base64
+  const image = imagePreview?.dataset.base64 || null;
+
+  // 昵称
+  const nickname = (nicknameInput?.value || '').trim().slice(0, CONFIG.nicknameMaxLen) || '匿名星尘';
+
+  // 禁用按钮
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = '发送中...';
+  }
+
+  try {
+    const result = await createPost({
+      content,
+      image,
+      mood,
+      nickname,
+    });
+
+    showToast('发布成功 ✦', 'success');
+
+    // 清空表单
+    if (contentInput) contentInput.value = '';
+    if (charCount) document.getElementById('compose-charcount').textContent = `0 / ${CONFIG.contentMaxLen}`;
+    if (imagePreview) { imagePreview.innerHTML = ''; delete imagePreview.dataset.base64; }
+    if (imageInput) document.getElementById('compose-image').value = '';
+
+    // 重置情绪选择
+    if (moodSelector) {
+      moodSelector.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('mood-btn--selected'));
+      const firstBtn = moodSelector.querySelector('.mood-btn');
+      if (firstBtn) firstBtn.classList.add('mood-btn--selected');
+    }
+
+    // 如果 result 中有 post 对象，可以插入到 feed
+    if (result.post) {
+      // 切换到星尘 tab 并刷新
+      const stardustTab = document.querySelector('[data-tab="stardust"]');
+      if (stardustTab) stardustTab.click();
+    }
+
+  } catch (err) {
+    showToast('发布失败: ' + err.message, 'error');
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = '✦ 发布星尘';
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 13. 我的 (Tab 4): 帖子列表 + 删除
+// ═══════════════════════════════════════════════════════════
+
+async function loadMyPosts() {
+  const container = document.getElementById('mine-feed');
+  if (!container) return;
+
+  showSkeletons(container, 3);
+
+  try {
+    const data = await fetchMyPosts();
+    hideSkeletons(container);
+
+    state.mine.posts = data.posts || [];
+    renderMyPosts(container, state.mine.posts);
+  } catch (err) {
+    hideSkeletons(container);
+    showToast('加载失败: ' + err.message, 'error');
+  }
+}
+
+async function handleDelete(postId) {
+  if (!confirm('确定要删除这篇帖子吗？此操作不可撤销。')) return;
+
+  try {
+    await deletePost(postId);
+    showToast('已删除', 'success');
+
+    // 从状态中移除
+    state.mine.posts = state.mine.posts.filter(p => String(p.id) !== String(postId));
+
+    // 重新渲染我的帖子列表
+    const container = document.getElementById('mine-feed');
+    if (container) {
+      renderMyPosts(container, state.mine.posts);
+    }
+  } catch (err) {
+    showToast('删除失败: ' + err.message, 'error');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 14. Like / Hug 互动
+// ═══════════════════════════════════════════════════════════
+
+async function handleLike(postId, button) {
+  try {
+    const result = await likePost(postId);
+
+    // 更新按钮状态
+    const isActive = result.action === 'liked';
+    button.classList.toggle('post-card__action--active', isActive);
+
+    // 更新计数
+    const countEl = button.querySelector('.post-card__action-count');
+    if (countEl) {
+      countEl.textContent = result.like_count || 0;
+    }
+
+    // 更新图标
+    const iconEl = button.querySelector('.post-card__action-icon');
+    if (iconEl) {
+      iconEl.textContent = isActive ? '♥' : '♡';
+    }
+
+    // 小动画
+    button.classList.add('post-card__action--pop');
+    setTimeout(() => button.classList.remove('post-card__action--pop'), 300);
+
+  } catch (err) {
+    showToast('操作失败: ' + err.message, 'error');
+  }
+}
+
+async function handleHug(postId, button) {
+  try {
+    const result = await hugPost(postId);
+
+    // 更新按钮状态
+    const isActive = result.action === 'hugged';
+    button.classList.toggle('post-card__action--active', isActive);
+
+    // 更新计数
+    const countEl = button.querySelector('.post-card__action-count');
+    if (countEl) {
+      countEl.textContent = result.hug_count || 0;
+    }
+
+    // 更新图标
+    const iconEl = button.querySelector('.post-card__action-icon');
+    if (iconEl) {
+      iconEl.textContent = isActive ? '◎' : '◉';
+    }
+
+    // 小动画
+    button.classList.add('post-card__action--pop');
+    setTimeout(() => button.classList.remove('post-card__action--pop'), 300);
+
+  } catch (err) {
+    showToast('操作失败: ' + err.message, 'error');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 15. 漂流瓶 (随机帖子弹窗)
+// ═══════════════════════════════════════════════════════════
+
+async function openBottle() {
+  const overlay = document.getElementById('bottle-overlay');
+  const card = document.getElementById('bottle-card');
+  const loading = document.getElementById('bottle-loading');
+  const errorEl = document.getElementById('bottle-error');
+
+  if (!overlay || !card) return;
+
+  // 显示弹窗
+  overlay.classList.add('bottle-overlay--visible');
+  card.classList.remove('bottle-card--loaded', 'bottle-card--error');
+  card.classList.add('bottle-card--loading');
+  if (loading) loading.style.display = 'flex';
+  if (errorEl) errorEl.style.display = 'none';
+
+  // 卡片内容区
+  const contentArea = card.querySelector('.bottle-card__content');
+  if (contentArea) contentArea.innerHTML = '';
+
+  try {
+    const post = await fetchRandomPost();
+
+    if (!post || !post.id) {
+      throw new Error('empty');
+    }
+
+    // 渲染卡片
+    if (contentArea) {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = renderCard(post, 0);
+      // 给漂流瓶卡片里的按钮加特殊class以便事件处理
+      const cardEl = wrapper.firstElementChild;
+      cardEl.classList.add('bottle-card__post');
+      contentArea.appendChild(cardEl);
+    }
+
+    card.classList.remove('bottle-card--loading');
+    card.classList.add('bottle-card--loaded');
+    if (loading) loading.style.display = 'none';
+
+    lazyLoadImages();
+
+  } catch (err) {
+    card.classList.remove('bottle-card--loading');
+    card.classList.add('bottle-card--error');
+    if (loading) loading.style.display = 'none';
+    if (errorEl) errorEl.style.display = 'flex';
+
+    if (err.message === 'empty' || err.message.includes('404')) {
+      if (errorEl) errorEl.querySelector('.bottle-error__text').textContent = '这片海域暂无漂流瓶';
+    } else {
+      showToast('漂流瓶漂远了: ' + err.message, 'error');
+    }
   }
 }
 
 function closeBottle() {
-  document.getElementById('bottleModal').style.display = 'none';
+  const overlay = document.getElementById('bottle-overlay');
+  const card = document.getElementById('bottle-card');
+
+  if (overlay) overlay.classList.remove('bottle-overlay--visible');
+  if (card) {
+    card.classList.remove('bottle-card--loaded', 'bottle-card--error', 'bottle-card--loading');
+  }
 }
 
-// ═══════════════════ My Posts ═══════════════════
-async function loadMyPosts() {
-  const container = document.getElementById('myPostsContainer');
-  container.innerHTML = '<div class="loading-state"><div class="loading-dots"><span></span><span></span><span></span></div><div>寻找你的星尘……</div></div>';
+function initBottle() {
+  const trigger = document.getElementById('bottle-trigger');
+  const close = document.getElementById('bottle-close');
+  const overlay = document.getElementById('bottle-overlay');
+  const another = document.getElementById('bottle-another');
+
+  if (trigger) {
+    trigger.addEventListener('click', (e) => {
+      createRipple(e, trigger);
+      openBottle();
+    });
+  }
+
+  if (close) {
+    close.addEventListener('click', () => closeBottle());
+  }
+
+  if (overlay) {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeBottle();
+    });
+  }
+
+  if (another) {
+    another.addEventListener('click', () => openBottle());
+  }
+
+  // ESC 关闭
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeBottle();
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// 16. 每日星语
+// ═══════════════════════════════════════════════════════════
+
+async function loadDailyMessage() {
+  const el = document.getElementById('daily-message');
+  if (!el) return;
 
   try {
-    const r = await fetch(API + '/api/my-posts?fingerprint=' + encodeURIComponent(state.fp));
-    const d = await r.json();
-    container.innerHTML = '';
-
-    if (d.posts.length === 0) {
-      container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📜</div><p class="empty-state-text">你还没有写过星尘<br>每一段心事都值得被留下</p></div>';
-    } else {
-      d.posts.forEach(p => {
-        const card = createPostCard(p);
-        // 添加删除按钮
-        const actions = card.querySelector('.post-card-actions');
-        const delBtn = document.createElement('button');
-        delBtn.className = 'post-action';
-        delBtn.style.cssText = 'margin-left:auto;opacity:0.4;font-size:12px';
-        delBtn.innerHTML = '🗑️ <span>删除</span>';
-        delBtn.addEventListener('click', async (e) => {
-          e.stopPropagation();
-          if (!confirm('确定要删除这条星尘吗？')) return;
-          try {
-            const r = await fetch(API + '/api/post/' + p.id, {
-              method: 'DELETE',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ fingerprint: state.fp })
-            });
-            const d = await r.json();
-            if (d.success) {
-              card.style.transition = 'all 0.3s ease';
-              card.style.opacity = '0';
-              card.style.transform = 'scale(0.95)';
-              setTimeout(() => { card.remove(); if (container.children.length === 0) loadMyPosts(); }, 300);
-            } else {
-              toast(d.error || '删除失败');
-            }
-          } catch (e) { toast('删除失败'); }
-        });
-        actions.appendChild(delBtn);
-        container.appendChild(card);
-      });
-    }
-  } catch (e) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🛰️</div><p class="empty-state-text">连接失败</p></div>';
+    const data = await fetchDailyMessage();
+    el.innerHTML = `
+      <p class="daily-message__text">${escapeHTML(data.message || '')}</p>
+      ${data.author ? `<span class="daily-message__author">— ${escapeHTML(data.author)}</span>` : ''}
+      ${data.source ? `<span class="daily-message__source">${escapeHTML(data.source)}</span>` : ''}
+    `;
+  } catch (err) {
+    el.innerHTML = `
+      <p class="daily-message__text">每一颗星都有自己的轨道，每束光都有自己的远方。</p>
+      <span class="daily-message__author">— 唯一</span>
+    `;
+    // 静默失败，不弹 toast
   }
 }
 
-// ═══════════════════ Infinite Scroll ═══════════════════
-function initScrollEffects() {
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => {
-      if (state.currentTab === 'stardust' && !state.isLoading && state.hasMoreStardust) {
-        const main = document.getElementById('mainContent');
-        if (main) {
-          const rect = main.getBoundingClientRect();
-          if (rect.bottom - window.innerHeight < 400) {
-            loadStardustPosts();
-          }
-        }
+// ═══════════════════════════════════════════════════════════
+// 17. Tab 切换
+// ═══════════════════════════════════════════════════════════
+
+function switchTab(tabName) {
+  if (state.currentTab === tabName) return;
+
+  state.currentTab = tabName;
+
+  // 更新 nav 高亮
+  document.querySelectorAll('.nav__item').forEach(item => {
+    item.classList.toggle('nav__item--active', item.dataset.tab === tabName);
+  });
+
+  // 切换视图
+  document.querySelectorAll('.view').forEach(view => {
+    view.classList.toggle('view--active', view.dataset.view === tabName);
+  });
+
+  // 加载对应内容
+  switch (tabName) {
+    case 'stardust':
+      if (state.stardust.posts.length === 0) {
+        loadStardust(false);
       }
-      ticking = false;
-    });
-  }, { passive: true });
-}
-
-// ═══════════════════ Utilities ═══════════════════
-function timeAgo(iso) {
-  const then = new Date(iso + (iso.endsWith('Z') ? '' : 'Z'));
-  const now = new Date();
-  const diff = Math.floor((now - then) / 1000);
-  if (diff < 60) return '刚刚';
-  if (diff < 3600) return Math.floor(diff / 60) + '分钟前';
-  if (diff < 86400) return Math.floor(diff / 3600) + '小时前';
-  if (diff < 604800) return Math.floor(diff / 86400) + '天前';
-  return then.toLocaleDateString('zh-CN');
-}
-
-function escHtml(s) {
-  const d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
-}
-
-function toast(msg) {
-  const container = document.getElementById('toastContainer');
-  const el = document.createElement('div');
-  el.className = 'toast-item';
-  el.textContent = msg;
-  container.appendChild(el);
-  setTimeout(() => el.remove(), 2300);
-}
-
-// ═══ Bottle float animation ═══
-const bottleFloatStyle = document.createElement('style');
-bottleFloatStyle.textContent = `
-  @keyframes bottleFloat {
-    from { transform: translateY(0px) rotate(-3deg); }
-    to { transform: translateY(-10px) rotate(3deg); }
+      break;
+    case 'curated':
+      if (!state.curated.categories) {
+        loadCurated();
+      }
+      break;
+    case 'compose':
+      // 无需异步加载
+      break;
+    case 'mine':
+      if (state.mine.posts.length === 0) {
+        loadMyPosts();
+      }
+      break;
   }
-`;
-document.head.appendChild(bottleFloatStyle);
+
+  // 滚动到顶部
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function initTabs() {
+  document.querySelectorAll('.nav__item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      createRipple(e, item);
+      const tab = item.dataset.tab;
+      if (tab) switchTab(tab);
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// 18. 全局事件委托 (卡片互动、删除等)
+// ═══════════════════════════════════════════════════════════
+
+function initGlobalDelegation() {
+  document.addEventListener('click', async (e) => {
+    // Like 按钮
+    const likeBtn = e.target.closest('[data-action="like"]');
+    if (likeBtn) {
+      e.preventDefault();
+      const postId = likeBtn.dataset.id;
+      if (postId) {
+        createRipple(e, likeBtn);
+        await handleLike(postId, likeBtn);
+      }
+      return;
+    }
+
+    // Hug 按钮
+    const hugBtn = e.target.closest('[data-action="hug"]');
+    if (hugBtn) {
+      e.preventDefault();
+      const postId = hugBtn.dataset.id;
+      if (postId) {
+        createRipple(e, hugBtn);
+        await handleHug(postId, hugBtn);
+      }
+      return;
+    }
+
+    // Delete 按钮
+    const deleteBtn = e.target.closest('[data-action="delete"]');
+    if (deleteBtn) {
+      e.preventDefault();
+      const postId = deleteBtn.dataset.id;
+      if (postId) {
+        await handleDelete(postId);
+      }
+      return;
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// 19. 星空背景初始化 (纯CSS，无Canvas)
+// ═══════════════════════════════════════════════════════════
+
+function initStarfield() {
+  const bg = document.getElementById('starfield-bg');
+  if (!bg) return;
+
+  // 通过 JS 动态生成若干星星元素，注入到背景容器中
+  // CSS 将处理动画和位置
+  const starCount = 120;
+  const fragment = document.createDocumentFragment();
+
+  for (let i = 0; i < starCount; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.setProperty('--star-x', Math.random());
+    star.style.setProperty('--star-y', Math.random());
+    star.style.setProperty('--star-size', (Math.random() * 3 + 1).toFixed(2) + 'px');
+    star.style.setProperty('--star-opacity', (Math.random() * 0.6 + 0.2).toFixed(2));
+    star.style.setProperty('--star-delay', (Math.random() * 5).toFixed(2) + 's');
+    star.style.setProperty('--star-duration', (Math.random() * 4 + 3).toFixed(2) + 's');
+    fragment.appendChild(star);
+  }
+
+  bg.appendChild(fragment);
+}
+
+// ═══════════════════════════════════════════════════════════
+// 20. 应用初始化
+// ═══════════════════════════════════════════════════════════
+
+async function initApp() {
+  try {
+    // 1. 获取/生成浏览器指纹
+    fingerprint = await getOrCreateFingerprint();
+
+    // 2. 初始化星空背景
+    initStarfield();
+
+    // 3. 初始化 Tab 切换
+    initTabs();
+
+    // 4. 初始化书写表单
+    initComposeForm();
+
+    // 5. 初始化漂流瓶
+    initBottle();
+
+    // 6. 全局事件委托
+    initGlobalDelegation();
+
+    // 7. 无限滚动
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    // 8. 加载每日星语
+    loadDailyMessage();
+
+    // 9. 加载首屏星尘流（默认tab）
+    await loadStardust(false);
+
+  } catch (err) {
+    console.error('App init error:', err);
+    showToast('初始化失败，请刷新页面', 'error');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// 启动
+// ═══════════════════════════════════════════════════════════
+
+document.addEventListener('DOMContentLoaded', initApp);
 
 </script>
 </body>
