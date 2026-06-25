@@ -247,6 +247,50 @@ def review_queue():
     return jsonify({'items': [dict(r) for r in rows]})
 
 
+@app.route('/api/review/queue', methods=['POST'])
+def review_queue_add():
+    """同步脚本推送候选内容到审核队列"""
+    API_KEY = os.environ.get("REVIEW_API_KEY", "weiyi-internal-2026")
+    headers = request.headers
+    if headers.get("X-API-Key") != API_KEY:
+        return jsonify({"error": "unauthorized"}), 401
+
+    data = request.get_json(force=True)
+    items = data.get("items", [])
+    if not items:
+        return jsonify({"error": "items required"}), 400
+
+    db = get_db()
+    added = 0
+    for item in items:
+        content = (item.get("content") or "").strip()
+        if not content or len(content) < 10:
+            continue
+        # 去重检查
+        existing = db.execute(
+            "SELECT id FROM review_queue WHERE content=? AND reviewed=0", (content,)
+        ).fetchone()
+        if existing:
+            continue
+        existing2 = db.execute(
+            "SELECT id FROM posts WHERE content=?", (content,)
+        ).fetchone()
+        if existing2:
+            continue
+
+        image = item.get("image") or ""
+        source = item.get("source") or item.get("src") or ""
+        nickname = item.get("nickname") or item.get("author") or ""
+        db.execute(
+            "INSERT INTO review_queue (content, image, source, nickname) VALUES (?,?,?,?)",
+            (content, image, source, nickname),
+        )
+        added += 1
+
+    db.commit()
+    return jsonify({"success": True, "added": added})
+
+
 @app.route('/api/review/approve', methods=['POST'])
 def review_approve():
     data = request.get_json(force=True)

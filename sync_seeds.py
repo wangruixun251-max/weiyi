@@ -1,22 +1,35 @@
 """
 「唯一」· 内容同步脚本 v2
-从 5 个平台抓取语录 → 写入 data/weiyi.db review_queue → 等待人工审核
-Hermes cronjob 每天执行
+从 5 个平台抓取语录 → POST 到 weiyi.onrender.com 审核队列
+Hermes cronjob 每天定时执行
 """
-import os, sys, random, json, sqlite3, urllib.request, urllib.error
-from datetime import datetime
+import os, random, json, urllib.request, urllib.error
 
-# ── Paths ───────────────────────────────────────────────
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(SCRIPT_DIR, "data", "weiyi.db")
-os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+RENDER_URL = os.environ.get("WEIYI_URL", "https://weiyi.onrender.com")
+API_KEY = os.environ.get("WEIYI_API_KEY", "weiyi-internal-2026")
 
 
-def get_db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA journal_mode=WAL")
-    return conn
+def _post(path, body):
+    req = urllib.request.Request(
+        f"{RENDER_URL}{path}",
+        data=json.dumps(body).encode(),
+        headers={
+            "Content-Type": "application/json",
+            "X-API-Key": API_KEY,
+            "User-Agent": "Weiyi-Sync/2.0",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            return json.loads(resp.read())
+    except urllib.error.HTTPError as e:
+        msg = e.read().decode()[:200]
+        print(f"[sync] HTTP {e.code}: {msg}")
+        return None
+    except Exception as e:
+        print(f"[sync] 网络错误: {e}")
+        return None
 
 
 # ── 精选图片库 ──────────────────────────────────────────
@@ -68,8 +81,8 @@ def fetch_hitokoto():
                 author = source
             else:
                 author = "一言"
-            if text and len(text) >= 10:
-                return {"text": text, "author": author, "src": "一言"}
+            if text and 10 <= len(text) <= 200:
+                return {"content": text, "author": author, "src": "一言", "image": match_image(text)}
     except Exception as e:
         print(f"  [hitokoto] {e}")
     return None
@@ -79,23 +92,18 @@ def fetch_hitokoto():
 
 def fetch_meiriyiwen():
     try:
-        req = urllib.request.Request(
-            "https://meiriyiwen.com/api/random",
-            headers={"User-Agent": "Weiyi/2.0"}
-        )
+        req = urllib.request.Request("https://meiriyiwen.com/api/random", headers={"User-Agent": "Weiyi/2.0"})
         with urllib.request.urlopen(req, timeout=10) as resp:
             data = json.loads(resp.read())
             content = (data.get("content") or "").replace("<p>", "").replace("</p>", "\n").strip()
             title = data.get("title") or ""
-            author = data.get("author") or "每日一文"
-            if title:
-                author = f"{author}《{title}》"
+            author_raw = data.get("author") or "每日一文"
+            author = f"{author_raw}《{title}》" if title else author_raw
             if len(content) > 180:
-                # 截断到最后一个句号
                 idx = content[:180].rfind("。")
                 content = content[:idx+1] if idx > 0 else content[:180]
             if len(content) >= 20:
-                return {"text": content, "author": author, "src": "每日一文"}
+                return {"content": content, "author": author, "src": "每日一文", "image": match_image(content)}
     except Exception as e:
         print(f"  [meiriyiwen] {e}")
     return None
@@ -104,35 +112,36 @@ def fetch_meiriyiwen():
 # ── 3-5. 本地精选 ───────────────────────────────────
 
 LOCAL_QUOTES = [
-    {"t": "整个春天，直至夏天，都是生命力独享风流的季节。长风沛雨，艳阳明月。", "a": "史铁生", "s": "本地·文学"},
-    {"t": "唯有你也想见我的时候，我们的见面才有意义。", "a": "波伏娃", "s": "本地·小众"},
-    {"t": "所谓理解，通常不过是误解的总和。", "a": "村上春树", "s": "本地·小众"},
-    {"t": "人生最大的遗憾，是一个人无法同时拥有青春和对青春的感受。", "a": "海明威", "s": "本地·小众"},
-    {"t": "有些人能感受雨，而其他人只是被淋湿。", "a": "鲍勃·迪伦", "s": "本地·小众"},
-    {"t": "真实的自我意味着：不必为自己的感受道歉。", "a": "卡尔·罗杰斯", "s": "本地·小众"},
-    {"t": "我步入丛林，因为我希望生活得有意义。", "a": "梭罗", "s": "本地·文学"},
-    {"t": "整个城市都睡了，只有你和你的心事不能寐。", "a": "佚名", "s": "本地·文学"},
-    {"t": "谁曾经声音穿透你最深的灵魂，谁又最终用沉默回答你的沉默。", "a": "里尔克", "s": "本地·小众"},
-    {"t": "我爱这哭不出来的浪漫。", "a": "严明", "s": "本地·小众"},
-    {"t": "在隆冬，我终于知道，我身上有一个不可战胜的夏天。", "a": "加缪", "s": "本地·文学"},
-    {"t": "忘记是自由的一种形式。", "a": "纪伯伦", "s": "本地·小众"},
-    {"t": "所谓浪漫，就是没有后来。", "a": "八月长安", "s": "本地·影视"},
-    {"t": "不管怎样，明天又是新的一天。", "a": "《乱世佳人》", "s": "本地·影视"},
-    {"t": "你是我做过最美的梦，可惜天总会亮。", "a": "佚名", "s": "本地·小众"},
-    {"t": "生活最佳状态：冷冷清清的风风火火。", "a": "木心", "s": "本地·文学"},
-    {"t": "天堂应该是图书馆的模样。", "a": "博尔赫斯", "s": "本地·文学"},
-    {"t": "对于世界而言，你是一个人；但对于某个人，你是他的整个世界。", "a": "狄更斯", "s": "本地·文学"},
-    {"t": "我恨自己别无选择，只能冒险爱你。", "a": "阿兰·德波顿", "s": "本地·小众"},
-    {"t": "人生不过午后到黄昏的距离，茶凉言尽，月上柳梢。", "a": "徐志摩", "s": "本地·文学"},
+    {"content": "整个春天，直至夏天，都是生命力独享风流的季节。长风沛雨，艳阳明月。", "author": "史铁生", "src": "本地·文学"},
+    {"content": "唯有你也想见我的时候，我们的见面才有意义。", "author": "波伏娃", "src": "本地·小众"},
+    {"content": "所谓理解，通常不过是误解的总和。", "author": "村上春树", "src": "本地·小众"},
+    {"content": "人生最大的遗憾，是一个人无法同时拥有青春和对青春的感受。", "author": "海明威", "src": "本地·小众"},
+    {"content": "有些人能感受雨，而其他人只是被淋湿。", "author": "鲍勃·迪伦", "src": "本地·小众"},
+    {"content": "真实的自我意味着：不必为自己的感受道歉。", "author": "卡尔·罗杰斯", "src": "本地·小众"},
+    {"content": "我步入丛林，因为我希望生活得有意义。", "author": "梭罗", "src": "本地·文学"},
+    {"content": "整个城市都睡了，只有你和你的心事不能寐。", "author": "佚名", "src": "本地·文学"},
+    {"content": "谁曾经声音穿透你最深的灵魂，谁又最终用沉默回答你的沉默。", "author": "里尔克", "src": "本地·小众"},
+    {"content": "在隆冬，我终于知道，我身上有一个不可战胜的夏天。", "author": "加缪", "src": "本地·文学"},
+    {"content": "忘记是自由的一种形式。", "author": "纪伯伦", "src": "本地·小众"},
+    {"content": "所谓浪漫，就是没有后来。", "author": "八月长安", "src": "本地·影视"},
+    {"content": "生活最佳状态：冷冷清清的风风火火。", "author": "木心", "src": "本地·文学"},
+    {"content": "天堂应该是图书馆的模样。", "author": "博尔赫斯", "src": "本地·文学"},
+    {"content": "我恨自己别无选择，只能冒险爱你。", "author": "阿兰·德波顿", "src": "本地·小众"},
+    {"content": "人生不过午后到黄昏的距离，茶凉言尽，月上柳梢。", "author": "徐志摩", "src": "本地·文学"},
+    {"content": "你是我做过最美的梦，可惜天总会亮。", "author": "佚名", "src": "本地·小众"},
+    {"content": "不管怎样，明天又是新的一天。", "author": "《乱世佳人》", "src": "本地·影视"},
+    {"content": "这样看你，用所有眼睛和所有距离。就像风住了，风又起。", "author": "冯唐", "src": "本地·文学"},
+    {"content": "花开如火，也如寂寞。", "author": "顾城", "src": "本地·文学"},
 ]
 
 
 def fetch_local():
     q = random.choice(LOCAL_QUOTES)
-    return {"text": q["t"], "author": q["a"], "src": q["s"]}
+    q["image"] = match_image(q["content"])
+    return q
 
 
-# ── 去重 + 质量控制 ──────────────────────────────────
+# ── 质量控制 ──────────────────────────────────────────
 
 BLACKLIST = ["广告", "推广", "扫码", "加微信", "加我QQ", "关注公众号",
              "点击下载", "赚钱", "兼职", "理财", "贷款", "加群", "转发"]
@@ -144,53 +153,19 @@ def is_quality(text):
     for w in BLACKLIST:
         if w in text:
             return False
-    # 去鸡汤
     cliches = ["加油你是最棒的", "阳光总在风雨后", "只要努力就能成功"]
     if sum(1 for c in cliches if c in text) >= 2:
         return False
     return True
 
 
-def is_dup(db, text):
-    # 检查 posts 表最近 200 条
-    rows = db.execute("SELECT content FROM posts ORDER BY created_at DESC LIMIT 200").fetchall()
-    for r in rows:
-        existing = r["content"] or ""
-        if text[:30] in existing or existing[:30] in text:
-            return True
-        s1 = set(text); s2 = set(existing)
-        if min(len(s1), len(s2)) > 5 and len(s1 & s2) / max(len(s1), len(s2)) > 0.85:
-            return True
-    # 检查 review_queue
-    rows2 = db.execute("SELECT content FROM review_queue WHERE reviewed=0 LIMIT 30").fetchall()
-    for r in rows2:
-        existing = r["content"] or ""
-        if text[:30] in existing or existing[:30] in text:
-            return True
-    return False
-
-
 # ── 主流程 ─────────────────────────────────────────────
 
 def main():
-    db = get_db()
-
-    # 确保表存在
-    db.executescript("""
-        CREATE TABLE IF NOT EXISTS review_queue (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            content TEXT NOT NULL, image TEXT DEFAULT '',
-            mood TEXT DEFAULT '其他', source TEXT DEFAULT '',
-            nickname TEXT DEFAULT '', created_at TEXT DEFAULT (datetime('now')),
-            reviewed INTEGER DEFAULT 0
-        );
-    """)
-    db.commit()
-
     candidates = []
 
     # 平台 1: 一言 (4 次)
-    for _ in range(4):
+    for _ in range(5):
         item = fetch_hitokoto()
         if item:
             candidates.append(item)
@@ -201,36 +176,29 @@ def main():
         if item:
             candidates.append(item)
 
-    # 平台 3-5: 本地精选 (5 条，去重)
+    # 平台 3-5: 本地精选 (6 条去重)
     seen = set()
-    for _ in range(6):
+    for _ in range(7):
         item = fetch_local()
-        k = item["text"][:30]
+        k = item["content"][:30]
         if k not in seen:
             seen.add(k)
             candidates.append(item)
 
-    # 去重 + 写入
-    inserted = 0
-    for item in candidates:
-        text = item["text"].strip()
-        if not is_quality(text):
-            continue
-        if is_dup(db, text):
-            continue
-        author = item.get("author", "")
-        source = item.get("src", "")
-        image = match_image(text)
+    # 过滤
+    filtered = [c for c in candidates if is_quality(c["content"])]
+    print(f"[sync] 抓取 {len(candidates)} 条, 质量过滤后 {len(filtered)} 条")
 
-        db.execute(
-            "INSERT INTO review_queue (content, image, source, nickname, created_at) VALUES (?,?,?,?,?)",
-            (text, image, source, author, datetime.utcnow().isoformat()),
-        )
-        inserted += 1
+    if not filtered:
+        print("[sync] 无内容可推送")
+        return
 
-    db.commit()
-    db.close()
-    print(f"[sync] 候选 {len(candidates)} → 去重+过滤后 {inserted} 条入库")
+    # POST 到 Render
+    result = _post("/api/review/queue", {"items": filtered})
+    if result and result.get("success"):
+        print(f"[sync] 成功：{result.get('added', 0)} 条已加入审核队列")
+    else:
+        print(f"[sync] 推送失败：{result}")
 
 
 if __name__ == "__main__":
