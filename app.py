@@ -738,7 +738,142 @@ body {
 .post-card-badge.poetry { background: rgba(232,199,106,0.1); color: var(--cat-poetry); }
 .post-card-badge.quote { background: rgba(123,184,212,0.1); color: var(--cat-quote); }
 .post-card-badge.essay { background: rgba(155,142,196,0.1); color: var(--cat-essay); }
-.post-card-badge.music { background: rgba(212,132,140,0.1); color: var(--cat-music); }
+.post-card-badge.music { background: rgba(201,122,130,0.1); color: var(--cat-music); }
+.post-card-badge.film { background: rgba(139,165,165,0.1); color: var(--cat-film); }
+
+/* ═══ 卡片分类差异化 ═══ */
+
+/* ── 诗歌：留白呼吸，衬线气质 ── */
+.post-card.cat-poetry {
+  padding: 36px 28px;
+  text-align: center;
+}
+.post-card.cat-poetry .post-card-body {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  line-height: 2.2;
+  letter-spacing: 0.04em;
+}
+.post-card.cat-poetry .post-card-source {
+  margin-top: 16px;
+  font-style: italic;
+  opacity: 0.5;
+  font-size: 12px;
+}
+.post-card.cat-poetry::before { background: var(--cat-poetry); opacity: 0.3; }
+
+/* ── 语录：pull-quote 杂志风格 ── */
+.post-card.cat-quote {
+  padding: 32px 28px 28px;
+}
+.post-card.cat-quote .post-card-body {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 2.0;
+  letter-spacing: 0.03em;
+  position: relative;
+  padding-left: 24px;
+}
+.post-card.cat-quote .post-card-body::before {
+  content: '「';
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  font-size: 42px;
+  font-family: var(--font-serif);
+  color: var(--cat-quote);
+  opacity: 0.35;
+  line-height: 1;
+}
+.post-card.cat-quote::before { background: var(--cat-quote); opacity: 0.35; }
+
+/* ── 随笔：舒适阅读，纸质温度 ── */
+.post-card.cat-essay {
+  padding: 28px 26px;
+  background: rgba(14, 20, 38, 0.7);
+}
+.post-card.cat-essay .post-card-body {
+  font-size: 14.5px;
+  line-height: 2.0;
+  letter-spacing: 0.025em;
+  color: #d8d4c8;
+}
+.post-card.cat-essay .post-card-source {
+  margin-top: 14px;
+  font-size: 11px;
+  opacity: 0.45;
+  text-align: right;
+  font-style: italic;
+}
+.post-card.cat-essay::before { background: var(--cat-essay); opacity: 0.3; }
+
+/* ── 音乐：歌单卡片，节奏点缀 ── */
+.post-card.cat-music {
+  padding: 24px 22px 22px;
+  border-top: 1px solid rgba(201,122,130,0.12);
+}
+.post-card.cat-music .post-card-body {
+  font-size: 14px;
+  line-height: 1.9;
+}
+.post-card.cat-music::after {
+  content: '♪';
+  position: absolute;
+  top: 10px;
+  right: 16px;
+  font-size: 16px;
+  color: var(--cat-music);
+  opacity: 0.2;
+}
+.post-card.cat-music::before { background: var(--cat-music); opacity: 0.3; }
+
+/* ── 光影：电影感，图片优先 ── */
+.post-card.cat-film {
+  padding: 0;
+  overflow: hidden;
+}
+.post-card.cat-film .post-card-image {
+  margin: 0;
+  aspect-ratio: 16/9;
+  border-radius: 0;
+}
+.post-card.cat-film .post-card-image img {
+  max-height: none;
+  height: 100%;
+}
+.post-card.cat-film .post-card-header,
+.post-card.cat-film .post-card-body,
+.post-card.cat-film .post-card-source,
+.post-card.cat-film .post-card-actions {
+  padding: 0 24px;
+}
+.post-card.cat-film .post-card-header { padding-top: 18px; }
+.post-card.cat-film .post-card-body {
+  font-size: 15px;
+  line-height: 1.85;
+  padding-bottom: 4px;
+}
+.post-card.cat-film .post-card-actions { padding-bottom: 18px; }
+.post-card.cat-film .post-card-source {
+  margin-top: 8px;
+  font-style: italic;
+  opacity: 0.4;
+  font-size: 11px;
+}
+.post-card.cat-film::before { display: none; }
+
+/* ── 有图片的卡片：图片在上 ── */
+.post-card.has-image .post-card-body {
+  margin-top: 14px;
+}
+
+/* ── 短内容：大字展示 ── */
+.post-card.short-text .post-card-body {
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.7;
+  text-align: center;
+}
 
 .post-card-time {
   font-size: 11px;
@@ -1523,17 +1658,21 @@ function initStarCanvas() {
   }
 
   function createStars() {
-    const count = Math.floor((canvas.width * canvas.height) / 2700);
+    const count = Math.floor((canvas.width * canvas.height) / 3800);
     stars = [];
     for (let i = 0; i < count; i++) {
+      const r = Math.random() * 1.3 + 0.2;
       stars.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        r: Math.random() * 1.6 + 0.3,
-        twinkleSpeed: Math.random() * 0.01 + 0.004,
+        r: r,
+        baseR: r,
+        vx: (Math.random() - 0.5) * 0.08,
+        vy: (Math.random() - 0.5) * 0.08,
+        twinkleSpeed: Math.random() * 0.012 + 0.005,
         twinkleOffset: Math.random() * Math.PI * 2,
-        hue: Math.random() < 0.20 ? 42 + Math.random() * 15 : 0,
-        alpha: Math.random() * 0.6 + 0.3,
+        hue: Math.random() < 0.20 ? 38 + Math.random() * 18 : 0,
+        alpha: Math.random() * 0.55 + 0.25,
       });
     }
   }
@@ -1543,8 +1682,14 @@ function initStarCanvas() {
     const t = Date.now() * 0.001;
 
     for (const s of stars) {
-      const alpha = s.alpha + Math.sin(t * s.twinkleSpeed * 60 + s.twinkleOffset) * 0.25;
-      const clampedAlpha = Math.max(0.1, Math.min(0.85, alpha));
+      // 缓慢漂移
+      s.x += s.vx; s.y += s.vy;
+      if (s.x < 0 || s.x > canvas.width) s.vx *= -1;
+      if (s.y < 0 || s.y > canvas.height) s.vy *= -1;
+
+      const alpha = s.alpha + Math.sin(t * s.twinkleSpeed * 60 + s.twinkleOffset) * 0.35;
+      const clampedAlpha = Math.max(0.08, Math.min(0.9, alpha));
+      const pulseR = s.baseR * (1 + Math.sin(t * s.twinkleSpeed * 60 + s.twinkleOffset) * 0.3);
 
       if (s.hue > 0) {
         ctx.fillStyle = `hsla(${s.hue}, 60%, 75%, ${clampedAlpha})`;
@@ -1553,7 +1698,7 @@ function initStarCanvas() {
       }
 
       ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.arc(s.x, s.y, pulseR, 0, Math.PI * 2);
       ctx.fill();
 
       // 偶尔加辉光
@@ -1562,7 +1707,7 @@ function initStarCanvas() {
           ? `hsla(${s.hue}, 60%, 75%, ${clampedAlpha * 0.15})`
           : `rgba(220,220,235,${clampedAlpha * 0.12})`;
         ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r * 3, 0, Math.PI * 2);
+        ctx.arc(s.x, s.y, pulseR * 3, 0, Math.PI * 2);
         ctx.fill();
       }
     }
@@ -1775,7 +1920,11 @@ async function loadStardustPosts(reset = false) {
 
 function createPostCard(p) {
   const card = document.createElement('div');
-  card.className = 'post-card' + (p.is_curated ? ' curated' : '');
+  const catClassMap = { '诗歌': 'cat-poetry', '语录': 'cat-quote', '随笔': 'cat-essay', '音乐': 'cat-music', '光影': 'cat-film' };
+  const catClass = catClassMap[p.category] || '';
+  const hasImg = p.image ? ' has-image' : '';
+  const shortTxt = p.content && p.content.length < 50 ? ' short-text' : '';
+  card.className = 'post-card' + (p.is_curated ? ' curated' : '') + (catClass ? ' ' + catClass : '') + hasImg + shortTxt;
 
   // Badge 类名映射
   const badgeClassMap = { '诗歌': 'poetry', '语录': 'quote', '随笔': 'essay', '音乐': 'music', '光影': 'film' };
