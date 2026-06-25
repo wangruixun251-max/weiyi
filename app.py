@@ -5,7 +5,7 @@ Flask 单文件部署：HTML/CSS/JS 全部内联
 import os
 import sqlite3
 import datetime
-from flask import Flask, g, request, jsonify
+from flask import Flask, g, request, jsonify, render_template
 
 app = Flask(__name__)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -52,6 +52,13 @@ def init_db():
         CREATE INDEX IF NOT EXISTS idx_posts_created ON posts(created_at DESC);
         CREATE INDEX IF NOT EXISTS idx_posts_curated ON posts(is_curated);
         CREATE INDEX IF NOT EXISTS idx_interactions_post ON interactions(post_id);
+        CREATE TABLE IF NOT EXISTS review_queue (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            content TEXT NOT NULL, image TEXT DEFAULT '',
+            mood TEXT DEFAULT '其他', source TEXT DEFAULT '',
+            nickname TEXT DEFAULT '', created_at TEXT DEFAULT (datetime('now')),
+            reviewed INTEGER DEFAULT 0
+        );
     """)
     db.commit(); db.close()
 
@@ -212,6 +219,63 @@ def api_delete(pid):
 def api_mine():
     fp=request.args.get('fingerprint',''); db=get_db()
     return jsonify({'posts':[dict(x) for x in db.execute("SELECT * FROM posts WHERE fingerprint=? ORDER BY created_at DESC LIMIT 50",(fp,)).fetchall()]})
+
+
+# ═══════ 审核系统 ═══════
+REVIEW_PASSWORD = "weiyi2024"
+
+
+@app.route('/review')
+def review_page():
+    return render_template('review.html')
+
+
+@app.route('/api/review/auth', methods=['POST'])
+def review_auth():
+    pw = (request.get_json(force=True).get('password') or '').strip()
+    if pw == REVIEW_PASSWORD:
+        return jsonify({'ok': True, 'token': 'weiyi_session_2026'})
+    return jsonify({'ok': False, 'error': '密码错误'}), 403
+
+
+@app.route('/api/review/queue')
+def review_queue():
+    db = get_db()
+    rows = db.execute(
+        "SELECT id, content, image, source, nickname, created_at FROM review_queue WHERE reviewed=0 ORDER BY created_at DESC LIMIT 30"
+    ).fetchall()
+    return jsonify({'items': [dict(r) for r in rows]})
+
+
+@app.route('/api/review/approve', methods=['POST'])
+def review_approve():
+    data = request.get_json(force=True)
+    rid = data.get('id')
+    if not rid:
+        return jsonify({'error': '缺少 id'}), 400
+    db = get_db()
+    row = db.execute("SELECT content, image, nickname, created_at FROM review_queue WHERE id=? AND reviewed=0", (rid,)).fetchone()
+    if not row:
+        return jsonify({'error': '未找到'}), 404
+    db.execute(
+        "INSERT INTO posts (content, image, mood, mood_emoji, mood_color, nickname, fingerprint, is_curated, category, source) VALUES (?,?,?,?,?,?,?,1,'语录',?)",
+        (row['content'], row['image'] or '', '其他', '✨', '#c8963e', row['nickname'] or '', 'seed_唯一_'+str(rid), row['nickname'] or '')
+    )
+    db.execute("UPDATE review_queue SET reviewed=1 WHERE id=?", (rid,))
+    db.commit()
+    return jsonify({'success': True})
+
+
+@app.route('/api/review/reject', methods=['POST'])
+def review_reject():
+    data = request.get_json(force=True)
+    rid = data.get('id')
+    if not rid:
+        return jsonify({'error': '缺少 id'}), 400
+    db = get_db()
+    db.execute("UPDATE review_queue SET reviewed=1 WHERE id=?", (rid,))
+    db.commit()
+    return jsonify({'success': True})
 
 
 # ═══════ HTML 模板（内联） ═══════
