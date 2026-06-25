@@ -629,19 +629,48 @@ body {
   border-left: 3px solid var(--gold);
 }
 
-/* 卡片的左侧彩色条 */
+/* 卡片顶部渐变光带 */
 .post-card::before {
   content: '';
   position: absolute;
-  left: 0;
   top: 0;
-  bottom: 0;
-  width: 2px;
-  border-radius: 2px 0 0 2px;
-  transition: width 0.3s var(--ease-smooth);
-  opacity: 0.5;
+  left: 12%;
+  right: 12%;
+  height: 1.5px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(201, 160, 69, 0.5) 25%,
+    rgba(232, 180, 100, 0.4) 50%,
+    rgba(201, 160, 69, 0.5) 75%,
+    transparent 100%);
+  border-radius: 2px;
+  opacity: 0.7;
+  transition: all 0.5s var(--ease-smooth);
+  z-index: 1;
 }
-.post-card:hover::before { width: 3px; opacity: 0.8; }
+.post-card:hover::before {
+  opacity: 1;
+  left: 8%;
+  right: 8%;
+}
+
+/* 微光粒子装饰 */
+.post-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1.2px 1.2px at 18% 25%, rgba(255,255,255,0.18), transparent),
+    radial-gradient(1px 1px at 75% 55%, rgba(201,160,69,0.15), transparent),
+    radial-gradient(1px 1px at 42% 78%, rgba(255,255,255,0.12), transparent),
+    radial-gradient(0.8px 0.8px at 88% 15%, rgba(232,180,100,0.13), transparent);
+  pointer-events: none;
+  border-radius: var(--radius);
+  z-index: 0;
+  opacity: 0.7;
+  transition: opacity 0.5s ease;
+}
+.post-card:hover::after { opacity: 1; }
 
 .post-card-header {
   display: flex;
@@ -765,6 +794,43 @@ body {
   100% { transform: scale(1); }
 }
 .post-action.just-liked { animation: heartBurst 0.4s var(--ease-spring); }
+
+/* 情绪图标 */
+.post-card-mood-icon {
+  position: absolute;
+  top: 22px;
+  right: 20px;
+  width: 26px;
+  height: 26px;
+  opacity: 0.45;
+  z-index: 2;
+  filter: drop-shadow(0 0 8px rgba(201,160,69,0.25));
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.post-card:hover .post-card-mood-icon { opacity: 0.65; }
+
+/* 图片放大 lightbox */
+.image-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: zoom-out;
+  animation: fadeIn 0.25s ease;
+}
+.image-overlay img {
+  max-width: 92%;
+  max-height: 88vh;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.55);
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 /* ═══════════════════ Curated Page ═══════════════════ */
 .curated-intro {
@@ -1351,6 +1417,27 @@ const MOODS = {
   '其他': { emoji: '✨', color: '#c8963e' },
 };
 
+// 情绪SVG微光图标
+const MOOD_ICONS = {
+  '开心': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(232,199,106,0.8)" stroke-width="1.5"><circle cx="12" cy="12" r="4" fill="rgba(232,199,106,0.2)"/><path d="M12 1v2M12 21v2M1 12h2M21 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  '难过': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(123,158,199,0.7)" stroke-width="1.5"><path d="M12 3l2 5h5l-4 3 1.5 5L12 18l-4.5 2L9 11 5 8h5z" fill="rgba(123,158,199,0.15)"/></svg>',
+  '愤怒': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(196,122,110,0.7)" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M8 15c1.5 2 4 2 4 2s2.5 0 4-2"/><circle cx="8.5" cy="9" r="1.5" fill="rgba(196,122,110,0.5)"/><circle cx="15.5" cy="9" r="1.5" fill="rgba(196,122,110,0.5)"/></svg>',
+  '焦虑': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(155,142,196,0.7)" stroke-width="1.5"><path d="M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z" fill="rgba(155,142,196,0.12)"/></svg>',
+  '迷茫': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(139,165,165,0.7)" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5" fill="rgba(139,165,165,0.3)"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg>',
+  '感恩': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(224,176,136,0.7)" stroke-width="1.5"><path d="M12 4l2 5h5l-4 3 1.5 5L12 14l-4.5 3L9 12l-4-3h5z" fill="rgba(224,176,136,0.15)"/></svg>',
+  '其他': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(200,150,62,0.7)" stroke-width="1.5"><circle cx="12" cy="12" r="3" fill="rgba(200,150,62,0.2)"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/></svg>',
+};
+
+// 图片点击放大
+function zoomImage(e, src) {
+  e.stopPropagation();
+  const overlay = document.createElement('div');
+  overlay.className = 'image-overlay';
+  overlay.innerHTML = `<img src="${src}" alt="放大预览">`;
+  overlay.addEventListener('click', () => overlay.remove());
+  document.body.appendChild(overlay);
+}
+
 // ═══ State ═══
 const state = {
   fp: getFingerprint(),
@@ -1653,14 +1740,15 @@ function createPostCard(p) {
   const card = document.createElement('div');
   card.className = 'post-card' + (p.is_curated ? ' curated' : '');
 
-  // 左侧色条
-  card.style.setProperty('--mood-color', p.mood_color);
-
   // Badge 类名映射
   const badgeClassMap = { '诗歌': 'poetry', '语录': 'quote', '随笔': 'essay', '音乐': 'music', '光影': 'film' };
   const badgeClass = badgeClassMap[p.category] || '';
 
+  // 情绪图标
+  const moodIcon = MOOD_ICONS[p.mood] || MOOD_ICONS['其他'];
+
   card.innerHTML = `
+    <div class="post-card-mood-icon">${moodIcon}</div>
     <div class="post-card-header">
       <div class="post-card-meta">
         <span class="post-card-mood">${p.mood_emoji}</span>
@@ -1670,7 +1758,7 @@ function createPostCard(p) {
       <span class="post-card-time">${timeAgo(p.created_at)}</span>
     </div>
     <div class="post-card-body">${escHtml(p.content)}</div>
-    ${p.image ? `<div class="post-card-image"><img src="${p.image}" alt="星尘图片" loading="lazy"></div>` : ''}
+    ${p.image ? `<div class="post-card-image" onclick="zoomImage(event, '${p.image.replace(/'/g, "\\'")}')"><img src="${p.image}" alt="星尘图片" loading="lazy"></div>` : ''}
     ${p.source ? `<div class="post-card-source">—— ${escHtml(p.source)}</div>` : ''}
     <div class="post-card-actions">
       <button class="post-action like-btn${p.liked_by_me ? ' liked' : ''}" data-id="${p.id}">
