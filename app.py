@@ -224,6 +224,7 @@ _HTML = r'''<!DOCTYPE html>
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>唯一 · 星尘</title>
+  <!-- System fonts only -->
   <style>
 /* ============================================================
    Stardust — 紫色系深空主题 · 移动端优先 480px
@@ -1816,1350 +1817,297 @@ ul, ol {
        ============================================================ -->
 <script>
 /**
- * ============================================================
- * 「唯一」文艺社区 — 应用主逻辑 (app.js)
- * ============================================================
- * 深空宇宙主题 · 五分类卡片 · 瀑布流 · 互动 · 漂流瓶
- * 纯 Vanilla JS · async/await · 无框架依赖
- * ============================================================
+ * 「唯一」— 主逻辑 v5
+ * 紫色系深空主题 · 480px移动端优先 · 底部4Tab导航
  */
+(function(){
+'use strict';
 
-// ═══════════════════════════════════════════════════════════
-// 0. 配置常量
-// ═══════════════════════════════════════════════════════════
+const API = '';
+const FP = (()=>{ let f=localStorage.getItem('w_fp'); if(!f){ f='fp_'+Date.now()+'_'+Math.random().toString(36).slice(2,10); localStorage.setItem('w_fp',f); } return f; })();
 
-const API_BASE = '';
-const CONFIG = {
-  // 无限滚动阈值（距底部多少px时触发加载）
-  scrollThreshold: 300,
-  // 每页帖子数
-  pageSize: 20,
-  // featured 卡片间隔（每N张放1张featured）
-  featuredInterval: 6,
-  // skeleton 骨架屏数量
-  skeletonCount: 6,
-  // Toast 持续时间 (ms)
-  toastDuration: 2800,
-  // 图片压缩配置
-  imageMaxWidth: 1200,
-  imageMaxHeight: 1200,
-  imageQuality: 0.75,
-  // 昵称长度限制
-  nicknameMaxLen: 12,
-  // 内容长度限制
-  contentMaxLen: 5000,
-  // 心情列表
-  moods: [
-    { id: 'calm',     emoji: '🌙', color: '#7eb8da', label: '平静' },
-    { id: 'thoughtful', emoji: '🌿', color: '#a8c97e', label: '沉思' },
-    { id: 'inspired', emoji: '✨', color: '#c9a045', label: '灵感' },
-    { id: 'melancholy', emoji: '🌧️', color: '#9b8ec4', label: '感怀' },
-    { id: 'passionate', emoji: '🔥', color: '#d4876e', label: '热烈' },
-    { id: 'lonely',  emoji: '🌌', color: '#8ba5a5', label: '寂寥' },
-    { id: 'grateful', emoji: '🙏', color: '#e4c36a', label: '感恩' },
-    { id: 'hopeful', emoji: '🌅', color: '#c97a82', label: '期待' },
-  ],
-  // 分类映射
-  categoryMap: {
-    '诗歌': 'poetry',
-    '语录': 'quote',
-    '随笔': 'essay',
-    '音乐': 'music',
-    '光影': 'film',
-  },
+const MOODS = {
+  '平静':{emoji:'🌿',color:'#7ca87c'},'喜悦':{emoji:'🌟',color:'#e4c36a'},
+  '忧郁':{emoji:'🌙',color:'#7b8fce'},'热烈':{emoji:'🔥',color:'#c97a82'},
+  '沉思':{emoji:'🪐',color:'#a38cc9'},'怀念':{emoji:'🍂',color:'#c99f6a'},
+  '孤独':{emoji:'🕯️',color:'#8a9bb5'},'期待':{emoji:'✨',color:'#c9a045'}
 };
+const CAT_ICONS = {'诗歌':'🌸','语录':'💡','随笔':'📝','音乐':'🎵','光影':'🎬'};
+const CAT_CLASS = {'诗歌':'cat-poetry','语录':'cat-quote','随笔':'cat-essay','音乐':'cat-music','光影':'cat-film'};
 
-// ═══════════════════════════════════════════════════════════
-// 1. 浏览器指纹 (Canvas Fingerprinting)
-// ═══════════════════════════════════════════════════════════
+let stardustPage=1, hasMore=true, loading=false, cardIdx=0;
+let uploadData='', selectedMood='期待', selectedCat='poem';
+let curPage='stardust';
 
-function generateFingerprint() {
-  return new Promise((resolve) => {
-    try {
-      const canvas = document.createElement('canvas');
-      canvas.width = 280;
-      canvas.height = 60;
-      const ctx = canvas.getContext('2d');
+// ═══ Init ═══
+document.addEventListener('DOMContentLoaded',()=>{
+  initTabs();
+  initFAB();
+  initBottle();
+  initCompose();
+  initMoods();
+  initImage();
+  initCategory();
+  loadDaily();
+  loadStardust(true);
+});
 
-      // 绘制多层文本 + 几何图形
-      ctx.textBaseline = 'top';
-      ctx.font = '14px "Noto Serif SC", "PingFang SC", serif';
-      ctx.fillStyle = '#c9a045';
-      ctx.fillText('唯一 ✦ 星尘', 4, 4);
+// ═══ Tab切换 ═══
+function initTabs(){
+  document.querySelectorAll('.tab-bar__item').forEach(t=>{
+    t.addEventListener('click',()=>switchTab(t.dataset.tab));
+  });
+}
+function switchTab(name){
+  curPage=name;
+  document.querySelectorAll('.tab-bar__item').forEach(t=>t.classList.toggle('tab-bar__item--active',t.dataset.tab===name));
+  document.querySelectorAll('.page-view').forEach(v=>v.classList.toggle('page-view--active',v.dataset.view===name));
+  if(name==='stardust' && !document.getElementById('postFeedStardust').children.length) loadStardust(true);
+  if(name==='curated' && !document.getElementById('curatedSections').children.length) loadCurated();
+  if(name==='profile') loadMyPosts();
+}
 
-      ctx.font = '11px "JetBrains Mono", monospace';
-      ctx.fillStyle = '#7eb8da';
-      ctx.fillText(navigator.userAgent.slice(0, 40), 4, 26);
+// ═══ FAB ═══
+function initFAB(){
+  document.getElementById('fabBtn')?.addEventListener('click',()=>switchTab('write'));
+}
 
-      ctx.beginPath();
-      ctx.arc(230, 30, 8, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(201,160,69,0.4)';
-      ctx.fill();
+// ═══ Toast ═══
+function toast(msg,type=''){
+  const c=document.getElementById('toastContainer')||(t=>{let d=document.createElement('div');d.id='toastContainer';d.className='toast-container';document.body.appendChild(d);return d;})();
+  const el=document.createElement('div');
+  el.className='toast-item'+(type?' toast--'+type:'');
+  el.textContent=msg;
+  c.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('toast--visible'));
+  setTimeout(()=>{el.classList.remove('toast--visible');setTimeout(()=>el.remove(),400);},2000);
+}
 
-      ctx.font = '10px "PingFang SC", sans-serif';
-      ctx.fillStyle = '#a4a6b8';
-      const extras = [
-        navigator.language || '',
-        screen.colorDepth || '',
-        screen.width + 'x' + screen.height,
-        new Date().getTimezoneOffset(),
-      ].join('|');
-      ctx.fillText(extras.slice(0, 60), 4, 46);
+// ═══ 每日星语 ═══
+async function loadDaily(){
+  try{const r=await fetch(API+'/api/daily-message');const d=await r.json();
+    document.getElementById('dailyMessage').querySelector('.hero__daily-text').textContent='「'+d.message+'」';
+    document.getElementById('dailyAttribution').textContent=(d.author?'—— '+d.author:'')+(d.source?' 《'+d.source+'》':'');
+  }catch(e){}
+}
 
-      const dataURL = canvas.toDataURL();
-      let hash = 0;
-      for (let i = 0; i < dataURL.length; i++) {
-        const ch = dataURL.charCodeAt(i);
-        hash = ((hash << 5) - hash) + ch;
-        hash |= 0;
-      }
-      const fp = 'fp_' + Math.abs(hash).toString(36).padStart(8, '0');
-      resolve(fp);
-    } catch (e) {
-      // 降级：基于 navigator 属性
-      const raw = [
-        navigator.userAgent,
-        navigator.language,
-        screen.colorDepth,
-        screen.width,
-        screen.height,
-        new Date().getTimezoneOffset(),
-      ].join('|');
-      let h = 0;
-      for (let i = 0; i < raw.length; i++) {
-        h = ((h << 5) - h) + raw.charCodeAt(i);
-        h |= 0;
-      }
-      resolve('fp_' + Math.abs(h).toString(36).padStart(8, '0'));
+// ═══ 情绪选择 ═══
+function initMoods(){
+  document.querySelectorAll('.mood-chip').forEach(c=>{
+    c.addEventListener('click',()=>{
+      document.querySelectorAll('.mood-chip').forEach(x=>x.classList.remove('mood-chip--active'));
+      c.classList.add('mood-chip--active');
+      selectedMood=c.dataset.mood;
+    });
+  });
+}
+function initCategory(){
+  document.querySelectorAll('.category-option').forEach(c=>{
+    c.addEventListener('click',()=>{
+      document.querySelectorAll('.category-option').forEach(x=>x.classList.remove('category-option--active'));
+      c.classList.add('category-option--active');
+      selectedCat=c.dataset.category;
+    });
+  });
+}
+function initImage(){
+  const inp=document.getElementById('imageInput'), preview=document.getElementById('imagePreview'),
+        img=document.getElementById('previewImg'), rm=document.getElementById('removeImage'),
+        placeholder=document.getElementById('imagePlaceholder');
+  inp?.addEventListener('change',()=>{
+    const f=inp.files[0]; if(!f) return;
+    const r=new FileReader(); r.onload=function(e){
+      const i=new Image(); i.onload=function(){
+        const c=document.createElement('canvas'); let w=i.width,h=i.height,m=800;
+        if(w>m){h=h*m/w;w=m;} c.width=w;c.height=h;
+        c.getContext('2d').drawImage(i,0,0,w,h);
+        uploadData=c.toDataURL('image/jpeg',0.65); img.src=uploadData;
+        preview.style.display='block'; placeholder.style.display='none';
+      }; i.src=e.target.result;
+    }; r.readAsDataURL(f);
+  });
+  rm?.addEventListener('click',()=>{
+    uploadData=''; inp.value=''; preview.style.display='none'; placeholder.style.display='flex';
+  });
+}
+
+// ═══ 书写表单 ═══
+function initCompose(){
+  const ta=document.getElementById('writeContent'), cc=document.getElementById('charCount'),
+        form=document.getElementById('writeForm');
+  ta?.addEventListener('input',()=>{cc.textContent=ta.value.length;});
+  form?.addEventListener('submit',async(e)=>{
+    e.preventDefault();
+    const c=ta.value.trim(); if(!c){toast('写点什么吧 ✨');return;}
+    const btn=document.getElementById('publishBtn'); btn.disabled=true; btn.querySelector('.btn-publish__text').textContent='化作星尘…';
+    try{
+      const r=await fetch(API+'/api/post',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({content:c,image:uploadData,mood:selectedMood,nickname:'匿名旅人',fingerprint:FP})});
+      const d=await r.json();
+      if(d.success){
+        ta.value=''; cc.textContent='0'; uploadData='';
+        document.getElementById('imageInput').value='';
+        document.getElementById('imagePreview').style.display='none';
+        document.getElementById('imagePlaceholder').style.display='flex';
+        toast('✨ 已化作星尘','success');
+        switchTab('stardust'); loadStardust(true);
+      }else toast(d.error||'发送失败');
+    }catch(e){toast('发送失败');}
+    btn.disabled=false; btn.querySelector('.btn-publish__text').textContent='撒向星尘';
+  });
+}
+
+// ═══ 时间格式化 ═══
+function timeAgo(iso){
+  const then=new Date(iso+(iso.endsWith('Z')?'':'Z')), now=new Date();
+  const diff=Math.floor((now-then)/1000);
+  if(diff<60)return'刚刚'; if(diff<3600)return Math.floor(diff/60)+'分钟前';
+  if(diff<86400)return Math.floor(diff/3600)+'小时前';
+  if(diff<604800)return Math.floor(diff/86400)+'天前';
+  return then.toLocaleDateString('zh-CN');
+}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+// ═══ 卡片渲染 ═══
+function renderCard(p,idx){
+  const catC=CAT_CLASS[p.category]||'';
+  const badgeC={'诗歌':'poetry','语录':'quote','随笔':'essay','音乐':'music','光影':'film'}[p.category]||'';
+  const isFeatured=idx===0||(idx>0&&idx%6===0);
+  const card=document.createElement('article');
+  card.className='post-card'+(p.is_curated?' post-card--curated':'')+(catC?' '+catC:'')+(isFeatured?' post-card--featured':'');
+  card.style.animationDelay=(cardIdx*0.05)+'s'; cardIdx++;
+
+  card.innerHTML=`
+    <div class="post-card__mood-icon">${p.mood_emoji||'✨'}</div>
+    <time class="post-card__time">${timeAgo(p.created_at)}</time>
+    <div class="post-card__body">${esc(p.content)}</div>
+    ${p.image?`<div class="post-card__image"><img src="${p.image}" alt="" loading="lazy"></div>`:''}
+    ${p.source?`<div class="post-card__source">—— ${esc(p.source)}</div>`:''}
+    <div class="post-card__actions">
+      <button class="post-action like-btn${p.liked_by_me?' liked':''}" data-id="${p.id}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="${p.liked_by_me?'currentColor':'none'}" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <span>${p.like_count||0}</span>
+      </button>
+      <button class="post-action hug-btn${p.hugged_by_me?' hugged':''}" data-id="${p.id}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        <span>${p.hug_count||0}</span>
+      </button>
+    </div>`;
+  return card;
+}
+
+// 全局事件委托处理 like/hug
+document.addEventListener('click',async function(e){
+  const likeBtn=e.target.closest('.like-btn');
+  const hugBtn=e.target.closest('.hug-btn');
+  const btn=likeBtn||hugBtn;
+  if(!btn||btn.classList.contains('processing')) return;
+  btn.classList.add('processing');
+  const id=btn.dataset.id, type=likeBtn?'like':'hug';
+  try{
+    const r=await fetch(API+'/api/post/'+id+'/'+type,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fingerprint:FP})});
+    const d=await r.json();
+    btn.classList.toggle('liked',type==='like'&&d.action==='liked');
+    btn.classList.toggle('hugged',type==='hug'&&d.action==='hugged');
+    btn.querySelector('span').textContent=type==='like'?d.like_count:d.hug_count;
+    if(btn.classList.contains('liked')){btn.classList.add('just-liked');setTimeout(()=>btn.classList.remove('just-liked'),400);}
+  }catch(e){}
+  btn.classList.remove('processing');
+});
+
+// ═══ 星尘流加载 ═══
+async function loadStardust(reset){
+  if(loading)return;
+  if(reset){stardustPage=1;hasMore=true;cardIdx=0;document.getElementById('postFeedStardust').innerHTML='';}
+  if(!hasMore)return;
+  loading=true;
+  const sk=document.getElementById('skeletonStardust');
+  const feed=document.getElementById('postFeedStardust');
+  sk.style.display='block';
+  try{
+    const r=await fetch(API+'/api/posts?page='+stardustPage+'&fingerprint='+encodeURIComponent(FP));
+    const d=await r.json();
+    sk.style.display='none';
+    d.posts.forEach((p,i)=>feed.appendChild(renderCard(p,stardustPage===1?i:50+i)));
+    hasMore=d.has_more; stardustPage++;
+    document.getElementById('emptyStardust').style.display=feed.children.length===0?'flex':'none';
+  }catch(e){sk.style.display='none';if(reset)document.getElementById('emptyStardust').style.display='flex';}
+  loading=false;
+}
+
+// 无限滚动
+window.addEventListener('scroll',()=>{
+  if(curPage!=='stardust'||loading||!hasMore)return;
+  const feed=document.getElementById('postFeedStardust');
+  if(!feed)return;
+  const rect=feed.getBoundingClientRect();
+  if(rect.bottom-window.innerHeight<400)loadStardust(false);
+},{passive:true});
+
+// ═══ 策展 ═══
+async function loadCurated(){
+  const sk=document.getElementById('skeletonCurated'), sections=document.getElementById('curatedSections');
+  if(sections.children.length)return;
+  sk.style.display='block';
+  try{
+    const r=await fetch(API+'/api/posts/curated?fingerprint='+encodeURIComponent(FP));
+    const d=await r.json(); sk.style.display='none';
+    for(const [cat,posts] of Object.entries(d.categories)){
+      if(!posts.length)continue;
+      const sec=document.createElement('section');
+      sec.className='curated-section';
+      sec.innerHTML=`<div class="curated-section__header"><span class="curated-section__icon">${CAT_ICONS[cat]||'✨'}</span><h3>${cat}</h3></div><div class="curated-section__grid"></div>`;
+      const grid=sec.querySelector('.curated-section__grid');
+      posts.forEach((p,i)=>{cardIdx=0;grid.appendChild(renderCard(p,i));});
+      sections.appendChild(sec);
     }
-  });
+    document.getElementById('emptyCurated').style.display=sections.children.length===0?'flex':'none';
+  }catch(e){sk.style.display='none';}
 }
 
-async function getOrCreateFingerprint() {
-  let fp = localStorage.getItem('onlyone_fingerprint');
-  if (!fp) {
-    fp = await generateFingerprint();
-    localStorage.setItem('onlyone_fingerprint', fp);
-  }
-  return fp;
+// ═══ 我的帖子 ═══
+async function loadMyPosts(){
+  const feed=document.getElementById('postFeedStardust'); // 复用
+  feed.innerHTML='<div class="empty-state"><div class="empty-state__icon">📜</div><p class="empty-state__text">加载中…</p></div>';
+  try{
+    const r=await fetch(API+'/api/my-posts?fingerprint='+encodeURIComponent(FP));
+    const d=await r.json(); feed.innerHTML=''; cardIdx=0;
+    if(!d.posts.length){feed.innerHTML='<div class="empty-state"><div class="empty-state__icon">📜</div><p class="empty-state__text">还没有写过星尘</p></div>';return;}
+    d.posts.forEach((p,i)=>feed.appendChild(renderCard(p,i)));
+  }catch(e){feed.innerHTML='<div class="empty-state"><div class="empty-state__icon">🛰️</div><p class="empty-state__text">加载失败</p></div>';}
 }
 
-// ═══════════════════════════════════════════════════════════
-// 2. Toast 通知系统
-// ═══════════════════════════════════════════════════════════
-
-let toastTimer = null;
-
-function showToast(message, type = 'info') {
-  const container = document.getElementById('toast-container');
-  if (!container) return;
-
-  // 清除上一个定时器
-  if (toastTimer) clearTimeout(toastTimer);
-
-  const toast = document.createElement('div');
-  toast.className = `toast toast--${type}`;
-  toast.innerHTML = `
-    <span class="toast__icon">${type === 'success' ? '✦' : type === 'error' ? '✧' : '·'}</span>
-    <span class="toast__text">${escapeHTML(message)}</span>
-  `;
-
-  container.appendChild(toast);
-
-  // 入场动画
-  requestAnimationFrame(() => {
-    toast.classList.add('toast--visible');
-  });
-
-  // 自动消失
-  toastTimer = setTimeout(() => {
-    toast.classList.remove('toast--visible');
-    setTimeout(() => {
-      if (toast.parentNode) toast.parentNode.removeChild(toast);
-    }, 300);
-  }, CONFIG.toastDuration);
+// ═══ 漂流瓶 ═══
+function initBottle(){
+  document.getElementById('driftBottleBtn')?.addEventListener('click',openBottle);
+  document.getElementById('driftBottleModal')?.addEventListener('click',function(e){if(e.target===this)closeBottle();});
 }
-
-// ═══════════════════════════════════════════════════════════
-// 3. 工具函数
-// ═══════════════════════════════════════════════════════════
-
-function escapeHTML(str) {
-  if (!str) return '';
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
+async function openBottle(){
+  const m=document.getElementById('driftBottleModal'), c=document.getElementById('bottleContent');
+  m.style.display='flex'; c.innerHTML='<div class="empty-state"><div class="empty-state__icon">🏺</div><p class="empty-state__text">正在打捞…</p></div>';
+  try{
+    const r=await fetch(API+'/api/posts/random?fingerprint='+encodeURIComponent(FP));
+    if(r.status===404){c.innerHTML=`<div class="empty-state"><div class="empty-state__icon">🏺</div><p class="empty-state__text">${(await r.json()).error}</p><button class="btn-ghost" onclick="openBottle()">再捞一个</button></div>`;return;}
+    const p=await r.json(); cardIdx=0;
+    c.innerHTML='<button class="modal-close" onclick="document.getElementById(\'driftBottleModal\').style.display=\'none\'">✕</button>'+renderCard(p,0).outerHTML+'<div style="text-align:center;margin-top:16px"><button class="btn-ghost" onclick="openBottle()">🫧 再捞一个</button></div>';
+  }catch(e){c.innerHTML='<div class="empty-state"><div class="empty-state__icon">🛰️</div><p class="empty-state__text">漂流瓶漂远了</p></div>';}
 }
+function closeBottle(){document.getElementById('driftBottleModal').style.display='none';}
 
-function formatTime(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  const now = new Date();
-  const diff = now - d;
-  const mins = Math.floor(diff / 60000);
-  const hours = Math.floor(diff / 3600000);
-  const days = Math.floor(diff / 86400000);
-
-  if (mins < 1) return '刚刚';
-  if (mins < 60) return `${mins}分钟前`;
-  if (hours < 24) return `${hours}小时前`;
-  if (days < 7) return `${days}天前`;
-
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
-
-function getCategoryClass(category) {
-  const map = {
-    '诗歌': 'cat-poetry',
-    '语录': 'cat-quote',
-    '随笔': 'cat-essay',
-    '音乐': 'cat-music',
-    '光影': 'cat-film',
-    'poetry': 'cat-poetry',
-    'quote': 'cat-quote',
-    'essay': 'cat-essay',
-    'music': 'cat-music',
-    'film': 'cat-film',
-    'photo': 'cat-film',
-  };
-  return map[category] || 'cat-essay';
-}
-
-function getCardModifierClass(category) {
-  const map = {
-    '诗歌': 'post-card--poetry',
-    '语录': 'post-card--quote',
-    '随笔': 'post-card--essay',
-    '音乐': 'post-card--music',
-    '光影': 'post-card--photo',
-    'poetry': 'post-card--poetry',
-    'quote': 'post-card--quote',
-    'essay': 'post-card--essay',
-    'music': 'post-card--music',
-    'film': 'post-card--photo',
-    'photo': 'post-card--photo',
-  };
-  return map[category] || 'post-card--essay';
-}
-
-function getCategoryLabel(category) {
-  const map = {
-    'poetry': '诗歌',
-    'quote': '语录',
-    'essay': '随笔',
-    'music': '音乐',
-    'film': '光影',
-    'photo': '光影',
-  };
-  return map[category] || category || '随笔';
-}
-
-// 图片 base64 压缩
-function compressImage(file) {
-  return new Promise((resolve, reject) => {
-    if (!file) { resolve(null); return; }
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        let { width, height } = img;
-        // 等比缩放
-        if (width > CONFIG.imageMaxWidth) {
-          height = Math.round((height * CONFIG.imageMaxWidth) / width);
-          width = CONFIG.imageMaxWidth;
-        }
-        if (height > CONFIG.imageMaxHeight) {
-          width = Math.round((width * CONFIG.imageMaxHeight) / height);
-          height = CONFIG.imageMaxHeight;
-        }
-
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-
-        const dataURL = canvas.toDataURL('image/jpeg', CONFIG.imageQuality);
-        resolve(dataURL);
-      };
-      img.onerror = () => reject(new Error('图片加载失败'));
-      img.src = e.target.result;
-    };
-    reader.onerror = () => reject(new Error('文件读取失败'));
-    reader.readAsDataURL(file);
-  });
-}
-
-// 防抖
-function debounce(fn, delay) {
-  let timer;
-  return function (...args) {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn.apply(this, args), delay);
-  };
-}
-
-// 节流
-function throttle(fn, interval) {
-  let last = 0;
-  return function (...args) {
-    const now = Date.now();
-    if (now - last >= interval) {
-      last = now;
-      fn.apply(this, args);
-    }
-  };
-}
-
-// ═══════════════════════════════════════════════════════════
-// 4. API 层 (async/await + fetch)
-// ═══════════════════════════════════════════════════════════
-
-let fingerprint = null;
-
-async function apiGet(path) {
-  const url = API_BASE + path + (path.includes('?') ? '&' : '?') + 'fingerprint=' + fingerprint;
-  const res = await fetch(url, {
-    headers: { 'Accept': 'application/json' },
-  });
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(text || `HTTP ${res.status}`);
-  }
-  return res.json();
-}
-
-async function apiPost(path, body = {}) {
-  const payload = { ...body, fingerprint: fingerprint };
-  const res = await fetch(API_BASE + path, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(text || `HTTP ${res.status}`);
-  }
-  return res.json();
-}
-
-async function apiDelete(path) {
-  const res = await fetch(API_BASE + path + '?fingerprint=' + fingerprint, {
-    method: 'DELETE',
-    headers: { 'Accept': 'application/json' },
-  });
-  if (!res.ok) {
-    const text = await res.text().catch(() => '');
-    throw new Error(text || `HTTP ${res.status}`);
-  }
-  return res.json();
-}
-
-// -- 具体 API 方法 --
-
-async function fetchDailyMessage() {
-  return apiGet('/api/daily-message');
-}
-
-async function fetchPosts(page = 1) {
-  return apiGet(`/api/posts?page=${page}`);
-}
-
-async function fetchCurated() {
-  return apiGet('/api/posts/curated');
-}
-
-async function fetchRandomPost() {
-  return apiGet('/api/posts/random');
-}
-
-async function createPost(data) {
-  return apiPost('/api/post', data);
-}
-
-async function likePost(id) {
-  return apiPost(`/api/post/${id}/like`);
-}
-
-async function hugPost(id) {
-  return apiPost(`/api/post/${id}/hug`);
-}
-
-async function deletePost(id) {
-  return apiDelete(`/api/post/${id}`);
-}
-
-async function fetchMyPosts() {
-  return apiGet('/api/my-posts');
-}
-
-// ═══════════════════════════════════════════════════════════
-// 5. 状态管理
-// ═══════════════════════════════════════════════════════════
-
-const state = {
-  currentTab: 'stardust',   // stardust | curated | compose | mine
-  stardust: {
-    page: 1,
-    hasMore: true,
-    loading: false,
-    posts: [],
-  },
-  curated: {
-    categories: null,
-  },
-  mine: {
-    posts: [],
-  },
-};
-
-// ═══════════════════════════════════════════════════════════
-// 6. 涟漪点击效果
-// ═══════════════════════════════════════════════════════════
-
-function createRipple(e, el) {
-  const ripple = document.createElement('span');
-  ripple.className = 'ripple';
-  const rect = el.getBoundingClientRect();
-  const size = Math.max(rect.width, rect.height);
-  ripple.style.width = ripple.style.height = size + 'px';
-  ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
-  ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+// ═══ 涟漪效果 ═══
+document.addEventListener('click',function(e){
+  const el=e.target.closest('button,.tab-bar__item,.fab-btn,.mood-chip');
+  if(!el)return;
+  const rect=el.getBoundingClientRect(), ripple=document.createElement('span');
+  ripple.className='ripple-effect';
+  const s=Math.max(rect.width,rect.height);
+  ripple.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-rect.left-s/2}px;top:${e.clientY-rect.top-s/2}px`;
+  el.style.position=el.style.position||'relative'; el.style.overflow='hidden';
   el.appendChild(ripple);
+  setTimeout(()=>ripple.remove(),600);
+});
 
-  ripple.addEventListener('animationend', () => {
-    if (ripple.parentNode) ripple.parentNode.removeChild(ripple);
-  });
-}
-
-// ═══════════════════════════════════════════════════════════
-// 7. 骨架屏
-// ═══════════════════════════════════════════════════════════
-
-function showSkeletons(container, count = CONFIG.skeletonCount) {
-  container.innerHTML = '';
-  for (let i = 0; i < count; i++) {
-    const sk = document.createElement('div');
-    sk.className = 'skeleton-card';
-    sk.innerHTML = `
-      <div class="skeleton-line skeleton-line--title"></div>
-      <div class="skeleton-line skeleton-line--body"></div>
-      <div class="skeleton-line skeleton-line--body skeleton-line--short"></div>
-      <div class="skeleton-line skeleton-line--meta"></div>
-    `;
-    container.appendChild(sk);
-  }
-}
-
-function hideSkeletons(container) {
-  container.innerHTML = '';
-}
-
-// ═══════════════════════════════════════════════════════════
-// 8. 卡片渲染
-// ═══════════════════════════════════════════════════════════
-
-/**
- * 渲染单张卡片 HTML 结构:
- *   时间左上 + 情绪(mood)右上 + 正文 + 图片(可选) + 互动区
- */
-function renderCard(post, index = 0) {
-  const catClass = getCategoryClass(post.category);
-  const modClass = getCardModifierClass(post.category);
-  const catLabel = getCategoryLabel(post.category);
-
-  // featured 变体: 每 6 张中的第 0 张
-  const isFeatured = (index % CONFIG.featuredInterval === 0);
-  const featuredClass = isFeatured ? 'post-card--featured' : '';
-  const spansClass = isFeatured ? 'post-card--spans' : '';
-
-  const timeStr = formatTime(post.created_at);
-  const moodEmoji = post.mood_emoji || '';
-  const moodColor = post.mood_color || 'rgba(201,160,69,0.6)';
-  const moodLabel = post.mood || '';
-  const contentHTML = escapeHTML(post.content || '').replace(/
-/g, '<br>');
-  const nickname = escapeHTML(post.nickname || '匿名星尘');
-
-  const hasImage = post.image && post.image.trim().length > 0;
-  const imageHTML = hasImage
-    ? `<div class="post-card__image-wrap"><img class="post-card__image lazyload" data-src="${escapeHTML(post.image)}" alt="" loading="lazy" /></div>`
-    : '';
-
-  const likeActive = post.liked_by_me ? 'post-card__action--active' : '';
-  const hugActive = post.hugged_by_me ? 'post-card__action--active' : '';
-
-  // 精选标记
-  const curatedBadge = post.is_curated
-    ? '<span class="post-card__badge">✦ 精选</span>'
-    : '';
-
-  return `
-    <article
-      class="post-card ${modClass} ${catClass} ${featuredClass} ${spansClass}"
-      data-id="${post.id}"
-      data-category="${catLabel}"
-    >
-      ${curatedBadge}
-      <div class="post-card__header">
-        <span class="post-card__time">${timeStr}</span>
-        <span class="post-card__mood" style="color:${moodColor}" title="${escapeHTML(moodLabel)}">
-          ${moodEmoji}
-        </span>
-      </div>
-
-      <div class="post-card__body">
-        <div class="post-card__content">${contentHTML}</div>
-        ${imageHTML}
-      </div>
-
-      <div class="post-card__meta">
-        <span class="post-card__nickname">— ${nickname}</span>
-        ${post.source ? `<span class="post-card__source">${escapeHTML(post.source)}</span>` : ''}
-      </div>
-
-      <div class="post-card__actions">
-        <button class="post-card__action post-card__like ${likeActive}" data-action="like" data-id="${post.id}" aria-label="喜欢">
-          <span class="post-card__action-icon">♡</span>
-          <span class="post-card__action-count">${post.like_count || 0}</span>
-        </button>
-        <button class="post-card__action post-card__hug ${hugActive}" data-action="hug" data-id="${post.id}" aria-label="拥抱">
-          <span class="post-card__action-icon">◉</span>
-          <span class="post-card__action-count">${post.hug_count || 0}</span>
-        </button>
-      </div>
-    </article>
-  `;
-}
-
-/**
- * 渲染帖子列表到容器
- */
-function renderFeed(container, posts, startIndex = 0, append = false) {
-  if (!append) {
-    container.innerHTML = '';
-  }
-
-  const fragment = document.createDocumentFragment();
-  posts.forEach((post, i) => {
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = renderCard(post, startIndex + i);
-    fragment.appendChild(wrapper.firstElementChild);
-  });
-
-  container.appendChild(fragment);
-
-  // 懒加载图片
-  lazyLoadImages();
-}
-
-/**
- * 策展视图：按分类分组渲染
- */
-function renderCurated(container, categoriesData) {
-  if (!categoriesData) return;
-
-  container.innerHTML = '';
-
-  const categoryOrder = ['诗歌', '语录', '随笔', '音乐', '光影'];
-
-  categoryOrder.forEach((catName) => {
-    const posts = categoriesData[catName];
-    if (!posts || posts.length === 0) return;
-
-    const catKey = CONFIG.categoryMap[catName] || 'essay';
-    const catClass = `cat-${catKey}`;
-
-    const section = document.createElement('section');
-    section.className = `curated-section ${catClass}`;
-    section.innerHTML = `
-      <h2 class="curated-section__title">
-        <span class="curated-section__icon"></span>
-        ${escapeHTML(catName)}
-        <span class="curated-section__count">${posts.length}篇</span>
-      </h2>
-    `;
-
-    const grid = document.createElement('div');
-    grid.className = 'post-grid post-grid--curated';
-
-    posts.forEach((post, i) => {
-      const wrapper = document.createElement('div');
-      wrapper.innerHTML = renderCard(post, i);
-      grid.appendChild(wrapper.firstElementChild);
-    });
-
-    section.appendChild(grid);
-    container.appendChild(section);
-  });
-
-  lazyLoadImages();
-}
-
-/**
- * 我的帖子列表渲染（含删除按钮）
- */
-function renderMyPosts(container, posts) {
-  if (!posts || posts.length === 0) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-state__icon">◈</div>
-        <p class="empty-state__text">你还没有发布过帖子</p>
-        <p class="empty-state__sub">在星尘中留下你的痕迹吧</p>
-      </div>
-    `;
-    return;
-  }
-
-  container.innerHTML = '';
-
-  posts.forEach((post, i) => {
-    const catClass = getCategoryClass(post.category);
-    const modClass = getCardModifierClass(post.category);
-    const timeStr = formatTime(post.created_at);
-    const moodEmoji = post.mood_emoji || '';
-    const moodColor = post.mood_color || 'rgba(201,160,69,0.6)';
-    const contentHTML = escapeHTML(post.content || '').replace(/
-/g, '<br>');
-    const hasImage = post.image && post.image.trim().length > 0;
-
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = `
-      <article class="post-card ${modClass} ${catClass}" data-id="${post.id}">
-        <div class="post-card__header">
-          <span class="post-card__time">${timeStr}</span>
-          <span class="post-card__mood" style="color:${moodColor}">${moodEmoji}</span>
-        </div>
-        <div class="post-card__body">
-          <div class="post-card__content">${contentHTML}</div>
-          ${hasImage ? `<div class="post-card__image-wrap"><img class="post-card__image lazyload" data-src="${escapeHTML(post.image)}" alt="" loading="lazy" /></div>` : ''}
-        </div>
-        <div class="post-card__actions">
-          <span class="post-card__stat">♡ ${post.like_count || 0}</span>
-          <span class="post-card__stat">◉ ${post.hug_count || 0}</span>
-          <button class="post-card__delete-btn" data-action="delete" data-id="${post.id}" aria-label="删除">
-            ✕ 删除
-          </button>
-        </div>
-      </article>
-    `;
-    container.appendChild(wrapper.firstElementChild);
-  });
-
-  lazyLoadImages();
-}
-
-// ═══════════════════════════════════════════════════════════
-// 9. 图片懒加载
-// ═══════════════════════════════════════════════════════════
-
-function lazyLoadImages() {
-  const images = document.querySelectorAll('img.lazyload[data-src]');
-  if ('IntersectionObserver' in window) {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const img = entry.target;
-          img.src = img.dataset.src;
-          img.classList.remove('lazyload');
-          observer.unobserve(img);
-        }
-      });
-    }, { rootMargin: '100px' });
-
-    images.forEach((img) => observer.observe(img));
-  } else {
-    // 降级：直接加载
-    images.forEach((img) => {
-      img.src = img.dataset.src;
-      img.classList.remove('lazyload');
-    });
-  }
-}
-
-// ═══════════════════════════════════════════════════════════
-// 10. 星尘流 (Tab 1): 首屏加载 + 无限滚动
-// ═══════════════════════════════════════════════════════════
-
-async function loadStardust(append = false) {
-  const container = document.getElementById('stardust-feed');
-  if (!container) return;
-
-  if (!append) {
-    state.stardust.page = 1;
-    state.stardust.hasMore = true;
-    state.stardust.posts = [];
-    showSkeletons(container);
-  }
-
-  if (state.stardust.loading || !state.stardust.hasMore) return;
-
-  state.stardust.loading = true;
-
-  try {
-    const data = await fetchPosts(state.stardust.page);
-
-    if (!append) {
-      hideSkeletons(container);
-    }
-
-    const posts = data.posts || [];
-    state.stardust.hasMore = data.has_more !== false;
-    state.stardust.page = data.page || state.stardust.page;
-
-    if (posts.length > 0) {
-      state.stardust.posts = append
-        ? [...state.stardust.posts, ...posts]
-        : posts;
-      renderFeed(container, posts, state.stardust.posts.length - posts.length, append);
-    } else if (!append) {
-      container.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-state__icon">✦</div>
-          <p class="empty-state__text">暂无星尘</p>
-          <p class="empty-state__sub">成为第一个留下光芒的人</p>
-        </div>
-      `;
-    }
-
-    // 没有更多内容时追加提示
-    if (!state.stardust.hasMore && state.stardust.posts.length > 0) {
-      const end = document.createElement('div');
-      end.className = 'feed-end';
-      end.innerHTML = '<span>— 已到达星尘尽头 —</span>';
-      container.appendChild(end);
-    }
-
-  } catch (err) {
-    if (!append) hideSkeletons(container);
-    showToast('加载失败: ' + err.message, 'error');
-  } finally {
-    state.stardust.loading = false;
-  }
-}
-
-// 无限滚动处理
-const handleScroll = throttle(() => {
-  if (state.currentTab !== 'stardust') return;
-  if (!state.stardust.hasMore || state.stardust.loading) return;
-
-  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-  const windowHeight = window.innerHeight;
-  const docHeight = document.documentElement.scrollHeight;
-
-  if (scrollTop + windowHeight >= docHeight - CONFIG.scrollThreshold) {
-    state.stardust.page++;
-    loadStardust(true);
-  }
-}, 200);
-
-// ═══════════════════════════════════════════════════════════
-// 11. 策展 (Tab 2): 分类分组展示
-// ═══════════════════════════════════════════════════════════
-
-async function loadCurated() {
-  const container = document.getElementById('curated-feed');
-  if (!container) return;
-
-  showSkeletons(container, 4);
-
-  try {
-    const data = await fetchCurated();
-    hideSkeletons(container);
-
-    state.curated.categories = data.categories || data;
-    renderCurated(container, state.curated.categories);
-
-    if (!state.curated.categories || Object.keys(state.curated.categories).length === 0) {
-      container.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-state__icon">✦</div>
-          <p class="empty-state__text">暂无策展内容</p>
-          <p class="empty-state__sub">编辑正在精心挑选中...</p>
-        </div>
-      `;
-    }
-  } catch (err) {
-    hideSkeletons(container);
-    showToast('策展加载失败: ' + err.message, 'error');
-  }
-}
-
-// ═══════════════════════════════════════════════════════════
-// 12. 书写 (Tab 3): 发布表单
-// ═══════════════════════════════════════════════════════════
-
-function initComposeForm() {
-  const form = document.getElementById('compose-form');
-  const contentInput = document.getElementById('compose-content');
-  const charCount = document.getElementById('compose-charcount');
-  const moodSelector = document.getElementById('compose-mood-selector');
-  const imageInput = document.getElementById('compose-image');
-  const imagePreview = document.getElementById('compose-image-preview');
-  const submitBtn = document.getElementById('compose-submit');
-  const nicknameInput = document.getElementById('compose-nickname');
-
-  if (!form) return;
-
-  // 字数统计
-  if (contentInput && charCount) {
-    contentInput.addEventListener('input', () => {
-      const len = contentInput.value.length;
-      charCount.textContent = `${len} / ${CONFIG.contentMaxLen}`;
-      charCount.className = len > CONFIG.contentMaxLen
-        ? 'compose__charcount compose__charcount--over'
-        : 'compose__charcount';
-    });
-  }
-
-  // 情绪选择器构建
-  if (moodSelector) {
-    CONFIG.moods.forEach((mood) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'mood-btn';
-      btn.dataset.mood = mood.id;
-      btn.dataset.emoji = mood.emoji;
-      btn.dataset.color = mood.color;
-      btn.innerHTML = `<span class="mood-btn__emoji">${mood.emoji}</span><span class="mood-btn__label">${mood.label}</span>`;
-      btn.addEventListener('click', () => {
-        moodSelector.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('mood-btn--selected'));
-        btn.classList.add('mood-btn--selected');
-      });
-      moodSelector.appendChild(btn);
-    });
-    // 默认选中第一个
-    const firstBtn = moodSelector.querySelector('.mood-btn');
-    if (firstBtn) firstBtn.classList.add('mood-btn--selected');
-  }
-
-  // 图片预览
-  if (imageInput && imagePreview) {
-    imageInput.addEventListener('change', async () => {
-      const file = imageInput.files[0];
-      if (!file) { imagePreview.innerHTML = ''; return; }
-
-      if (!file.type.startsWith('image/')) {
-        showToast('请选择图片文件', 'error');
-        imageInput.value = '';
-        return;
-      }
-
-      imagePreview.innerHTML = '<div class="compose__image-loading">压缩中...</div>';
-
-      try {
-        const dataURL = await compressImage(file);
-        imagePreview.innerHTML = `<img src="${dataURL}" alt="预览" class="compose__image-thumb" />`;
-        // 存储 base64 到 data 属性供提交时使用
-        imagePreview.dataset.base64 = dataURL;
-      } catch (err) {
-        imagePreview.innerHTML = '';
-        showToast('图片处理失败', 'error');
-      }
-    });
-  }
-
-  // 提交
-  if (submitBtn) {
-    submitBtn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      await handlePublish();
-    });
-  }
-
-  // Enter 提交 (Ctrl+Enter)
-  if (contentInput) {
-    contentInput.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        e.preventDefault();
-        handlePublish();
-      }
-    });
-  }
-}
-
-async function handlePublish() {
-  const contentInput = document.getElementById('compose-content');
-  const moodSelector = document.getElementById('compose-mood-selector');
-  const imagePreview = document.getElementById('compose-image-preview');
-  const submitBtn = document.getElementById('compose-submit');
-  const nicknameInput = document.getElementById('compose-nickname');
-
-  const content = (contentInput?.value || '').trim();
-  if (!content) {
-    showToast('请写下你想说的话', 'error');
-    contentInput?.focus();
-    return;
-  }
-
-  if (content.length > CONFIG.contentMaxLen) {
-    showToast(`内容不能超过${CONFIG.contentMaxLen}字`, 'error');
-    return;
-  }
-
-  // 获取选中的情绪
-  const selectedMood = moodSelector?.querySelector('.mood-btn--selected');
-  const mood = selectedMood?.dataset.mood || 'calm';
-  const moodEmoji = selectedMood?.dataset.emoji || '🌙';
-  const moodColor = selectedMood?.dataset.color || '#7eb8da';
-
-  // 获取图片 base64
-  const image = imagePreview?.dataset.base64 || null;
-
-  // 昵称
-  const nickname = (nicknameInput?.value || '').trim().slice(0, CONFIG.nicknameMaxLen) || '匿名星尘';
-
-  // 禁用按钮
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = '发送中...';
-  }
-
-  try {
-    const result = await createPost({
-      content,
-      image,
-      mood,
-      nickname,
-    });
-
-    showToast('发布成功 ✦', 'success');
-
-    // 清空表单
-    if (contentInput) contentInput.value = '';
-    if (charCount) document.getElementById('compose-charcount').textContent = `0 / ${CONFIG.contentMaxLen}`;
-    if (imagePreview) { imagePreview.innerHTML = ''; delete imagePreview.dataset.base64; }
-    if (imageInput) document.getElementById('compose-image').value = '';
-
-    // 重置情绪选择
-    if (moodSelector) {
-      moodSelector.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('mood-btn--selected'));
-      const firstBtn = moodSelector.querySelector('.mood-btn');
-      if (firstBtn) firstBtn.classList.add('mood-btn--selected');
-    }
-
-    // 如果 result 中有 post 对象，可以插入到 feed
-    if (result.post) {
-      // 切换到星尘 tab 并刷新
-      const stardustTab = document.querySelector('[data-tab="stardust"]');
-      if (stardustTab) stardustTab.click();
-    }
-
-  } catch (err) {
-    showToast('发布失败: ' + err.message, 'error');
-  } finally {
-    if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.textContent = '✦ 发布星尘';
-    }
-  }
-}
-
-// ═══════════════════════════════════════════════════════════
-// 13. 我的 (Tab 4): 帖子列表 + 删除
-// ═══════════════════════════════════════════════════════════
-
-async function loadMyPosts() {
-  const container = document.getElementById('mine-feed');
-  if (!container) return;
-
-  showSkeletons(container, 3);
-
-  try {
-    const data = await fetchMyPosts();
-    hideSkeletons(container);
-
-    state.mine.posts = data.posts || [];
-    renderMyPosts(container, state.mine.posts);
-  } catch (err) {
-    hideSkeletons(container);
-    showToast('加载失败: ' + err.message, 'error');
-  }
-}
-
-async function handleDelete(postId) {
-  if (!confirm('确定要删除这篇帖子吗？此操作不可撤销。')) return;
-
-  try {
-    await deletePost(postId);
-    showToast('已删除', 'success');
-
-    // 从状态中移除
-    state.mine.posts = state.mine.posts.filter(p => String(p.id) !== String(postId));
-
-    // 重新渲染我的帖子列表
-    const container = document.getElementById('mine-feed');
-    if (container) {
-      renderMyPosts(container, state.mine.posts);
-    }
-  } catch (err) {
-    showToast('删除失败: ' + err.message, 'error');
-  }
-}
-
-// ═══════════════════════════════════════════════════════════
-// 14. Like / Hug 互动
-// ═══════════════════════════════════════════════════════════
-
-async function handleLike(postId, button) {
-  try {
-    const result = await likePost(postId);
-
-    // 更新按钮状态
-    const isActive = result.action === 'liked';
-    button.classList.toggle('post-card__action--active', isActive);
-
-    // 更新计数
-    const countEl = button.querySelector('.post-card__action-count');
-    if (countEl) {
-      countEl.textContent = result.like_count || 0;
-    }
-
-    // 更新图标
-    const iconEl = button.querySelector('.post-card__action-icon');
-    if (iconEl) {
-      iconEl.textContent = isActive ? '♥' : '♡';
-    }
-
-    // 小动画
-    button.classList.add('post-card__action--pop');
-    setTimeout(() => button.classList.remove('post-card__action--pop'), 300);
-
-  } catch (err) {
-    showToast('操作失败: ' + err.message, 'error');
-  }
-}
-
-async function handleHug(postId, button) {
-  try {
-    const result = await hugPost(postId);
-
-    // 更新按钮状态
-    const isActive = result.action === 'hugged';
-    button.classList.toggle('post-card__action--active', isActive);
-
-    // 更新计数
-    const countEl = button.querySelector('.post-card__action-count');
-    if (countEl) {
-      countEl.textContent = result.hug_count || 0;
-    }
-
-    // 更新图标
-    const iconEl = button.querySelector('.post-card__action-icon');
-    if (iconEl) {
-      iconEl.textContent = isActive ? '◎' : '◉';
-    }
-
-    // 小动画
-    button.classList.add('post-card__action--pop');
-    setTimeout(() => button.classList.remove('post-card__action--pop'), 300);
-
-  } catch (err) {
-    showToast('操作失败: ' + err.message, 'error');
-  }
-}
-
-// ═══════════════════════════════════════════════════════════
-// 15. 漂流瓶 (随机帖子弹窗)
-// ═══════════════════════════════════════════════════════════
-
-async function openBottle() {
-  const overlay = document.getElementById('bottle-overlay');
-  const card = document.getElementById('bottle-card');
-  const loading = document.getElementById('bottle-loading');
-  const errorEl = document.getElementById('bottle-error');
-
-  if (!overlay || !card) return;
-
-  // 显示弹窗
-  overlay.classList.add('bottle-overlay--visible');
-  card.classList.remove('bottle-card--loaded', 'bottle-card--error');
-  card.classList.add('bottle-card--loading');
-  if (loading) loading.style.display = 'flex';
-  if (errorEl) errorEl.style.display = 'none';
-
-  // 卡片内容区
-  const contentArea = card.querySelector('.bottle-card__content');
-  if (contentArea) contentArea.innerHTML = '';
-
-  try {
-    const post = await fetchRandomPost();
-
-    if (!post || !post.id) {
-      throw new Error('empty');
-    }
-
-    // 渲染卡片
-    if (contentArea) {
-      const wrapper = document.createElement('div');
-      wrapper.innerHTML = renderCard(post, 0);
-      // 给漂流瓶卡片里的按钮加特殊class以便事件处理
-      const cardEl = wrapper.firstElementChild;
-      cardEl.classList.add('bottle-card__post');
-      contentArea.appendChild(cardEl);
-    }
-
-    card.classList.remove('bottle-card--loading');
-    card.classList.add('bottle-card--loaded');
-    if (loading) loading.style.display = 'none';
-
-    lazyLoadImages();
-
-  } catch (err) {
-    card.classList.remove('bottle-card--loading');
-    card.classList.add('bottle-card--error');
-    if (loading) loading.style.display = 'none';
-    if (errorEl) errorEl.style.display = 'flex';
-
-    if (err.message === 'empty' || err.message.includes('404')) {
-      if (errorEl) errorEl.querySelector('.bottle-error__text').textContent = '这片海域暂无漂流瓶';
-    } else {
-      showToast('漂流瓶漂远了: ' + err.message, 'error');
-    }
-  }
-}
-
-function closeBottle() {
-  const overlay = document.getElementById('bottle-overlay');
-  const card = document.getElementById('bottle-card');
-
-  if (overlay) overlay.classList.remove('bottle-overlay--visible');
-  if (card) {
-    card.classList.remove('bottle-card--loaded', 'bottle-card--error', 'bottle-card--loading');
-  }
-}
-
-function initBottle() {
-  const trigger = document.getElementById('bottle-trigger');
-  const close = document.getElementById('bottle-close');
-  const overlay = document.getElementById('bottle-overlay');
-  const another = document.getElementById('bottle-another');
-
-  if (trigger) {
-    trigger.addEventListener('click', (e) => {
-      createRipple(e, trigger);
-      openBottle();
-    });
-  }
-
-  if (close) {
-    close.addEventListener('click', () => closeBottle());
-  }
-
-  if (overlay) {
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) closeBottle();
-    });
-  }
-
-  if (another) {
-    another.addEventListener('click', () => openBottle());
-  }
-
-  // ESC 关闭
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeBottle();
-  });
-}
-
-// ═══════════════════════════════════════════════════════════
-// 16. 每日星语
-// ═══════════════════════════════════════════════════════════
-
-async function loadDailyMessage() {
-  const el = document.getElementById('daily-message');
-  if (!el) return;
-
-  try {
-    const data = await fetchDailyMessage();
-    el.innerHTML = `
-      <p class="daily-message__text">${escapeHTML(data.message || '')}</p>
-      ${data.author ? `<span class="daily-message__author">— ${escapeHTML(data.author)}</span>` : ''}
-      ${data.source ? `<span class="daily-message__source">${escapeHTML(data.source)}</span>` : ''}
-    `;
-  } catch (err) {
-    el.innerHTML = `
-      <p class="daily-message__text">每一颗星都有自己的轨道，每束光都有自己的远方。</p>
-      <span class="daily-message__author">— 唯一</span>
-    `;
-    // 静默失败，不弹 toast
-  }
-}
-
-// ═══════════════════════════════════════════════════════════
-// 17. Tab 切换
-// ═══════════════════════════════════════════════════════════
-
-function switchTab(tabName) {
-  if (state.currentTab === tabName) return;
-
-  state.currentTab = tabName;
-
-  // 更新 nav 高亮
-  document.querySelectorAll('.nav__item').forEach(item => {
-    item.classList.toggle('nav__item--active', item.dataset.tab === tabName);
-  });
-
-  // 切换视图
-  document.querySelectorAll('.view').forEach(view => {
-    view.classList.toggle('view--active', view.dataset.view === tabName);
-  });
-
-  // 加载对应内容
-  switch (tabName) {
-    case 'stardust':
-      if (state.stardust.posts.length === 0) {
-        loadStardust(false);
-      }
-      break;
-    case 'curated':
-      if (!state.curated.categories) {
-        loadCurated();
-      }
-      break;
-    case 'compose':
-      // 无需异步加载
-      break;
-    case 'mine':
-      if (state.mine.posts.length === 0) {
-        loadMyPosts();
-      }
-      break;
-  }
-
-  // 滚动到顶部
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function initTabs() {
-  document.querySelectorAll('.nav__item').forEach(item => {
-    item.addEventListener('click', (e) => {
-      createRipple(e, item);
-      const tab = item.dataset.tab;
-      if (tab) switchTab(tab);
-    });
-  });
-}
-
-// ═══════════════════════════════════════════════════════════
-// 18. 全局事件委托 (卡片互动、删除等)
-// ═══════════════════════════════════════════════════════════
-
-function initGlobalDelegation() {
-  document.addEventListener('click', async (e) => {
-    // Like 按钮
-    const likeBtn = e.target.closest('[data-action="like"]');
-    if (likeBtn) {
-      e.preventDefault();
-      const postId = likeBtn.dataset.id;
-      if (postId) {
-        createRipple(e, likeBtn);
-        await handleLike(postId, likeBtn);
-      }
-      return;
-    }
-
-    // Hug 按钮
-    const hugBtn = e.target.closest('[data-action="hug"]');
-    if (hugBtn) {
-      e.preventDefault();
-      const postId = hugBtn.dataset.id;
-      if (postId) {
-        createRipple(e, hugBtn);
-        await handleHug(postId, hugBtn);
-      }
-      return;
-    }
-
-    // Delete 按钮
-    const deleteBtn = e.target.closest('[data-action="delete"]');
-    if (deleteBtn) {
-      e.preventDefault();
-      const postId = deleteBtn.dataset.id;
-      if (postId) {
-        await handleDelete(postId);
-      }
-      return;
-    }
-  });
-}
-
-// ═══════════════════════════════════════════════════════════
-// 19. 星空背景初始化 (纯CSS，无Canvas)
-// ═══════════════════════════════════════════════════════════
-
-function initStarfield() {
-  const bg = document.getElementById('starfield-bg');
-  if (!bg) return;
-
-  // 通过 JS 动态生成若干星星元素，注入到背景容器中
-  // CSS 将处理动画和位置
-  const starCount = 120;
-  const fragment = document.createDocumentFragment();
-
-  for (let i = 0; i < starCount; i++) {
-    const star = document.createElement('div');
-    star.className = 'star';
-    star.style.setProperty('--star-x', Math.random());
-    star.style.setProperty('--star-y', Math.random());
-    star.style.setProperty('--star-size', (Math.random() * 3 + 1).toFixed(2) + 'px');
-    star.style.setProperty('--star-opacity', (Math.random() * 0.6 + 0.2).toFixed(2));
-    star.style.setProperty('--star-delay', (Math.random() * 5).toFixed(2) + 's');
-    star.style.setProperty('--star-duration', (Math.random() * 4 + 3).toFixed(2) + 's');
-    fragment.appendChild(star);
-  }
-
-  bg.appendChild(fragment);
-}
-
-// ═══════════════════════════════════════════════════════════
-// 20. 应用初始化
-// ═══════════════════════════════════════════════════════════
-
-async function initApp() {
-  try {
-    // 1. 获取/生成浏览器指纹
-    fingerprint = await getOrCreateFingerprint();
-
-    // 2. 初始化星空背景
-    initStarfield();
-
-    // 3. 初始化 Tab 切换
-    initTabs();
-
-    // 4. 初始化书写表单
-    initComposeForm();
-
-    // 5. 初始化漂流瓶
-    initBottle();
-
-    // 6. 全局事件委托
-    initGlobalDelegation();
-
-    // 7. 无限滚动
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
-    // 8. 加载每日星语
-    loadDailyMessage();
-
-    // 9. 加载首屏星尘流（默认tab）
-    await loadStardust(false);
-
-  } catch (err) {
-    console.error('App init error:', err);
-    showToast('初始化失败，请刷新页面', 'error');
-  }
-}
-
-// ═══════════════════════════════════════════════════════════
-// 启动
-// ═══════════════════════════════════════════════════════════
-
-document.addEventListener('DOMContentLoaded', initApp);
+})();
 
 </script>
 </body>
