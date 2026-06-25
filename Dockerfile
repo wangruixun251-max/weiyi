@@ -10,6 +10,8 @@ COPY . .
 # 确保 data 目录可写
 RUN mkdir -p data
 
+# Build: 2026-06-25-v3 — 听书+解压模块
+
 EXPOSE 10000
 
 CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:10000", "--workers", "2", "--timeout", "120"]
