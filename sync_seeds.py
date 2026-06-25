@@ -34,22 +34,22 @@ def _post(path, body):
 
 # ── 精选图片库 ──────────────────────────────────────────
 IMAGE_POOL = {
-    "星空": ["https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?w=800&q=80",
-             "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800&q=80"],
-    "孤独": ["https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
-             "https://images.unsplash.com/photo-1518834107812-67b0b7c15434?w=800&q=80"],
-    "自由": ["https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
-             "https://images.unsplash.com/photo-1494500764479-0c8f2919a3d8?w=800&q=80"],
-    "黄昏": ["https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80",
-             "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&q=80"],
-    "夜晚": ["https://images.unsplash.com/photo-1532767153582-b1a0e5145009?w=800&q=80",
-             "https://images.unsplash.com/photo-1507400492013-162706c8c05e?w=800&q=80"],
-    "海洋": ["https://images.unsplash.com/photo-1504898770365-14faca6a7320?w=800&q=80",
-             "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&q=80"],
-    "森林": ["https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80",
-             "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80"],
-    "温暖": ["https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?w=800&q=80",
-             "https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&q=80"],
+    "星空": ["https://images.unsplash.com/photo-1468276314544-df37b8c1edcb?w=800&q=80",
+             "https://images.unsplash.com/photo-1439853949127-272b3f66ee7a?w=800&q=80"],
+    "孤独": ["https://images.unsplash.com/photo-1468581264429-0a1dd7228f2d?w=800&q=80",
+             "https://images.unsplash.com/photo-1486870591950-67b0b7c15434?w=800&q=80"],
+    "自由": ["https://images.unsplash.com/photo-1533038590840-21bda4d32df4?w=800&q=80",
+             "https://images.unsplash.com/photo-1558618666-0c8f2919a3d8?w=800&q=80"],
+    "黄昏": ["https://images.unsplash.com/photo-1544085311-b723cf961d3e?w=800&q=80",
+             "https://images.unsplash.com/photo-1526801932844-50d01698950b?w=800&q=80"],
+    "夜晚": ["https://images.unsplash.com/photo-1487537708572-b1a0e5145009?w=800&q=80",
+             "https://images.unsplash.com/photo-1534260186734-162706c8c05e?w=800&q=80"],
+    "海洋": ["https://images.unsplash.com/photo-1553868292-14faca6a7320?w=800&q=80",
+             "https://images.unsplash.com/photo-1546162086-46273834b3fb?w=800&q=80"],
+    "森林": ["https://images.unsplash.com/photo-1481277542483-c6227db76b6e?w=800&q=80",
+             "https://images.unsplash.com/photo-1542199082-56623f02e42e?w=800&q=80"],
+    "温暖": ["https://images.unsplash.com/photo-1518459031867-7ba9967e16a0?w=800&q=80",
+             "https://images.unsplash.com/photo-1504198453319-025f5b846b35?w=800&q=80"],
 }
 ALL_IMAGES = [url for urls in IMAGE_POOL.values() for url in urls]
 
