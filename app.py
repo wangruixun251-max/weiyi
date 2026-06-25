@@ -259,19 +259,47 @@ def api_tts(book_id):
                         headers={'Cache-Control': 'public, max-age=86400'})
 
     # Edge TTS 合成 — 女声「晓晓」，极自然，微软神经网络语音
+    # 长文本自动分段合成后拼接
     async def _generate():
         import edge_tts
-        communicate = edge_tts.Communicate(
-            text,
-            'zh-CN-XiaoxiaoNeural',
-            rate='-5%',
-            pitch='-2Hz'
-        )
-        with open(cache_path + '.tmp', 'wb') as f:
-            async for chunk in communicate.stream():
-                if chunk['type'] == 'audio':
-                    f.write(chunk['data'])
-        os.rename(cache_path + '.tmp', cache_path)
+
+        # 分段：每段约 800 字，避免单次请求过长导致流中断
+        chunk_size = 800
+        texts = []
+        remaining = text
+        while len(remaining) > chunk_size:
+            # 在标点处断开，保持句子完整
+            split_at = remaining.rfind('。', 0, chunk_size)
+            if split_at == -1:
+                split_at = remaining.rfind('，', 0, chunk_size)
+            if split_at == -1 or split_at < 100:
+                split_at = chunk_size
+            texts.append(remaining[:split_at + 1])
+            remaining = remaining[split_at + 1:]
+        texts.append(remaining)
+
+        # 逐段合成
+        tmp_files = []
+        for i, chunk_text in enumerate(texts):
+            if not chunk_text.strip():
+                continue
+            tmp_path = f'{cache_path}.part{i}.mp3'
+            communicate = edge_tts.Communicate(
+                chunk_text.strip(),
+                'zh-CN-XiaoxiaoNeural',
+                rate='-5%',
+                pitch='-2Hz'
+            )
+            await communicate.save(tmp_path)
+            tmp_files.append(tmp_path)
+
+        # 拼接 MP3（简单二进制拼接即可，浏览器能正常播放）
+        with open(cache_path, 'wb') as out:
+            for tf in tmp_files:
+                with open(tf, 'rb') as inf:
+                    out.write(inf.read())
+                os.remove(tf)
+
         return cache_path
 
     loop = asyncio.new_event_loop()
