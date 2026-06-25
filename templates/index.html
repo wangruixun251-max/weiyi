@@ -288,23 +288,34 @@ body {
   background: rgba(255,255,255,0.02);
   border-radius: var(--radius-full);
   padding: 3px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  max-width: calc(100vw - 100px);
+  mask: linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%);
+  -webkit-mask: linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%);
 }
+.nav-tabs::-webkit-scrollbar { display: none; }
 
 .nav-tab {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 3px;
   background: none;
   border: none;
   color: var(--text-tertiary);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
-  padding: 8px 16px;
+  padding: 6px 12px;
   border-radius: var(--radius-full);
   cursor: pointer;
   font-family: inherit;
   transition: all var(--duration-normal);
   white-space: nowrap;
+  flex-shrink: 0;
+}
+@media (min-width: 480px) {
+  .nav-tab { font-size: 13px; padding: 8px 16px; gap: 5px; }
 }
 .nav-tab:hover { color: var(--text-secondary); }
 .nav-tab:active { transform: scale(0.96); }
@@ -1053,13 +1064,16 @@ textarea:-webkit-autofill {
   background: var(--glass);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius);
-  padding: 24px 20px;
+  padding: 16px 14px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
   transition: all 0.35s ease;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+}
+@media (min-width: 480px) {
+  .audio-card { padding: 24px 20px; gap: 14px; }
 }
 .audio-card:hover {
   border-color: rgba(212,168,83,0.25);
@@ -1847,15 +1861,33 @@ function initListenTab() {
   });
 }
 
-function toggleListen(idx) {
-  // Stop any playing
+function getBestChineseVoice() {
+  const voices = speechSynthesis.getVoices();
+  if (voices.length === 0) return null;
+  // 按自然度排序：Ting-Ting (macOS) > Google 普通话 (Android/Chrome) > 京京/粵語 > 任意 zh-CN
+  const ranking = ['Ting-Ting', 'TingTing', 'Google 普通话', 'Google 國語', 'Mei-Jia', 'Sin-Ji', 'Microsoft Kangkang', 'Microsoft Yaoyao', 'zh-CN'];
+  for (const name of ranking) {
+    const v = voices.find(v => v.name === name && v.lang.startsWith('zh'));
+    if (v) return v;
+  }
+  return voices.find(v => v.lang.startsWith('zh-CN')) || voices.find(v => v.lang.startsWith('zh')) || voices[0];
+}
+
+function initVoices() {
+  return new Promise(resolve => {
+    const voices = speechSynthesis.getVoices();
+    if (voices.length > 0) { resolve(voices); return; }
+    speechSynthesis.onvoiceschanged = () => resolve(speechSynthesis.getVoices());
+  });
+}
+
+async function toggleListen(idx) {
   if (listenSynth) {
     listenSynth.cancel();
     resetAllListenCards();
   }
 
   if (listenCurrentIdx === idx) {
-    // Stop current
     listenCurrentIdx = -1;
     return;
   }
@@ -1871,14 +1903,23 @@ function toggleListen(idx) {
   btn.classList.add('playing');
   btn.textContent = '⏸';
 
+  // 等待 voices 加载（部分浏览器需要异步获取）
+  await initVoices();
+  
   listenSynth = window.speechSynthesis;
   listenUtterance = new SpeechSynthesisUtterance(item.tts);
   listenUtterance.lang = 'zh-CN';
-  listenUtterance.rate = 0.85;
-  listenUtterance.pitch = 1.0;
+  listenUtterance.rate = 0.78;   // 更慢，更从容
+  listenUtterance.pitch = 0.95;  // 稍低沉，减少尖锐感
+  listenUtterance.volume = 0.9;
+
+  const bestVoice = getBestChineseVoice();
+  if (bestVoice) {
+    listenUtterance.voice = bestVoice;
+  }
 
   const startTime = Date.now();
-  const estDuration = item.tts.length * 60; // rough estimate: ~60ms per char
+  const estDuration = item.tts.length * 65;
 
   const progressInterval = setInterval(() => {
     const elapsed = (Date.now() - startTime) / 1000;
