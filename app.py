@@ -195,69 +195,69 @@ _HTML = r'''<!DOCTYPE html>
 <!-- Fonts: 系统字体栈，无需外部加载 -->
 <style>
 /* ═══════════════════════════════════════════════════════
-   「唯一」 Design System v3
-   设计参考：X (Twitter) 克制排版 + Tumblr 艺术感 + 小红书社区温度
+   「唯一」 Design System v4 — Premium
    核心隐喻：星尘·宇宙·漂流
    ═══════════════════════════════════════════════════════ */
 
 /* ═══ Design Tokens ═══ */
 :root {
   /* 暗色宇宙调色板 */
-  --space-deep: #060914;
-  --space: #0b1024;
-  --space-light: #111838;
-  --surface: rgba(17, 24, 56, 0.6);
-  --surface-hover: rgba(25, 34, 72, 0.75);
-  --glass: rgba(15, 20, 45, 0.7);
-  --glass-border: rgba(212, 168, 83, 0.1);
+  --space-deep: #010308;
+  --space: #060b18;
+  --space-light: #0d1530;
+  --surface: rgba(9, 16, 40, 0.65);
+  --surface-hover: rgba(18, 28, 58, 0.82);
+  --glass: rgba(12, 18, 40, 0.75);
+  --glass-border: rgba(212, 168, 83, 0.08);
 
   /* 文字层级 */
-  --text-primary: #ebe5d5;
-  --text-secondary: #9a9db8;
-  --text-tertiary: #6b6f8a;
-  --text-muted: #4a4d60;
+  --text-primary: #ece6d5;
+  --text-secondary: #a4a6b8;
+  --text-tertiary: #72758a;
+  --text-muted: #4e5164;
 
   /* 强调色 */
-  --gold: #d4a853;
-  --gold-light: #e8c76a;
-  --gold-soft: rgba(212, 168, 83, 0.1);
-  --rose: #d4848c;
-  --rose-soft: rgba(212, 132, 140, 0.08);
-  --rose-deep: #b86a72;
+  --gold: #c9a045;
+  --gold-light: #e4c36a;
+  --gold-soft: rgba(201, 160, 69, 0.08);
+  --rose: #c97a82;
+  --rose-soft: rgba(201, 122, 130, 0.06);
+  --rose-deep: #a65c64;
 
   /* 分类色 */
-  --cat-poetry: #e8c76a;
+  --cat-poetry: #e4c36a;
   --cat-quote: #7bb8d4;
   --cat-essay: #9b8ec4;
-  --cat-music: #d4848c;
+  --cat-music: #c97a82;
   --cat-film: #8ba5a5;
 
   /* 间距与圆角 */
   --space-xs: 4px;
   --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
-  --space-2xl: 48px;
-  --radius-sm: 8px;
-  --radius: 14px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
+  --space-md: 20px;
+  --space-lg: 32px;
+  --space-xl: 48px;
+  --space-2xl: 72px;
+  --radius-sm: 10px;
+  --radius: 18px;
+  --radius-lg: 26px;
+  --radius-xl: 36px;
   --radius-full: 9999px;
 
   /* 阴影 */
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.25);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.35);
-  --shadow-gold: 0 0 60px rgba(212, 168, 83, 0.06);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 24px rgba(0,0,0,0.35);
+  --shadow-lg: 0 8px 48px rgba(0,0,0,0.45);
+  --shadow-gold: 0 0 80px rgba(201, 160, 69, 0.05);
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.2);
 
   /* 动效 */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-  --duration-fast: 150ms;
-  --duration-normal: 300ms;
-  --duration-slow: 500ms;
+  --duration-fast: 180ms;
+  --duration-normal: 400ms;
+  --duration-slow: 700ms;
 
   /* 字体 */
   --font-serif: 'SimSun', 'STSong', 'Noto Serif SC', serif;
@@ -324,67 +324,78 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 92vh;
-  min-height: 92dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
   padding: var(--space-xl);
   text-align: center;
   overflow: hidden;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  height: 180px;
+  background: linear-gradient(transparent, var(--space-deep));
+  z-index: 3;
+  pointer-events: none;
 }
 
 .hero-constellation {
   position: absolute;
   inset: 0;
-  opacity: 0.5;
+  opacity: 0.6;
 }
 .hero-constellation canvas { width: 100%; height: 100%; }
 
 .hero-content {
   position: relative;
   z-index: 2;
-  animation: heroReveal 1.2s var(--ease-out) both;
+  animation: heroReveal 1.4s var(--ease-out) both;
 }
 
 @keyframes heroReveal {
-  from { opacity: 0; transform: translateY(40px); }
+  from { opacity: 0; transform: translateY(48px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .hero-title {
   font-family: var(--font-serif);
-  font-size: clamp(48px, 8vw, 80px);
+  font-size: clamp(56px, 10vw, 96px);
   font-weight: 700;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.2em;
   display: flex;
-  gap: 0.15em;
+  gap: 0.2em;
   justify-content: center;
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-lg);
+  text-shadow: 0 0 80px rgba(201,160,69,0.25);
 }
 
 .hero-char {
   display: inline-block;
-  background: linear-gradient(180deg, var(--gold-light) 0%, var(--gold) 40%, #9a6c2e 100%);
+  background: linear-gradient(180deg, #f0d78c 0%, var(--gold) 35%, #8a5c1e 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: charFloat 3s ease-in-out infinite;
+  animation: charFloat 4s ease-in-out infinite;
 }
 .hero-char:nth-child(1) { animation-delay: 0s; }
-.hero-char:nth-child(2) { animation-delay: 0.15s; }
+.hero-char:nth-child(2) { animation-delay: 0.2s; }
 
 @keyframes charFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  0%, 100% { transform: translateY(0); filter: brightness(1); }
+  50% { transform: translateY(-8px); filter: brightness(1.2); }
 }
 
 .hero-subtitle {
   font-family: var(--font-serif);
-  font-size: clamp(15px, 2.5vw, 20px);
+  font-size: clamp(16px, 2.8vw, 22px);
   color: var(--text-secondary);
   font-weight: 400;
-  letter-spacing: 0.12em;
-  margin-bottom: var(--space-xl);
+  letter-spacing: 0.18em;
+  margin-bottom: var(--space-2xl);
   opacity: 0;
-  animation: subtitleReveal 1s 0.5s var(--ease-out) forwards;
+  animation: subtitleReveal 1.2s 0.6s var(--ease-out) forwards;
 }
 
 @keyframes subtitleReveal {
@@ -579,43 +590,43 @@ body {
 /* ═══════════════════ Masonry Grid ═══════════════════ */
 .masonry {
   columns: 1;
-  column-gap: var(--space-md);
+  column-gap: var(--space-lg);
 }
 @media (min-width: 640px) { .masonry { columns: 2; } }
-@media (min-width: 1024px) { .masonry { columns: 3; column-gap: var(--space-lg); } }
+@media (min-width: 1024px) { .masonry { columns: 3; column-gap: var(--space-xl); } }
 
-/* ═══════════════════ Post Card ═══════════════════ */
+/* ═══ Post Card ═══ */
 .post-card {
   break-inside: avoid;
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-lg);
   background: var(--surface);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-radius: var(--radius);
   border: 1px solid var(--glass-border);
-  padding: 20px 18px;
-  transition: all 0.35s var(--ease-smooth);
+  padding: 28px 24px;
+  transition: all 0.45s var(--ease-smooth);
   position: relative;
   overflow: hidden;
   cursor: default;
-  box-shadow: var(--shadow-sm);
-  animation: cardAppear 0.5s var(--ease-out) both;
+  box-shadow: var(--shadow-card);
+  animation: cardAppear 0.6s var(--ease-out) both;
 }
 
 @keyframes cardAppear {
-  from { opacity: 0; transform: translateY(24px) scale(0.98); }
+  from { opacity: 0; transform: translateY(32px) scale(0.97); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .post-card:hover {
   background: var(--surface-hover);
-  border-color: rgba(212, 168, 83, 0.18);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md), 0 0 50px rgba(212, 168, 83, 0.04);
+  border-color: rgba(201, 160, 69, 0.22);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg), 0 0 60px rgba(201, 160, 69, 0.06);
 }
 
 .post-card.curated {
-  border-left: 2px solid var(--gold);
+  border-left: 3px solid var(--gold);
 }
 
 /* 卡片的左侧彩色条 */
@@ -674,13 +685,13 @@ body {
 }
 
 .post-card-body {
-  font-size: 14.5px;
-  line-height: 1.85;
+  font-size: 15px;
+  line-height: 1.9;
   color: var(--text-primary);
   white-space: pre-wrap;
   word-break: break-word;
   font-weight: 400;
-  letter-spacing: 0.015em;
+  letter-spacing: 0.02em;
 }
 
 .post-card-image {
@@ -1577,7 +1588,7 @@ async function initDailyMessage() {
     parts.push('「' + d.message + '」');
     if (d.author) parts.push('—— ' + d.author);
     if (d.source) parts.push('《' + d.source + '》');
-    el.textContent = parts.join('\\n');
+    el.textContent = parts.join('\n');
   } catch (e) {
     document.getElementById('heroDaily').textContent = '「享受今晚。」';
   }
