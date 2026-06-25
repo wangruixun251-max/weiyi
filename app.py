@@ -2403,7 +2403,7 @@ document.head.appendChild(bottleFloatStyle);
 
 @app.route('/')
 def index():
-    return _HTML
+    return render_template('index.html')
 
 # ═══════ 启动 ═══════
 if __name__=='__main__':
