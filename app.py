@@ -5,7 +5,11 @@ Flask 单文件部署：HTML/CSS/JS 全部内联
 import os
 import sqlite3
 import datetime
-from flask import Flask, g, request, jsonify, render_template
+import asyncio
+import hashlib
+import io
+import time
+from flask import Flask, g, request, jsonify, render_template, Response
 
 app = Flask(__name__)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -220,6 +224,69 @@ def api_delete(pid):
 def api_mine():
     fp=request.args.get('fingerprint',''); db=get_db()
     return jsonify({'posts':[dict(x) for x in db.execute("SELECT * FROM posts WHERE fingerprint=? ORDER BY created_at DESC LIMIT 50",(fp,)).fetchall()]})
+
+
+# ═══════ Edge TTS 听书 ═══════
+# 运行时缓存：生成一次，重放无需再生（/tmp 在 Render 容器生命周期内持久）
+import json as _json
+_tts_cache_dir = os.path.join(os.environ.get('TMPDIR', '/tmp'), 'weiyi_tts')
+os.makedirs(_tts_cache_dir, exist_ok=True)
+_tts_lock = {}  # 简单的进程内锁，避免重复生成
+
+
+@app.route('/api/tts/<int:book_id>', methods=['POST'])
+def api_tts(book_id):
+    """接收前端文本，用 Edge TTS 合成 MP3，首次缓存后即时响应。
+    
+    前端 POST {'text': '...'}
+    返回 audio/mpeg 流。首次请求可能需数秒合成，之后直接从缓存响应。
+    """
+    data = request.get_json(force=True) or {}
+    text = (data.get('text') or '').strip()
+    if not text or len(text) < 50:
+        return jsonify({'error': 'text too short'}), 400
+
+    cache_key = hashlib.md5(text.encode()).hexdigest()[:16]
+    cache_path = os.path.join(_tts_cache_dir, f'tts_{book_id}_{cache_key}.mp3')
+
+    # 已有缓存 → 直接返回
+    if os.path.exists(cache_path):
+        def stream_cached():
+            with open(cache_path, 'rb') as f:
+                while chunk := f.read(65536):
+                    yield chunk
+        return Response(stream_cached(), mimetype='audio/mpeg',
+                        headers={'Cache-Control': 'public, max-age=86400'})
+
+    # Edge TTS 合成 — 女声「晓晓」，极自然，微软神经网络语音
+    async def _generate():
+        import edge_tts
+        communicate = edge_tts.Communicate(
+            text,
+            'zh-CN-XiaoxiaoNeural',
+            rate='-5%',
+            pitch='-2Hz'
+        )
+        with open(cache_path + '.tmp', 'wb') as f:
+            async for chunk in communicate.stream():
+                if chunk['type'] == 'audio':
+                    f.write(chunk['data'])
+        os.rename(cache_path + '.tmp', cache_path)
+        return cache_path
+
+    loop = asyncio.new_event_loop()
+    try:
+        loop.run_until_complete(_generate())
+    finally:
+        loop.close()
+
+    def stream():
+        with open(cache_path, 'rb') as f:
+            while chunk := f.read(65536):
+                yield chunk
+
+    return Response(stream(), mimetype='audio/mpeg',
+                    headers={'Cache-Control': 'public, max-age=86400'})
 
 
 # ═══════ 审核系统 ═══════
