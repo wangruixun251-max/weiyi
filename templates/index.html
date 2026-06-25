@@ -1016,6 +1016,204 @@ textarea:-webkit-autofill {
   -webkit-text-fill-color: var(--text-primary) !important;
 }
 
+/* ═══════════════════ 听书 & 解压 ═══════════════════ */
+.audio-section-intro {
+  text-align: center;
+  padding: var(--space-2xl) var(--space-md) var(--space-lg);
+}
+.audio-section-intro h2 {
+  font-size: 24px;
+  font-weight: 400;
+  color: var(--gold);
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+.audio-section-intro p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.audio-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+  padding: 0 var(--space-md) var(--space-2xl);
+}
+@media (min-width: 640px) {
+  .audio-grid { grid-template-columns: repeat(2, 1fr); padding: 0 var(--space-lg) var(--space-2xl); }
+}
+@media (min-width: 1024px) {
+  .audio-grid { grid-template-columns: repeat(3, 1fr); padding: 0 var(--space-2xl) var(--space-2xl); }
+}
+
+.audio-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: all 0.35s ease;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.audio-card:hover {
+  border-color: rgba(212,168,83,0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.audio-card.playing {
+  border-color: var(--gold);
+  box-shadow: 0 0 24px rgba(212,168,83,0.12);
+}
+
+.audio-card-icon {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  background: var(--gold-soft);
+  flex-shrink: 0;
+}
+
+.audio-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+}
+.audio-card-author {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+.audio-card-excerpt {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-height: 80px;
+  overflow: hidden;
+  position: relative;
+}
+.audio-card-excerpt::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 30px;
+  background: linear-gradient(transparent, var(--space));
+}
+.audio-card.playing .audio-card-excerpt::after {
+  background: linear-gradient(transparent, rgba(11,16,36,0.95));
+}
+
+.audio-player-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+.audio-btn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+.audio-btn:hover {
+  background: var(--gold-soft);
+  transform: scale(1.08);
+}
+.audio-btn.playing {
+  background: var(--gold);
+  color: var(--space-deep);
+  box-shadow: 0 0 16px rgba(212,168,83,0.3);
+}
+
+.audio-progress {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.audio-progress-bar {
+  height: 100%;
+  background: var(--gold);
+  border-radius: 2px;
+  transition: width 0.3s linear;
+  width: 0%;
+}
+
+.audio-time {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  min-width: 36px;
+  text-align: right;
+}
+
+/* Relax: waveform indicator */
+.relax-wave {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 24px;
+  margin: 4px 0;
+}
+.relax-wave span {
+  width: 3px;
+  background: var(--text-muted);
+  border-radius: 1px;
+  transition: all 0.3s ease;
+}
+.audio-card.playing .relax-wave span {
+  background: var(--gold);
+  animation: waveBounce 0.6s ease-in-out infinite;
+}
+.audio-card.playing .relax-wave span:nth-child(1) { animation-delay: 0s; height: 12px; }
+.audio-card.playing .relax-wave span:nth-child(2) { animation-delay: 0.1s; height: 20px; }
+.audio-card.playing .relax-wave span:nth-child(3) { animation-delay: 0.2s; height: 14px; }
+.audio-card.playing .relax-wave span:nth-child(4) { animation-delay: 0.3s; height: 22px; }
+.audio-card.playing .relax-wave span:nth-child(5) { animation-delay: 0.4s; height: 16px; }
+.audio-card.playing .relax-wave span:nth-child(6) { animation-delay: 0.5s; height: 18px; }
+
+@keyframes waveBounce {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(0.4); }
+}
+
+/* Volume slider for relax */
+.volume-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.1);
+  outline: none;
+  margin-top: 4px;
+}
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--gold);
+  cursor: pointer;
+  border: none;
+}
+.volume-slider::-moz-range-thumb {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--gold);
+  cursor: pointer;
+  border: none;
+}
+
 </style>
 </head>
 <body>
@@ -1055,6 +1253,14 @@ textarea:-webkit-autofill {
         <span class="nav-tab-icon">📖</span>
         <span class="nav-tab-label">策展</span>
       </button>
+      <button class="nav-tab" data-tab="listen">
+        <span class="nav-tab-icon">🎧</span>
+        <span class="nav-tab-label">听书</span>
+      </button>
+      <button class="nav-tab" data-tab="relax">
+        <span class="nav-tab-icon">🌊</span>
+        <span class="nav-tab-label">解压</span>
+      </button>
       <button class="nav-tab" data-tab="write">
         <span class="nav-tab-icon">✨</span>
         <span class="nav-tab-label">书写</span>
@@ -1092,6 +1298,24 @@ textarea:-webkit-autofill {
         <p class="curated-desc">由编辑精心挑选的文艺内容，诗歌、语录、随笔、音乐……让好文字遇见你。</p>
       </div>
       <div id="curatedContent"></div>
+    </section>
+
+    <!-- ═══ 听书 Tab ═══ -->
+    <section class="tab-content" id="tab-listen">
+      <div class="audio-section-intro">
+        <h2>星尘听书</h2>
+        <p>闭上眼睛，让经典在耳畔流淌。精选文学名篇与深度对话。</p>
+      </div>
+      <div class="audio-grid" id="listenGrid"></div>
+    </section>
+
+    <!-- ═══ 解压 Tab ═══ -->
+    <section class="tab-content" id="tab-relax">
+      <div class="audio-section-intro">
+        <h2>星尘解压</h2>
+        <p>篝火、雨声、海浪……让自然的声音拥抱你。</p>
+      </div>
+      <div class="audio-grid" id="relaxGrid"></div>
     </section>
 
     <!-- ═══ 书写 Tab ═══ -->
@@ -1369,6 +1593,8 @@ function switchTab(name) {
     loadStardustPosts(true);
   }
   if (name === 'curated') loadCuratedContent();
+  if (name === 'listen') initListenTab();
+  if (name === 'relax') initRelaxTab();
   if (name === 'mine') loadMyPosts();
 }
 
@@ -1569,6 +1795,275 @@ async function loadCuratedContent() {
   } catch (e) {
     container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🛰️</div><p class="empty-state-text">加载策展内容失败</p></div>';
   }
+}
+
+// ═══════════════════ Listen Tab (听书) ═══════════════════
+const LISTEN_DATA = [
+  { title:'《小王子》', author:'安托万·德·圣-埃克苏佩里', icon:'🌹',
+    text:'"如果你驯化了我，我们就彼此需要了。对我来说，你就是世界上唯一的了；对你来说，我也是世界上唯一的了。"',
+    tts:'如果你驯化了我，我们就彼此需要了。对我来说，你就是世界上唯一的了；对你来说，我也是世界上唯一的了。' },
+  { title:'《瓦尔登湖》', author:'亨利·戴维·梭罗', icon:'🏞️',
+    text:'"我步入丛林，因为我希望生活得有意义。我希望活得深刻，吸取生命中所有的精华，把非生命的一切都击溃，以免当我生命终结时，发现自己从没有活过。"',
+    tts:'我步入丛林，因为我希望生活得有意义。我希望活得深刻，吸取生命中所有的精华，把非生命的一切都击溃，以免当我生命终结时，发现自己从没有活过。' },
+  { title:'《人间失格》', author:'太宰治', icon:'🎭',
+    text:'"如今我早已不再是罪人，而是狂人。不对，我绝对没有发狂，哪怕是一瞬间，我都没有发狂过。可是，听说大部分的狂人都会这么说的。"',
+    tts:'如今我早已不再是罪人，而是狂人。不对，我绝对没有发狂，哪怕是一瞬间，我都没有发狂过。可是，听说大部分的狂人都会这么说的。' },
+  { title:'《百年孤独》', author:'加西亚·马尔克斯', icon:'🦋',
+    text:'"过去都是假的，回忆是一条没有归途的路，以往的一切春天都无法复原，即使最狂热最坚贞的爱情，归根结底也不过是一种瞬息即逝的现实。"',
+    tts:'过去都是假的，回忆是一条没有归途的路，以往的一切春天都无法复原，即使最狂热最坚贞的爱情，归根结底也不过是一种瞬息即逝的现实。' },
+  { title:'《活着》', author:'余华', icon:'🏮',
+    text:'"作为一个词语，活着在语言里充满了力量。它的力量不是来自于喊叫，也不是来自于进攻，而是忍受，去忍受生命赋予我们的责任，去忍受现实给予我们的幸福和苦难、无聊和平庸。"',
+    tts:'作为一个词语，活着在语言里充满了力量。它的力量不是来自于喊叫，也不是来自于进攻，而是忍受，去忍受生命赋予我们的责任，去忍受现实给予我们的幸福和苦难、无聊和平庸。' },
+  { title:'《局外人》', author:'阿尔贝·加缪', icon:'☀️',
+    text:'"今天，妈妈死了。也许是昨天，我搞不清。我收到养老院的一封电报：令堂去世。明日葬礼。特致慰唁。这说明不了什么。可能是昨天死的。"',
+    tts:'今天，妈妈死了。也许是昨天，我搞不清。我收到养老院的一封电报：令堂去世。明日葬礼。特致慰唁。这说明不了什么。可能是昨天死的。' },
+];
+
+let listenSynth = null;
+let listenUtterance = null;
+let listenCurrentIdx = -1;
+
+function initListenTab() {
+  const grid = document.getElementById('listenGrid');
+  if (grid.children.length > 0) return;
+
+  LISTEN_DATA.forEach((item, idx) => {
+    const card = document.createElement('div');
+    card.className = 'audio-card';
+    card.id = 'listen-card-' + idx;
+    card.innerHTML = `
+      <div class="audio-card-icon">${item.icon}</div>
+      <div class="audio-card-title">${item.title}</div>
+      <div class="audio-card-author">${item.author}</div>
+      <div class="audio-card-excerpt">${item.text}</div>
+      <div class="audio-player-row">
+        <button class="audio-btn" id="listen-btn-${idx}" onclick="toggleListen(${idx})" title="朗读">▶</button>
+        <div class="audio-progress"><div class="audio-progress-bar" id="listen-progress-${idx}"></div></div>
+        <div class="audio-time" id="listen-time-${idx}">0:00</div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function toggleListen(idx) {
+  // Stop any playing
+  if (listenSynth) {
+    listenSynth.cancel();
+    resetAllListenCards();
+  }
+
+  if (listenCurrentIdx === idx) {
+    // Stop current
+    listenCurrentIdx = -1;
+    return;
+  }
+
+  listenCurrentIdx = idx;
+  const item = LISTEN_DATA[idx];
+  const card = document.getElementById('listen-card-' + idx);
+  const btn = document.getElementById('listen-btn-' + idx);
+  const progBar = document.getElementById('listen-progress-' + idx);
+  const timeEl = document.getElementById('listen-time-' + idx);
+
+  card.classList.add('playing');
+  btn.classList.add('playing');
+  btn.textContent = '⏸';
+
+  listenSynth = window.speechSynthesis;
+  listenUtterance = new SpeechSynthesisUtterance(item.tts);
+  listenUtterance.lang = 'zh-CN';
+  listenUtterance.rate = 0.85;
+  listenUtterance.pitch = 1.0;
+
+  const startTime = Date.now();
+  const estDuration = item.tts.length * 60; // rough estimate: ~60ms per char
+
+  const progressInterval = setInterval(() => {
+    const elapsed = (Date.now() - startTime) / 1000;
+    const total = estDuration / 1000;
+    const pct = Math.min(100, (elapsed / total) * 100);
+    progBar.style.width = pct + '%';
+    const mins = Math.floor(elapsed / 60);
+    const secs = Math.floor(elapsed % 60);
+    timeEl.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+  }, 250);
+
+  listenUtterance.onend = () => {
+    clearInterval(progressInterval);
+    progBar.style.width = '100%';
+    resetAllListenCards();
+    listenCurrentIdx = -1;
+  };
+
+  listenUtterance.onerror = () => {
+    clearInterval(progressInterval);
+    resetAllListenCards();
+    listenCurrentIdx = -1;
+  };
+
+  listenSynth.speak(listenUtterance);
+}
+
+function resetAllListenCards() {
+  document.querySelectorAll('#listenGrid .audio-card').forEach(c => c.classList.remove('playing'));
+  document.querySelectorAll('#listenGrid .audio-btn').forEach(b => { b.classList.remove('playing'); b.textContent = '▶'; });
+}
+
+// ═══════════════════ Relax Tab (解压) ═══════════════════
+const RELAX_DATA = [
+  { id:'rain', name:'雨声', icon:'🌧️', desc:'淅淅沥沥的雨，落在窗台与树叶上', freq:'noise', filter:'lowpass' },
+  { id:'ocean', name:'海浪', icon:'🌊', desc:'潮汐起伏，一波一波拍打沙滩', freq:'noise', filter:'bandpass' },
+  { id:'fire', name:'篝火', icon:'🔥', desc:'木柴噼啪作响，温暖的火光摇曳', freq:'crackle', filter:null },
+  { id:'forest', name:'森林', icon:'🌲', desc:'鸟鸣与微风穿过林间', freq:'chirp', filter:null },
+  { id:'stream', name:'溪流', icon:'💧', desc:'山间小溪潺潺流过鹅卵石', freq:'noise', filter:'bandpass' },
+  { id:'whitenoise', name:'白噪音', icon:'🌫️', desc:'均匀的沙沙声，屏蔽外界干扰', freq:'noise', filter:null },
+];
+
+let relaxCtx = null;
+let relaxSource = null;
+let relaxGain = null;
+let relaxCurrentId = null;
+let relaxInterval = null;
+
+function initRelaxTab() {
+  const grid = document.getElementById('relaxGrid');
+  if (grid.children.length > 0) return;
+
+  RELAX_DATA.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'audio-card';
+    card.id = 'relax-card-' + item.id;
+    card.innerHTML = `
+      <div class="audio-card-icon">${item.icon}</div>
+      <div class="audio-card-title">${item.name}</div>
+      <div class="audio-card-excerpt" style="max-height:none">${item.desc}</div>
+      <div class="relax-wave"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="audio-player-row">
+        <button class="audio-btn" id="relax-btn-${item.id}" onclick="toggleRelax('${item.id}')" title="播放">▶</button>
+        <input type="range" class="volume-slider" id="relax-vol-${item.id}" min="0" max="100" value="50" oninput="setRelaxVolume('${item.id}', this.value)" title="音量">
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function toggleRelax(id) {
+  const item = RELAX_DATA.find(r => r.id === id);
+  if (!item) return;
+
+  const card = document.getElementById('relax-card-' + id);
+  const btn = document.getElementById('relax-btn-' + id);
+  const volSlider = document.getElementById('relax-vol-' + id);
+
+  // Stop current
+  if (relaxCurrentId === id && relaxSource) {
+    stopRelax();
+    relaxCurrentId = null;
+    return;
+  }
+
+  // Stop any previous
+  stopRelax();
+  relaxCurrentId = id;
+
+  // Init AudioContext
+  if (!relaxCtx) {
+    relaxCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  relaxGain = relaxCtx.createGain();
+  relaxGain.gain.value = parseFloat(volSlider.value) / 100 * 0.3;
+  relaxGain.connect(relaxCtx.destination);
+
+  card.classList.add('playing');
+  btn.classList.add('playing');
+  btn.textContent = '⏸';
+
+  if (item.freq === 'noise') {
+    // Generate white/brown noise
+    const bufferSize = 2 * relaxCtx.sampleRate;
+    const buffer = relaxCtx.createBuffer(1, bufferSize, relaxCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let b0 = 0, b1 = 0, b2 = 0;
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      if (item.filter === 'lowpass') {
+        // Brown noise (rain-like)
+        b0 = 0.997 * b0 + 0.03 * white;
+        data[i] = b0 * 2;
+      } else if (item.filter === 'bandpass') {
+        // Approximate bandpass
+        b0 = 0.995 * b0 + 0.005 * white;
+        b1 = 0.98 * b1 + 0.02 * (b0 - b1);
+        data[i] = b1 * 3;
+      } else {
+        data[i] = white;
+      }
+    }
+    relaxSource = relaxCtx.createBufferSource();
+    relaxSource.buffer = buffer;
+    relaxSource.loop = true;
+    relaxSource.connect(relaxGain);
+    relaxSource.start();
+  } else if (item.freq === 'crackle') {
+    // Fire crackle: random pops
+    const bufferSize = relaxCtx.sampleRate;
+    const buffer = relaxCtx.createBuffer(1, bufferSize, relaxCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      if (Math.random() < 0.002) {
+        data[i] = (Math.random() * 2 - 1) * 0.8;
+      } else {
+        data[i] = 0;
+      }
+    }
+    relaxSource = relaxCtx.createBufferSource();
+    relaxSource.buffer = buffer;
+    relaxSource.loop = true;
+    relaxSource.connect(relaxGain);
+    relaxSource.start();
+  } else if (item.freq === 'chirp') {
+    // Bird-like tones: random sine chirps
+    const bufferSize = relaxCtx.sampleRate * 4;
+    const buffer = relaxCtx.createBuffer(1, bufferSize, relaxCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      const t = i / relaxCtx.sampleRate;
+      const chirpCycle = Math.floor(t / 2);
+      const phaseInCycle = (t % 2) / 2;
+      if (Math.random() < 0.003) {
+        const freq = 600 + Math.random() * 800;
+        data[i] = Math.sin(2 * Math.PI * freq * t) * 0.06 * (1 - phaseInCycle);
+      } else {
+        data[i] += (Math.random() * 2 - 1) * 0.01; // ambient
+      }
+    }
+    relaxSource = relaxCtx.createBufferSource();
+    relaxSource.buffer = buffer;
+    relaxSource.loop = true;
+    relaxSource.connect(relaxGain);
+    relaxSource.start();
+  }
+}
+
+function setRelaxVolume(id, val) {
+  if (relaxCurrentId === id && relaxGain) {
+    relaxGain.gain.value = parseFloat(val) / 100 * 0.3;
+  }
+}
+
+function stopRelax() {
+  if (relaxSource) {
+    try { relaxSource.stop(); } catch(e) {}
+    relaxSource = null;
+  }
+  if (relaxInterval) {
+    clearInterval(relaxInterval);
+    relaxInterval = null;
+  }
+  document.querySelectorAll('#relaxGrid .audio-card').forEach(c => c.classList.remove('playing'));
+  document.querySelectorAll('#relaxGrid .audio-btn').forEach(b => { b.classList.remove('playing'); b.textContent = '▶'; });
 }
 
 // ═══════════════════ Write Form ═══════════════════
