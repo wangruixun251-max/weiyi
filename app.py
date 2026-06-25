@@ -1523,17 +1523,17 @@ function initStarCanvas() {
   }
 
   function createStars() {
-    const count = Math.floor((canvas.width * canvas.height) / 3500);
+    const count = Math.floor((canvas.width * canvas.height) / 2700);
     stars = [];
     for (let i = 0; i < count; i++) {
       stars.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        r: Math.random() * 1.4 + 0.3,
-        twinkleSpeed: Math.random() * 0.008 + 0.003,
+        r: Math.random() * 1.6 + 0.3,
+        twinkleSpeed: Math.random() * 0.01 + 0.004,
         twinkleOffset: Math.random() * Math.PI * 2,
-        hue: Math.random() < 0.15 ? 42 + Math.random() * 15 : 0, // 15% 金色星
-        alpha: Math.random() * 0.5 + 0.3,
+        hue: Math.random() < 0.20 ? 42 + Math.random() * 15 : 0,
+        alpha: Math.random() * 0.6 + 0.3,
       });
     }
   }
@@ -1707,7 +1707,11 @@ async function initDailyMessage() {
     const parts = [];
     parts.push('「' + d.message + '」');
     if (d.author) parts.push('—— ' + d.author);
-    if (d.source) parts.push('《' + d.source + '》');
+    if (d.source) {
+      const src = d.source;
+      const hasBrackets = src.startsWith('《') && src.endsWith('》');
+      parts.push(hasBrackets ? src : '《' + src + '》');
+    }
     el.textContent = parts.join('\n');
   } catch (e) {
     document.getElementById('heroDaily').textContent = '「享受今晚。」';
