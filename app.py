@@ -218,1896 +218,2074 @@ def api_mine():
 _HTML = r'''<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#010308" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>唯一 · 星尘</title>
-  <!-- System fonts only -->
-  <style>
-/* ============================================================
-   Stardust — 紫色系深空主题 · 移动端优先 480px
-   设计令牌系统 · 所有值通过 var() 引用 · 零硬编码
-   ============================================================ */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#080c1a">
+<title>唯一 — 享受今晚</title>
 
-/* ═══════════════════════════════════════════════════════════
-   0. 设计令牌系统
-   ═══════════════════════════════════════════════════════════ */
+<!-- Fonts: 系统字体栈，无需外部加载 -->
+<style>
+/* ═══════════════════════════════════════════════════════
+   「唯一」 Design System v4 — Premium
+   核心隐喻：星尘·宇宙·漂流
+   ═══════════════════════════════════════════════════════ */
+
+/* ═══ Design Tokens ═══ */
 :root {
-  /* ── 背景层级 ── */
-  --bg-void: #050714;
-  --bg-deep: #0a0e23;
-  --bg-card: rgba(255, 255, 255, 0.04);
+  /* 暗色宇宙调色板 */
+  --space-deep: #010308;
+  --space: #060b18;
+  --space-light: #0d1530;
+  --surface: rgba(9, 16, 40, 0.65);
+  --surface-hover: rgba(18, 28, 58, 0.82);
+  --glass: rgba(12, 18, 40, 0.75);
+  --glass-border: rgba(212, 168, 83, 0.08);
 
-  /* ── 文本层级 ── */
-  --text-primary: rgba(255, 255, 255, 0.92);
-  --text-secondary: rgba(255, 255, 255, 0.60);
-  --text-tertiary: rgba(255, 255, 255, 0.35);
+  /* 文字层级 */
+  --text-primary: #ece6d5;
+  --text-secondary: #a4a6b8;
+  --text-tertiary: #72758a;
+  --text-muted: #4e5164;
 
-  /* ── 强调色 ── */
-  --accent-purple: #a78bfa;
-  --accent-blue: #60a5fa;
+  /* 强调色 */
+  --gold: #c9a045;
+  --gold-light: #e4c36a;
+  --gold-soft: rgba(201, 160, 69, 0.08);
+  --rose: #c97a82;
+  --rose-soft: rgba(201, 122, 130, 0.06);
+  --rose-deep: #a65c64;
 
-  /* ── 边框 ── */
-  --border-subtle: rgba(255, 255, 255, 0.08);
+  /* 分类色 */
+  --cat-poetry: #e4c36a;
+  --cat-quote: #7bb8d4;
+  --cat-essay: #9b8ec4;
+  --cat-music: #c97a82;
+  --cat-film: #8ba5a5;
 
-  /* ── 间距 (基数 4px) ── */
+  /* 间距与圆角 */
   --space-xs: 4px;
   --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
-  --space-2xl: 48px;
-
-  /* ── 圆角 ── */
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
+  --space-md: 20px;
+  --space-lg: 32px;
+  --space-xl: 48px;
+  --space-2xl: 72px;
+  --radius-sm: 10px;
+  --radius: 18px;
+  --radius-lg: 26px;
+  --radius-xl: 36px;
   --radius-full: 9999px;
 
-  /* ── 字体 ── */
-  --font-system: system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-    "Noto Color Emoji";
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 24px rgba(0,0,0,0.35);
+  --shadow-lg: 0 8px 48px rgba(0,0,0,0.45);
+  --shadow-gold: 0 0 80px rgba(201, 160, 69, 0.05);
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.3), 0 8px 32px rgba(0,0,0,0.2);
 
-  /* ── 字号 ── */
-  --font-size-xs: 12px;
-  --font-size-sm: 13px;
-  --font-size-base: 15px;
-  --font-size-lg: 18px;
-  --font-size-xl: 22px;
+  /* 动效 */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 180ms;
+  --duration-normal: 400ms;
+  --duration-slow: 700ms;
 
-  /* ── 行高 ── */
-  --line-height-tight: 1.4;
-  --line-height-normal: 1.7;
-  --line-height-relaxed: 1.85;
-
-  /* ── 动效 ── */
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --duration-fast: 0.2s;
-  --duration-normal: 0.35s;
-  --duration-slow: 0.5s;
-
-  /* ── 组件尺寸 ── */
-  --nav-height: 64px;
-  --fab-size: 56px;
-  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  /* 字体 */
+  --font-serif: 'SimSun', 'STSong', 'Noto Serif SC', serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+  --font-mono: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   1. 全局 Reset + Body 基础样式
-   ═══════════════════════════════════════════════════════════ */
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* ═══ Reset ═══ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 html {
-  -webkit-text-size-adjust: 100%;
-  -webkit-tap-highlight-color: transparent;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
 }
 
 body {
-  font-family: var(--font-system);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-normal);
+  font-family: var(--font-sans);
+  background: var(--space-deep);
   color: var(--text-primary);
-  background-color: var(--bg-void);
   min-height: 100vh;
   min-height: 100dvh;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
   overflow-x: hidden;
-  /* 底部导航占位 */
-  padding-bottom: calc(var(--nav-height) + var(--safe-area-inset-bottom) + var(--space-md));
-}
-
-img,
-svg,
-video {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button,
-input,
-textarea,
-select {
-  font: inherit;
-  color: inherit;
-  border: none;
-  background: none;
-  outline: none;
-}
-
-button {
-  cursor: pointer;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-ul, ol {
-  list-style: none;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
 }
 
 ::selection {
-  background: var(--accent-purple);
-  color: var(--bg-void);
+  background: rgba(212, 168, 83, 0.2);
+  color: var(--text-primary);
 }
 
-/* ── 主容器：移动端全宽，480px 居中 ── */
-.app-container {
-  width: 100%;
-  max-width: 480px;
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(212, 168, 83, 0.12); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(212, 168, 83, 0.25); }
+
+/* ═══ Canvas 星空 ═══ */
+.stars-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+#starCanvas { width: 100%; height: 100%; }
+
+/* ═══ App 容器 ═══ */
+.app {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: var(--safe-area-inset-top) var(--space-md) 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ═══════════════════ Hero ═══════════════════ */
+.hero {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
   min-height: 100dvh;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   2. 底部导航栏 (64px, 毛玻璃, 安全区)
-   ═══════════════════════════════════════════════════════════ */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 480px;
-  height: var(--nav-height);
-  padding-bottom: var(--safe-area-inset-bottom);
-  background: rgba(10, 14, 35, 0.82);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-top: 1px solid var(--border-subtle);
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  z-index: 100;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-xs);
-  flex: 1;
-  height: 100%;
-  color: var(--text-tertiary);
-  font-size: var(--font-size-xs);
-  transition: color var(--duration-fast) var(--ease-out);
-  position: relative;
-}
-
-.nav-item.active {
-  color: var(--accent-purple);
-}
-
-.nav-item.active::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 24px;
-  height: 3px;
-  border-radius: var(--radius-full);
-  background: var(--accent-purple);
-}
-
-.nav-item .nav-icon {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--font-size-lg);
-  line-height: 1;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   3. FAB 浮动按钮 (右下角, 紫色渐变, 旋转 hover)
-   ═══════════════════════════════════════════════════════════ */
-.fab {
-  position: fixed;
-  bottom: calc(var(--nav-height) + var(--safe-area-inset-bottom) + var(--space-lg));
-  right: var(--space-lg);
-  width: var(--fab-size);
-  height: var(--fab-size);
-  border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
-  box-shadow:
-    0 var(--space-sm) var(--space-lg) rgba(167, 139, 250, 0.35),
-    0 var(--space-xs) var(--space-sm) rgba(96, 165, 250, 0.20);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: var(--font-size-xl);
-  z-index: 90;
-  transition:
-    transform var(--duration-normal) var(--ease-out),
-    box-shadow var(--duration-normal) var(--ease-out);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.fab:hover {
-  transform: rotate(90deg) scale(1.08);
-  box-shadow:
-    0 var(--space-md) var(--space-xl) rgba(167, 139, 250, 0.45),
-    0 var(--space-sm) var(--space-lg) rgba(96, 165, 250, 0.30);
-}
-
-.fab:active {
-  transform: rotate(90deg) scale(0.94);
-  transition: transform var(--duration-fast) var(--ease-out);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   4. 星尘流布局 (单列卡片流)
-   ═══════════════════════════════════════════════════════════ */
-.stardust-feed {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-  padding: var(--space-md) 0;
-  padding-bottom: calc(var(--nav-height) + var(--safe-area-inset-bottom) + var(--space-xl));
-}
-
-.stardust-feed > .card {
-  width: 100%;
-}
-
-/* 交错入场动画 */
-.stardust-feed > .card {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: card-enter var(--duration-slow) var(--ease-out) forwards;
-}
-
-.stardust-feed > .card:nth-child(1) { animation-delay: 0.05s; }
-.stardust-feed > .card:nth-child(2) { animation-delay: 0.10s; }
-.stardust-feed > .card:nth-child(3) { animation-delay: 0.15s; }
-.stardust-feed > .card:nth-child(4) { animation-delay: 0.20s; }
-.stardust-feed > .card:nth-child(5) { animation-delay: 0.25s; }
-.stardust-feed > .card:nth-child(6) { animation-delay: 0.30s; }
-.stardust-feed > .card:nth-child(7) { animation-delay: 0.35s; }
-.stardust-feed > .card:nth-child(8) { animation-delay: 0.40s; }
-.stardust-feed > .card:nth-child(9) { animation-delay: 0.45s; }
-.stardust-feed > .card:nth-child(10) { animation-delay: 0.50s; }
-
-@keyframes card-enter {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════
-   5. 策展页面布局
-   ═══════════════════════════════════════════════════════════ */
-.curation-page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-  padding: var(--space-md) 0;
-}
-
-/* 策展头部 */
-.curation-header {
-  padding: var(--space-lg) var(--space-md) var(--space-md);
+  padding: var(--space-xl);
   text-align: center;
+  overflow: hidden;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  height: 180px;
+  background: linear-gradient(transparent, var(--space-deep));
+  z-index: 3;
+  pointer-events: none;
 }
 
-.curation-header .curation-title {
-  font-size: var(--font-size-xl);
+.hero-constellation {
+  position: absolute;
+  inset: 0;
+  opacity: 0.6;
+}
+.hero-constellation canvas { width: 100%; height: 100%; }
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  animation: heroReveal 1.4s var(--ease-out) both;
+}
+
+@keyframes heroReveal {
+  from { opacity: 0; transform: translateY(48px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(56px, 10vw, 96px);
   font-weight: 700;
-  line-height: var(--line-height-tight);
-  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+  letter-spacing: 0.2em;
+  display: flex;
+  gap: 0.2em;
+  justify-content: center;
+  margin-bottom: var(--space-lg);
+  text-shadow: 0 0 80px rgba(201,160,69,0.25);
+}
+
+.hero-char {
+  display: inline-block;
+  background: linear-gradient(180deg, #f0d78c 0%, var(--gold) 35%, #8a5c1e 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: var(--space-xs);
+  animation: charFloat 4s ease-in-out infinite;
+}
+.hero-char:nth-child(1) { animation-delay: 0s; }
+.hero-char:nth-child(2) { animation-delay: 0.2s; }
+
+@keyframes charFloat {
+  0%, 100% { transform: translateY(0); filter: brightness(1); }
+  50% { transform: translateY(-8px); filter: brightness(1.2); }
 }
 
-.curation-header .curation-subtitle {
-  font-size: var(--font-size-sm);
-  color: var(--text-tertiary);
-  line-height: var(--line-height-normal);
-}
-
-/* 策展分区 */
-.curation-section {
-  padding: 0 var(--space-md);
-}
-
-.curation-section .section-label {
-  font-size: var(--font-size-sm);
-  font-weight: 600;
+.hero-subtitle {
+  font-family: var(--font-serif);
+  font-size: clamp(16px, 2.8vw, 22px);
   color: var(--text-secondary);
-  text-transform: uppercase;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  margin-bottom: var(--space-2xl);
+  opacity: 0;
+  animation: subtitleReveal 1.2s 0.6s var(--ease-out) forwards;
+}
+
+@keyframes subtitleReveal {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 0.7; transform: translateY(0); }
+}
+
+.hero-daily {
+  display: inline-block;
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-style: italic;
+  color: var(--gold-light);
+  opacity: 0.65;
   letter-spacing: 0.08em;
-  margin-bottom: var(--space-sm);
-  padding-left: var(--space-xs);
+  line-height: 1.8;
+  max-width: 420px;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--gold-soft);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(212, 168, 83, 0.08);
+  animation: dailyPulse 4s ease-in-out infinite;
 }
 
-.curation-section .section-cards {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
+@keyframes dailyPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   6. 书写页布局 (输入区 + 工具栏 + 发布按钮)
-   ═══════════════════════════════════════════════════════════ */
-.write-page {
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-  padding: var(--space-md);
-  padding-bottom: calc(var(--nav-height) + var(--safe-area-inset-bottom) + var(--space-xl));
-}
-
-/* 输入区 */
-.write-input {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-}
-
-.write-input textarea {
-  flex: 1;
-  min-height: 200px;
-  padding: var(--space-md);
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-relaxed);
-  resize: none;
-  transition: border-color var(--duration-fast) var(--ease-out);
-}
-
-.write-input textarea:focus {
-  border-color: var(--accent-purple);
-  box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.15);
-}
-
-.write-input textarea::placeholder {
+.hero-scroll {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
   color: var(--text-tertiary);
-}
-
-/* 工具栏 */
-.write-toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.write-toolbar::-webkit-scrollbar {
-  display: none;
-}
-
-.toolbar-btn {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-secondary);
-  font-size: var(--font-size-base);
-  transition:
-    background var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) var(--ease-out);
-}
-
-.toolbar-btn:hover,
-.toolbar-btn:active {
-  background: rgba(167, 139, 250, 0.12);
-  color: var(--accent-purple);
-}
-
-.toolbar-divider {
-  width: 1px;
-  height: 20px;
-  background: var(--border-subtle);
-  flex-shrink: 0;
-  margin: 0 var(--space-xs);
-}
-
-/* 发布按钮 */
-.publish-btn {
-  margin-top: var(--space-lg);
-  padding: var(--space-md) var(--space-xl);
-  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
-  border-radius: var(--radius-full);
-  color: #fff;
-  font-size: var(--font-size-base);
-  font-weight: 600;
-  text-align: center;
-  transition:
-    transform var(--duration-fast) var(--ease-out),
-    box-shadow var(--duration-fast) var(--ease-out);
-  box-shadow: 0 var(--space-sm) var(--space-lg) rgba(167, 139, 250, 0.30);
-}
-
-.publish-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 var(--space-md) var(--space-xl) rgba(167, 139, 250, 0.40);
-}
-
-.publish-btn:active {
-  transform: translateY(0) scale(0.97);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   7. 我的页布局 (头像 + 统计 + 菜单)
-   ═══════════════════════════════════════════════════════════ */
-.profile-page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-  padding: var(--space-lg) var(--space-md);
-  padding-bottom: calc(var(--nav-height) + var(--safe-area-inset-bottom) + var(--space-xl));
-}
-
-/* 头像区域 */
-.profile-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-lg) 0;
-}
-
-.profile-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  color: #fff;
-  box-shadow: 0 var(--space-sm) var(--space-lg) rgba(167, 139, 250, 0.25);
-}
-
-.profile-name {
-  font-size: var(--font-size-lg);
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.profile-bio {
-  font-size: var(--font-size-sm);
-  color: var(--text-tertiary);
-  text-align: center;
-  max-width: 280px;
-}
-
-/* 统计区 */
-.profile-stats {
-  display: flex;
-  justify-content: space-around;
-  padding: var(--space-md) 0;
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-xs);
-}
-
-.stat-value {
-  font-size: var(--font-size-lg);
-  font-weight: 700;
-  color: var(--accent-purple);
-}
-
-.stat-label {
-  font-size: var(--font-size-xs);
-  color: var(--text-tertiary);
-}
-
-/* 菜单列表 */
-.profile-menu {
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
-  overflow: hidden;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-md);
-  color: var(--text-primary);
-  font-size: var(--font-size-base);
-  border-bottom: 1px solid var(--border-subtle);
-  transition: background var(--duration-fast) var(--ease-out);
   cursor: pointer;
+  animation: scrollBounce 2s ease-in-out infinite;
+  opacity: 0.5;
+  transition: opacity var(--duration-fast);
+}
+.hero-scroll:hover { opacity: 1; }
+
+@keyframes scrollBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
 }
 
-.menu-item:last-child {
-  border-bottom: none;
-}
-
-.menu-item:hover,
-.menu-item:active {
-  background: rgba(167, 139, 250, 0.06);
-}
-
-.menu-item .menu-icon {
-  margin-right: var(--space-sm);
-  color: var(--text-secondary);
-  font-size: var(--font-size-base);
-}
-
-.menu-item .menu-arrow {
-  color: var(--text-tertiary);
-  font-size: var(--font-size-xs);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   8. 卡片样式 — 情绪图标(右上) + 时间(左上) + 正文 + 图片 + 互动区
-   ═══════════════════════════════════════════════════════════ */
-.card {
-  position: relative;
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  transition:
-    border-color var(--duration-normal) var(--ease-out),
-    box-shadow var(--duration-normal) var(--ease-out),
-    transform var(--duration-normal) var(--ease-out);
-}
-
-.card:hover {
-  border-color: rgba(167, 139, 250, 0.25);
-  box-shadow:
-    0 var(--space-sm) var(--space-xl) rgba(167, 139, 250, 0.08),
-    0 var(--space-md) var(--space-2xl) rgba(5, 7, 20, 0.40);
-  transform: translateY(-2px);
-}
-
-.card:active {
-  transform: scale(0.985);
-  transition: transform var(--duration-fast) var(--ease-out);
-}
-
-/* ── 卡片头部：左上时间 + 右上情绪图标 ── */
-.card-header {
+/* ═══════════════════ Navigation ═══════════════════ */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  padding: var(--space-md) var(--space-md) 0;
+  padding: 12px var(--space-lg);
+  background: rgba(6, 9, 20, 0.78);
+  backdrop-filter: saturate(180%) blur(24px);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  border-bottom: 1px solid rgba(212, 168, 83, 0.06);
+  transition: all var(--duration-normal);
 }
 
-.card-time {
-  font-size: var(--font-size-xs);
-  color: var(--text-tertiary);
-  letter-spacing: 0.03em;
-  line-height: var(--line-height-tight);
+.nav.scrolled {
+  box-shadow: 0 1px 20px rgba(0,0,0,0.3);
 }
 
-.card-mood {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-full);
-  background: rgba(167, 139, 250, 0.10);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--font-size-sm);
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-/* ── 卡片正文 ── */
-.card-body {
-  padding: var(--space-sm) var(--space-md) var(--space-md);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-relaxed);
-  color: var(--text-primary);
-  word-break: break-word;
-}
-
-.card-body p + p {
-  margin-top: var(--space-sm);
-}
-
-/* ── 卡片图片 ── */
-.card-image {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  background: var(--bg-deep);
-  transition: transform var(--duration-slow) var(--ease-out);
-}
-
-.card:hover .card-image {
-  transform: scale(1.03);
-}
-
-.card-image-placeholder {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background: linear-gradient(135deg,
-    rgba(167, 139, 250, 0.05),
-    rgba(96, 165, 250, 0.05));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-tertiary);
-  font-size: var(--font-size-xl);
-}
-
-/* ── 卡片互动区 ── */
-.card-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-lg);
-  padding: var(--space-sm) var(--space-md) var(--space-md);
-}
-
-.action-btn {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  color: var(--text-tertiary);
-  font-size: var(--font-size-sm);
-  transition:
-    color var(--duration-fast) var(--ease-out),
-    transform var(--duration-fast) var(--ease-out);
-}
-
-.action-btn:hover {
-  color: var(--accent-purple);
-}
-
-.action-btn:active {
-  transform: scale(0.90);
-}
-
-.action-btn .action-icon {
-  font-size: var(--font-size-base);
-  line-height: 1;
-}
-
-.action-btn .action-count {
-  font-size: var(--font-size-xs);
-}
-
-/* 点赞激活态 */
-.action-btn.liked {
-  color: var(--accent-purple);
-}
-
-.action-btn.liked .action-icon {
-  animation: heart-pop var(--duration-normal) var(--ease-out);
-}
-
-@keyframes heart-pop {
-  0%   { transform: scale(1); }
-  30%  { transform: scale(1.35); }
-  60%  { transform: scale(0.90); }
-  100% { transform: scale(1); }
-}
-
-/* ═══════════════════════════════════════════════════════════
-   9. 骨架屏动画
-   ═══════════════════════════════════════════════════════════ */
-.skeleton {
-  pointer-events: none;
+.nav-brand {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  cursor: pointer;
   user-select: none;
 }
 
-.skeleton .card-header,
-.skeleton .card-body,
-.skeleton .card-image,
-.skeleton .card-actions {
+.nav-tabs {
+  display: flex;
+  gap: 2px;
+  background: rgba(255,255,255,0.02);
+  border-radius: var(--radius-full);
+  padding: 3px;
+}
+
+.nav-tab {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all var(--duration-normal);
+  white-space: nowrap;
+}
+.nav-tab:hover { color: var(--text-secondary); }
+.nav-tab:active { transform: scale(0.96); }
+.nav-tab.active {
+  color: var(--gold-light);
+  background: var(--gold-soft);
+  font-weight: 600;
+}
+.nav-tab-icon { font-size: 15px; line-height: 1; }
+.nav-tab-label { letter-spacing: 0.04em; }
+
+.nav-bottle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(212, 132, 140, 0.08);
+  border: 1px solid rgba(212, 132, 140, 0.15);
+  color: var(--rose);
+  font-size: 18px;
+  cursor: pointer;
+  transition: all var(--duration-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.nav-bottle:hover {
+  background: rgba(212, 132, 140, 0.15);
+  transform: scale(1.08);
+}
+.nav-bottle:active { transform: scale(0.92); }
+
+/* ═══════════════════ Main Content ═══════════════════ */
+.main {
+  flex: 1;
+  padding: var(--space-md) var(--space-lg) 120px;
   position: relative;
+  z-index: 1;
 }
 
-.skeleton .card-image {
-  background: var(--bg-deep);
+.tab-content {
+  display: none;
+  animation: tabEnter 0.45s var(--ease-out);
+}
+.tab-content.active { display: block; }
+
+@keyframes tabEnter {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* 骨架占位条 */
-.skeleton-line {
-  height: 14px;
+/* ═══════════════════ Category Bar ═══════════════════ */
+.category-bar {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-sm) 0 var(--space-lg);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  mask: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+  -webkit-mask: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+}
+.category-bar::-webkit-scrollbar { display: none; }
+
+.category-chip {
+  flex-shrink: 0;
+  padding: 7px 18px;
   border-radius: var(--radius-full);
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.04) 25%,
-    rgba(255, 255, 255, 0.08) 50%,
-    rgba(255, 255, 255, 0.04) 75%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.6s ease-in-out infinite;
-  margin-bottom: var(--space-sm);
+  border: 1px solid rgba(255,255,255,0.06);
+  background: var(--surface);
+  color: var(--text-tertiary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all var(--duration-normal);
+  white-space: nowrap;
+}
+.category-chip:hover {
+  border-color: rgba(212, 168, 83, 0.2);
+  color: var(--text-secondary);
+}
+.category-chip.active {
+  background: var(--gold-soft);
+  border-color: var(--gold);
+  color: var(--gold-light);
+  font-weight: 600;
 }
 
-.skeleton-line.short {
-  width: 60%;
+/* ═══════════════════ Masonry Grid ═══════════════════ */
+.masonry {
+  columns: 1;
+  column-gap: var(--space-lg);
 }
+@media (min-width: 640px) { .masonry { columns: 2; } }
+@media (min-width: 1024px) { .masonry { columns: 3; column-gap: var(--space-xl); } }
 
-.skeleton-line.medium {
-  width: 80%;
-}
+/* ═══════════════════ Cards Premium Magazine System ═══════════════════ */
 
-.skeleton-line.long {
-  width: 100%;
-}
-
-.skeleton-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-full);
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.04) 25%,
-    rgba(255, 255, 255, 0.08) 50%,
-    rgba(255, 255, 255, 0.04) 75%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.6s ease-in-out infinite;
-}
-
-@keyframes shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-/* 骨架卡片结构 */
-.skeleton-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: var(--space-md);
-}
-
-.skeleton-card .skeleton-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-md);
-}
-
-.skeleton-card .skeleton-row:last-child {
-  margin-bottom: 0;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   10. Toast 提示
-   ═══════════════════════════════════════════════════════════ */
-.toast-container {
-  position: fixed;
-  top: calc(var(--safe-area-inset-top) + var(--space-md));
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 200;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-  pointer-events: none;
-  width: calc(100% - var(--space-xl));
-  max-width: 480px;
-}
-
-.toast {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
-  background: rgba(10, 14, 35, 0.92);
+/* ── 基础卡片 ── */
+.post-card {
+  break-inside: avoid;
+  margin-bottom: var(--space-lg);
+  background: var(--surface);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-full);
-  box-shadow:
-    0 var(--space-sm) var(--space-xl) rgba(5, 7, 20, 0.50),
-    0 var(--space-xs) var(--space-sm) rgba(0, 0, 0, 0.30);
-  pointer-events: auto;
-  animation: toast-in var(--duration-normal) var(--ease-out) forwards;
-  font-size: var(--font-size-sm);
-  color: var(--text-primary);
-  line-height: var(--line-height-tight);
+  border-radius: var(--radius);
+  border: 1px solid var(--glass-border);
+  padding: 0;
+  transition: all 0.45s var(--ease-smooth);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  animation: cardAppear 0.6s var(--ease-out) both;
+}
+.post-card:hover {
+  background: var(--surface-hover);
+  border-color: rgba(201, 160, 69, 0.2);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg), 0 0 70px rgba(201, 160, 69, 0.04);
+}
+@keyframes cardAppear {
+  from { opacity: 0; transform: translateY(36px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.toast.toast-out {
-  animation: toast-out var(--duration-normal) var(--ease-out) forwards;
+/* 分类左色条 */
+.post-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px; opacity: 0.45;
+  transition: width 0.35s var(--ease-smooth), opacity 0.35s;
 }
+.post-card:hover::before { width: 4px; opacity: 0.8; }
 
-.toast .toast-icon {
-  flex-shrink: 0;
-  font-size: var(--font-size-base);
-  line-height: 1;
+/* ── Featured 大卡片 ── */
+.post-card.featured {
+  column-span: all;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 0;
+  min-height: 320px;
+  border: 1px solid rgba(201, 160, 69, 0.15);
 }
-
-/* 变体 */
-.toast-success .toast-icon { color: #34d399; }
-.toast-error .toast-icon   { color: #f87171; }
-.toast-info .toast-icon    { color: var(--accent-blue); }
-.toast-warning .toast-icon { color: #fbbf24; }
-
-@keyframes toast-in {
-  from {
-    opacity: 0;
-    transform: translateY(-12px) scale(0.92);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes toast-out {
-  from {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-12px) scale(0.92);
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════
-   11. 星空背景 (纯 CSS box-shadow 星点 + twinkle 动画)
-   ═══════════════════════════════════════════════════════════ */
-.starry-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
+.post-card.featured .post-card-image {
+  grid-row: 1 / -1;
+  margin: 0; border-radius: 0;
   height: 100%;
-  pointer-events: none;
-  z-index: -1;
+}
+.post-card.featured .post-card-image img {
+  height: 100%; max-height: none;
+  object-fit: cover;
+}
+.post-card.featured .post-card-inner {
+  padding: 32px 28px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.post-card.featured::after {
+  content: '✦ 精选';
+  position: absolute; top: 14px; right: 18px;
+  font-size: 10px; color: var(--gold-light);
+  letter-spacing: 0.12em; opacity: 0.6; z-index: 2;
+}
+@media (max-width: 640px) {
+  .post-card.featured {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+  .post-card.featured .post-card-image { max-height: 220px; }
+}
+
+/* ── 卡片内部 ── */
+.post-card-inner { padding: 26px 22px; }
+.post-card-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px;
+}
+.post-card-meta { display: flex; align-items: center; gap: 10px; }
+.post-card-mood { font-size: 18px; line-height: 1; }
+.post-card-author { font-size: 12.5px; font-weight: 500; color: var(--text-secondary); letter-spacing: 0.03em; }
+.post-card-badge {
+  font-size: 10px; padding: 2px 10px; border-radius: var(--radius-full);
+  background: var(--gold-soft); color: var(--gold-light);
+  font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.post-card-badge.poetry { background: rgba(228,195,106,0.1); color: var(--cat-poetry); }
+.post-card-badge.quote { background: rgba(123,184,212,0.1); color: var(--cat-quote); }
+.post-card-badge.essay { background: rgba(155,142,196,0.1); color: var(--cat-essay); }
+.post-card-badge.music { background: rgba(201,122,130,0.1); color: var(--cat-music); }
+.post-card-badge.film { background: rgba(139,165,165,0.1); color: var(--cat-film); }
+.post-card-time { font-size: 11px; color: var(--text-muted); letter-spacing: 0.02em; }
+
+.post-card-body {
+  font-size: 15px; line-height: 1.9; color: var(--text-primary);
+  white-space: pre-wrap; word-break: break-word;
+  font-weight: 400; letter-spacing: 0.02em;
+}
+
+.post-card-image {
+  margin: 14px -22px -26px;
   overflow: hidden;
 }
+.post-card-image img {
+  width: 100%; max-height: 360px; object-fit: cover; display: block;
+  transition: transform 0.6s ease;
+}
+.post-card:hover .post-card-image img { transform: scale(1.04); }
 
-/* 星点层 — 用伪元素 + box-shadow 画星 */
-.starry-bg::before {
-  content: "";
+.post-card-source {
+  margin-top: 10px; font-size: 11px; color: var(--text-muted);
+  font-style: italic; opacity: 0.5; text-align: right;
+}
+
+.post-card-actions {
+  display: flex; gap: 14px; margin-top: 14px;
+  padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.03);
+}
+.post-action {
+  display: flex; align-items: center; gap: 5px;
+  background: none; border: none; color: var(--text-tertiary);
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  padding: 5px 8px; border-radius: 6px;
+  transition: all var(--duration-fast); font-family: inherit;
+}
+.post-action:hover { background: rgba(255,255,255,0.04); color: var(--text-secondary); }
+.post-action:active { transform: scale(0.94); }
+.post-action.liked { color: var(--rose); background: var(--rose-soft); }
+.post-action.hugged { color: var(--gold-light); background: var(--gold-soft); }
+.post-action.just-liked { animation: heartBurst 0.4s var(--ease-spring); }
+.post-action-count { font-size: 12px; min-width: 16px; text-align: center; font-variant-numeric: tabular-nums; }
+@keyframes heartBurst {
+  0% { transform: scale(1); } 30% { transform: scale(1.3); }
+  60% { transform: scale(0.95); } 100% { transform: scale(1); }
+}
+
+/* ═══ 5 分类 5 种视觉身份 ═══ */
+
+/* ── 诗歌 Poetry ── */
+.post-card.cat-poetry { padding: 36px 32px; text-align: center; }
+.post-card.cat-poetry .post-card-inner { padding: 0; }
+.post-card.cat-poetry .post-card-body {
+  font-family: var(--font-serif);
+  font-size: 15px; line-height: 2.2; letter-spacing: 0.05em;
+}
+.post-card.cat-poetry .post-card-source { text-align: center; margin-top: 18px; font-style: italic; font-size: 12px; }
+.post-card.cat-poetry::before { background: var(--cat-poetry); opacity: 0.35; }
+
+/* ── 语录 Quote ── */
+.post-card.cat-quote { padding: 30px 26px 26px; }
+.post-card.cat-quote .post-card-inner { padding: 0; }
+.post-card.cat-quote .post-card-body {
+  font-size: 16px; font-weight: 500; line-height: 2.0;
+  letter-spacing: 0.03em; position: relative; padding-left: 28px;
+}
+.post-card.cat-quote .post-card-body::before {
+  content: '「'; position: absolute; left: -6px; top: -6px;
+  font-size: 48px; font-family: var(--font-serif);
+  color: var(--cat-quote); opacity: 0.3; line-height: 1;
+}
+.post-card.cat-quote::before { background: var(--cat-quote); opacity: 0.35; }
+
+/* ── 随笔 Essay ── */
+.post-card.cat-essay { padding: 28px 26px; background: rgba(14, 20, 38, 0.72); }
+.post-card.cat-essay .post-card-inner { padding: 0; }
+.post-card.cat-essay .post-card-body {
+  font-size: 14.5px; line-height: 2.05; letter-spacing: 0.03em; color: #d6d2c6;
+}
+.post-card.cat-essay .post-card-source { text-align: right; font-style: italic; opacity: 0.4; }
+.post-card.cat-essay::before { background: var(--cat-essay); opacity: 0.3; }
+
+/* ── 音乐 Music ── */
+.post-card.cat-music { padding: 22px 20px 20px; }
+.post-card.cat-music .post-card-inner { padding: 0; }
+.post-card.cat-music .post-card-body { font-size: 14px; line-height: 1.85; }
+.post-card.cat-music::after {
+  content: '♪'; position: absolute; top: 8px; right: 14px;
+  font-size: 15px; color: var(--cat-music); opacity: 0.15;
+}
+.post-card.cat-music::before { background: var(--cat-music); opacity: 0.3; }
+
+/* ── 光影 Film ── */
+.post-card.cat-film { padding: 0; overflow: hidden; }
+.post-card.cat-film .post-card-image { margin: 0; border-radius: 0; aspect-ratio: 16/9; }
+.post-card.cat-film .post-card-image img { max-height: none; height: 100%; }
+.post-card.cat-film .post-card-inner { padding: 18px 24px 20px; }
+.post-card.cat-film .post-card-body { font-size: 15px; line-height: 1.85; }
+.post-card.cat-film .post-card-source { text-align: right; font-style: italic; opacity: 0.35; font-size: 11px; }
+.post-card.cat-film::before { display: none; }
+
+.post-card-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+.post-card-body {
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.post-card-image {
+  margin-top: 12px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.post-card-image img {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+.post-card:hover .post-card-image img {
+  transform: scale(1.03);
+}
+
+.post-card-source {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
+  text-align: right;
+  opacity: 0.6;
+}
+
+.post-card-actions {
+  display: flex;
+  gap: 14px;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.03);
+}
+
+.post-action {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 5px 8px;
+  border-radius: 6px;
+  transition: all var(--duration-fast);
+  font-family: inherit;
+}
+.post-action:hover {
+  background: rgba(255,255,255,0.04);
+  color: var(--text-secondary);
+}
+.post-action:active { transform: scale(0.94); }
+.post-action.liked { color: var(--rose); background: var(--rose-soft); }
+.post-action.hugged { color: var(--gold-light); background: var(--gold-soft); }
+.post-action-count {
+  font-size: 12px;
+  min-width: 16px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Like 动画 */
+@keyframes heartBurst {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.3); }
+  60% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+.post-action.just-liked { animation: heartBurst 0.4s var(--ease-spring); }
+
+/* 情绪图标 */
+.post-card-mood-icon {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 2px;
-  height: 2px;
+  top: 22px;
+  right: 20px;
+  width: 26px;
+  height: 26px;
+  opacity: 0.45;
+  z-index: 2;
+  filter: drop-shadow(0 0 8px rgba(201,160,69,0.25));
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.post-card:hover .post-card-mood-icon { opacity: 0.65; }
+
+/* 图片放大 lightbox */
+.image-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: zoom-out;
+  animation: fadeIn 0.25s ease;
+}
+.image-overlay img {
+  max-width: 92%;
+  max-height: 88vh;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.55);
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ═══════════════════ Curated Page ═══════════════════ */
+.curated-intro {
+  text-align: center;
+  padding: var(--space-xl) var(--space-lg) var(--space-2xl);
+}
+.curated-title {
+  font-family: var(--font-serif);
+  font-size: clamp(24px, 4vw, 36px);
+  font-weight: 700;
+  color: var(--gold-light);
+  letter-spacing: 0.1em;
+  margin-bottom: var(--space-sm);
+}
+.curated-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  max-width: 420px;
+  margin: 0 auto;
+  line-height: 1.7;
+  opacity: 0.7;
+}
+
+.curated-section {
+  margin-bottom: var(--space-2xl);
+}
+.curated-section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.curated-section-icon { font-size: 20px; }
+.curated-section-title {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.06em;
+}
+.curated-section-count {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-left: auto;
+}
+
+.curated-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+}
+@media (min-width: 640px) { .curated-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .curated-grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* ═══════════════════ Write Panel ═══════════════════ */
+.write-panel {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: var(--space-lg) 0;
+}
+
+.write-header {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+}
+.write-header h2 {
+  font-family: var(--font-serif);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--gold-light);
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-xs);
+}
+.write-header p {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.write-panel textarea {
+  width: 100%;
+  min-height: 200px;
+  background: var(--surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  padding: 18px 20px;
+  font-size: 15px;
+  line-height: 1.9;
+  resize: vertical;
+  font-family: inherit;
+  transition: all var(--duration-normal);
+  letter-spacing: 0.02em;
+}
+.write-panel textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-soft);
+}
+.write-panel textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.4;
+  font-style: italic;
+}
+
+.write-char-count {
+  text-align: right;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: var(--space-xs);
+  padding-right: 4px;
+}
+
+.write-image-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin: var(--space-md) 0;
+}
+.write-image-name {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.write-image-preview {
+  display: block;
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-md);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Mood Picker */
+.mood-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+.mood-chip {
+  padding: 8px 16px;
   border-radius: var(--radius-full);
-  background: transparent;
-  box-shadow:
-    /* 第1组 — 慢闪烁 */
-    15vw 8vh  0 0 rgba(255, 255, 255, 0.70),
-    23vw 12vh 0 0 rgba(255, 255, 255, 0.55),
-    31vw 5vh  0 0 rgba(255, 255, 255, 0.80),
-    42vw 18vh 0 0 rgba(255, 255, 255, 0.45),
-    55vw 9vh  0 0 rgba(255, 255, 255, 0.65),
-    68vw 14vh 0 0 rgba(255, 255, 255, 0.50),
-    77vw 6vh  0 0 rgba(255, 255, 255, 0.75),
-    88vw 20vh 0 0 rgba(255, 255, 255, 0.40),
-    8vw  28vh 0 0 rgba(255, 255, 255, 0.60),
-    19vw 35vh 0 0 rgba(255, 255, 255, 0.35),
-    33vw 42vh 0 0 rgba(255, 255, 255, 0.55),
-    48vw 38vh 0 0 rgba(255, 255, 255, 0.70),
-    62vw 30vh 0 0 rgba(255, 255, 255, 0.45),
-    75vw 45vh 0 0 rgba(255, 255, 255, 0.50),
-    85vw 33vh 0 0 rgba(255, 255, 255, 0.65),
-    /* 第2组 */
-    11vw 55vh 0 0 rgba(255, 255, 255, 0.40),
-    25vw 62vh 0 0 rgba(255, 255, 255, 0.75),
-    37vw 50vh 0 0 rgba(255, 255, 255, 0.60),
-    50vw 68vh 0 0 rgba(255, 255, 255, 0.35),
-    64vw 55vh 0 0 rgba(255, 255, 255, 0.55),
-    79vw 72vh 0 0 rgba(255, 255, 255, 0.70),
-    90vw 60vh 0 0 rgba(255, 255, 255, 0.45),
-    5vw  78vh 0 0 rgba(255, 255, 255, 0.50),
-    20vw 85vh 0 0 rgba(255, 255, 255, 0.65),
-    40vw 80vh 0 0 rgba(255, 255, 255, 0.40),
-    58vw 90vh 0 0 rgba(255, 255, 255, 0.55),
-    72vw 82vh 0 0 rgba(255, 255, 255, 0.70),
-    83vw 75vh 0 0 rgba(255, 255, 255, 0.35),
-    95vw 88vh 0 0 rgba(255, 255, 255, 0.60);
-
-  animation: twinkle-group1 3.6s ease-in-out infinite alternate;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: var(--surface);
+  color: var(--text-tertiary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all var(--duration-normal);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.mood-chip:hover {
+  border-color: rgba(212, 168, 83, 0.25);
+  color: var(--text-secondary);
+}
+.mood-chip:active { transform: scale(0.95); }
+.mood-chip.selected {
+  border-color: var(--gold);
+  color: var(--gold-light);
+  background: var(--gold-soft);
+  font-weight: 600;
 }
 
-/* 第2层星星 — 不同节奏 */
-.starry-bg::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1px;
-  height: 1px;
-  border-radius: var(--radius-full);
-  background: transparent;
-  box-shadow:
-    6vw  3vh  0 0 rgba(167, 139, 250, 0.50),
-    18vw 10vh 0 0 rgba(167, 139, 250, 0.35),
-    28vw 2vh  0 0 rgba(96, 165, 250, 0.55),
-    38vw 15vh 0 0 rgba(167, 139, 250, 0.40),
-    52vw 7vh  0 0 rgba(96, 165, 250, 0.60),
-    65vw 11vh 0 0 rgba(167, 139, 250, 0.30),
-    73vw 4vh  0 0 rgba(96, 165, 250, 0.50),
-    82vw 17vh 0 0 rgba(167, 139, 250, 0.45),
-    92vw 8vh  0 0 rgba(96, 165, 250, 0.35),
-    9vw  23vh 0 0 rgba(167, 139, 250, 0.55),
-    22vw 32vh 0 0 rgba(96, 165, 250, 0.40),
-    35vw 40vh 0 0 rgba(167, 139, 250, 0.30),
-    47vw 35vh 0 0 rgba(96, 165, 250, 0.50),
-    60vw 28vh 0 0 rgba(167, 139, 250, 0.45),
-    76vw 42vh 0 0 rgba(96, 165, 250, 0.55),
-    89vw 30vh 0 0 rgba(167, 139, 250, 0.35),
-    14vw 52vh 0 0 rgba(96, 165, 250, 0.40),
-    30vw 58vh 0 0 rgba(167, 139, 250, 0.60),
-    44vw 65vh 0 0 rgba(96, 165, 250, 0.35),
-    57vw 52vh 0 0 rgba(167, 139, 250, 0.50),
-    69vw 70vh 0 0 rgba(96, 165, 250, 0.45),
-    81vw 58vh 0 0 rgba(167, 139, 250, 0.30),
-    94vw 65vh 0 0 rgba(96, 165, 250, 0.55),
-    7vw  75vh 0 0 rgba(167, 139, 250, 0.40),
-    24vw 82vh 0 0 rgba(96, 165, 250, 0.50),
-    41vw 78vh 0 0 rgba(167, 139, 250, 0.35),
-    55vw 88vh 0 0 rgba(96, 165, 250, 0.45),
-    70vw 80vh 0 0 rgba(167, 139, 250, 0.55),
-    86vw 72vh 0 0 rgba(96, 165, 250, 0.40);
-
-  animation: twinkle-group2 2.8s ease-in-out infinite alternate;
+.input-nickname {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 12px 16px;
+  font-size: 14px;
+  margin-bottom: var(--space-lg);
+  font-family: inherit;
+  transition: all var(--duration-normal);
+}
+.input-nickname:focus {
+  outline: none;
+  border-color: rgba(212, 168, 83, 0.3);
 }
 
-@keyframes twinkle-group1 {
-  0%, 100% { opacity: 0.55; }
-  50%      { opacity: 1.0; }
+/* Buttons */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px dashed rgba(212, 168, 83, 0.2);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all var(--duration-fast);
 }
-
-@keyframes twinkle-group2 {
-  0%, 100% { opacity: 0.35; }
-  50%      { opacity: 0.85; }
+.btn-ghost:hover {
+  border-color: var(--gold);
+  color: var(--gold-light);
+  background: rgba(212, 168, 83, 0.06);
 }
+.btn-ghost:active { transform: scale(0.97); }
+.btn-ghost-danger { border-color: rgba(212,132,140,0.2); color: var(--rose); }
+.btn-ghost-danger:hover { border-color: var(--rose); background: var(--rose-soft); }
 
-/* ═══════════════════════════════════════════════════════════
-   12. 涟漪效果
-   ═══════════════════════════════════════════════════════════ */
-.ripple {
+.btn-send {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, var(--gold), #b88530);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  font-family: inherit;
+  transition: all var(--duration-normal);
+  box-shadow: 0 4px 24px rgba(212, 168, 83, 0.18);
   position: relative;
   overflow: hidden;
 }
-
-.ripple-effect {
+.btn-send::after {
+  content: '';
   position: absolute;
-  border-radius: var(--radius-full);
-  background: rgba(167, 139, 250, 0.30);
-  transform: scale(0);
-  animation: ripple-expand 0.7s var(--ease-out) forwards;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(255,255,255,0.1), transparent);
+  opacity: 0;
+  transition: opacity var(--duration-fast);
+}
+.btn-send:hover::after { opacity: 1; }
+.btn-send:hover { box-shadow: 0 6px 32px rgba(212, 168, 83, 0.3); }
+.btn-send:active { transform: scale(0.97); }
+.btn-send:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ═══════════════════ Modal ═══════════════════ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 8, 18, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+  animation: fadeIn 0.25s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-card {
+  background: var(--glass);
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl) var(--space-lg);
+  max-width: 440px;
+  width: 100%;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-lg);
+  animation: modalEnter 0.45s var(--ease-spring);
+  position: relative;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+@keyframes modalEnter {
+  from { opacity: 0; transform: translateY(48px) scale(0.94); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: rgba(255,255,255,0.04);
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 16px;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--duration-fast);
+}
+.modal-close:hover { background: rgba(255,255,255,0.1); color: var(--text-primary); }
+
+/* ═══════════════════ Toast ═══════════════════ */
+.toast-container {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 400;
   pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.toast-item {
+  background: rgba(212, 168, 83, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #0a0f24;
+  padding: 10px 24px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 4px 20px rgba(212, 168, 83, 0.25);
+  animation: toastIn 0.3s var(--ease-spring),
+             toastOut 0.25s 2s ease forwards;
+  letter-spacing: 0.04em;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(-12px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes toastOut {
+  from { opacity: 1; }
+  to { opacity: 0; transform: translateY(-8px); }
 }
 
-@keyframes ripple-expand {
-  to {
-    transform: scale(4);
-    opacity: 0;
-  }
+/* ═══════════════════ Load More ═══════════════════ */
+.load-more {
+  text-align: center;
+  padding: var(--space-lg);
+}
+.load-more-btn {
+  background: none;
+  border: 1px solid rgba(212, 168, 83, 0.15);
+  border-radius: var(--radius-full);
+  color: var(--text-tertiary);
+  padding: 10px 28px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.06em;
+  transition: all var(--duration-fast);
+}
+.load-more-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold-light);
+  background: var(--gold-soft);
 }
 
-/* 兼容 prefers-reduced-motion */
-@media (prefers-reduced-motion: reduce) {
-  .ripple-effect {
-    animation: none;
-  }
+/* ═══════════════════ Empty State ═══════════════════ */
+.empty-state {
+  text-align: center;
+  padding: 80px var(--space-lg);
+}
+.empty-state-icon { font-size: 52px; margin-bottom: var(--space-lg); opacity: 0.6; }
+.empty-state-text {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  color: var(--text-tertiary);
+  line-height: 1.8;
+  letter-spacing: 0.04em;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   13. 响应式布局
-   ═══════════════════════════════════════════════════════════ */
-
-/* ── 480px：居中容器 ── */
-@media (min-width: 480px) {
-  .app-container {
-    padding-left: var(--space-lg);
-    padding-right: var(--space-lg);
-  }
-
-  .stardust-feed {
-    gap: var(--space-lg);
-  }
-
-  .write-page {
-    padding-left: var(--space-lg);
-    padding-right: var(--space-lg);
-  }
-
-  .profile-page {
-    padding-left: var(--space-lg);
-    padding-right: var(--space-lg);
-  }
+/* ═══════════════════ Loading ═══════════════════ */
+.loading-state {
+  text-align: center;
+  padding: 48px;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+.loading-dots {
+  display: inline-flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.loading-dots span {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: dotBounce 1.2s infinite ease-in-out;
+}
+.loading-dots span:nth-child(2) { animation-delay: 0.15s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes dotBounce {
+  0%, 80%, 100% { transform: scale(0.5); opacity: 0.3; }
+  40% { transform: scale(1); opacity: 1; }
 }
 
-/* ── >769px：桌面端背景渐变 + 卡片双列 ── */
-@media (min-width: 769px) {
-  body {
-    background:
-      radial-gradient(ellipse 80% 60% at 50% -10%,
-        rgba(167, 139, 250, 0.08) 0%,
-        transparent 60%
-      ),
-      radial-gradient(ellipse 60% 50% at 80% 80%,
-        rgba(96, 165, 250, 0.05) 0%,
-        transparent 60%
-      ),
-      var(--bg-void);
-  }
-
-  .app-container {
-    max-width: 720px;
-    padding-left: var(--space-xl);
-    padding-right: var(--space-xl);
-  }
-
-  /* 双列卡片流 */
-  .stardust-feed {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-lg);
-  }
-
-  .stardust-feed > .card:first-child {
-    grid-column: span 2;
-  }
-
-  /* 策展页双列 */
-  .curation-section .section-cards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-md);
-  }
-
-  /* 调整 FAB 位置 */
-  .fab {
-    right: calc(50% - 360px + var(--space-lg));
-    bottom: var(--space-2xl);
-  }
+/* ═══════════════════ End Marker ═══════════════════ */
+.end-marker {
+  text-align: center;
+  padding: var(--space-lg);
+  color: var(--text-muted);
+  font-size: 12px;
+  opacity: 0.4;
+  letter-spacing: 0.06em;
 }
 
-/* ── >1024px：宽屏三列 ── */
+/* ═══════════════════ Responsive ═══════════════════ */
+@media (max-width: 360px) {
+  .nav { padding: 10px 12px; }
+  .nav-tab { padding: 6px 10px; font-size: 12px; }
+  .nav-tab-label { display: none; }
+  .hero-title { font-size: 36px; }
+  .post-card { padding: 16px 14px; }
+  .post-card-body { font-size: 13.5px; }
+}
+
+@media (min-width: 640px) {
+  .nav { padding: 14px var(--space-xl); }
+  .nav-tab { font-size: 14px; padding: 9px 20px; }
+  .post-card { padding: 22px 20px; }
+  .post-card-body { font-size: 15px; }
+}
+
 @media (min-width: 1024px) {
-  .app-container {
-    max-width: 960px;
-  }
-
-  .stardust-feed {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-
-  .stardust-feed > .card:first-child {
-    grid-column: span 2;
-  }
-
-  .fab {
-    right: calc(50% - 480px + var(--space-lg));
-  }
+  .nav { padding: 16px var(--space-2xl); }
+  .post-card { padding: 26px 22px; }
+  .post-card:hover { transform: translateY(-4px); }
+  .post-card-body { font-size: 15px; line-height: 1.9; }
+  .write-panel textarea { min-height: 240px; font-size: 16px; }
 }
 
-/* ── 横屏适配 ── */
-@media (orientation: landscape) and (max-height: 500px) {
-  body {
-    padding-bottom: 0;
-  }
-
-  .bottom-nav {
-    position: static;
-    height: auto;
-    padding: var(--space-sm) 0;
-    transform: none;
-    left: auto;
-    max-width: none;
-    background: var(--bg-deep);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
-
-  .fab {
-    bottom: var(--space-md);
-    right: var(--space-md);
-  }
-
-  .app-container {
-    max-width: 100%;
-    padding-bottom: var(--space-md);
-  }
-
-  .stardust-feed {
-    padding-bottom: var(--space-md);
-  }
-
-  /* 横屏书写页 */
-  .write-input textarea {
-    min-height: 120px;
-  }
-}
-
-/* ── 大横屏优化 ── */
-@media (orientation: landscape) and (min-width: 769px) {
-  .stardust-feed {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-lg);
-  }
-
-  .write-page {
-    flex-direction: row;
-    gap: var(--space-lg);
-    align-items: flex-start;
-  }
-
-  .write-page .write-input {
-    flex: 1;
-  }
-
-  .write-page .publish-btn {
-    flex-shrink: 0;
-    margin-top: 0;
-    align-self: flex-end;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════
-   14. 安全区适配
-   ═══════════════════════════════════════════════════════════ */
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  .bottom-nav {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
-  body {
-    padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + var(--space-md));
-  }
-
-  .app-container {
-    padding-top: env(safe-area-inset-top);
-  }
-
-  .toast-container {
-    top: calc(env(safe-area-inset-top) + var(--space-md));
-  }
-}
-
-/* ── 减少动画偏好 ── */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+/* 暗色模式下表单自动填充 */
+input:-webkit-autofill,
+textarea:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px var(--space) inset !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
 }
 
 </style>
 </head>
-<body class="theme-deep-space">
+<body>
 
-  <!-- ============================================================
-       Layer 0: 星空背景 (纯CSS box-shadow星点)
-       ============================================================ -->
-  <div class="stars-container" aria-hidden="true">
-    <div class="stars-layer stars-layer--1"></div>
-    <div class="stars-layer stars-layer--2"></div>
-    <div class="stars-layer stars-layer--3"></div>
-  </div>
+<!-- ═══ 星空背景 ═══ -->
+<div class="stars-bg">
+  <canvas id="starCanvas"></canvas>
+</div>
 
-  <!-- ============================================================
-       Layer 1: 主应用容器 (max-width: 480px, 居中)
-       ============================================================ -->
-  <div class="app-shell" id="appShell">
+<!-- ═══ 全局容器 ═══ -->
+<div class="app">
 
-    <!-- ── Hero 区 (缩小版，非全屏) ── -->
-    <header class="hero" id="heroSection">
-      <div class="hero__brand">
-        <h1 class="hero__title">
-          <span class="hero__title-cn">唯一</span>
-          <span class="hero__title-sub">The One</span>
-        </h1>
+  <!-- ═══ Hero 区 ═══ -->
+  <header class="hero" id="hero">
+    <div class="hero-constellation" id="heroConstellation"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">
+        <span class="hero-char">唯</span><span class="hero-char">一</span>
+      </h1>
+      <p class="hero-subtitle">每一粒星尘，都是一个宇宙</p>
+      <div class="hero-daily" id="heroDaily">...</div>
+    </div>
+    <div class="hero-scroll" onclick="document.getElementById('mainContent').scrollIntoView({behavior:'smooth'})">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+  </header>
+
+  <!-- ═══ 主导航 ═══ -->
+  <nav class="nav" id="mainNav">
+    <div class="nav-brand" onclick="window.scrollTo({top:0,behavior:'smooth'})">唯一</div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-tab="stardust">
+        <span class="nav-tab-icon">🌌</span>
+        <span class="nav-tab-label">星尘</span>
+      </button>
+      <button class="nav-tab" data-tab="curated">
+        <span class="nav-tab-icon">📖</span>
+        <span class="nav-tab-label">策展</span>
+      </button>
+      <button class="nav-tab" data-tab="write">
+        <span class="nav-tab-icon">✨</span>
+        <span class="nav-tab-label">书写</span>
+      </button>
+      <button class="nav-tab" data-tab="mine">
+        <span class="nav-tab-icon">📜</span>
+        <span class="nav-tab-label">我的</span>
+      </button>
+    </div>
+    <button class="nav-bottle" id="navBottle" title="漂流瓶">🏺</button>
+  </nav>
+
+  <!-- ═══ 主内容区 ═══ -->
+  <main class="main" id="mainContent">
+
+    <!-- ═══ 星尘广场 Tab ═══ -->
+    <section class="tab-content active" id="tab-stardust">
+      <!-- 分类标签 -->
+      <div class="category-bar" id="categoryBar">
+        <button class="category-chip active" data-cat="all">全部</button>
+        <button class="category-chip" data-cat="诗歌">诗歌</button>
+        <button class="category-chip" data-cat="语录">语录</button>
+        <button class="category-chip" data-cat="随笔">随笔</button>
+        <button class="category-chip" data-cat="音乐">音乐</button>
       </div>
-      <div class="hero__daily" id="dailyMessage">
-        <div class="hero__daily-quote">
-          <span class="hero__daily-icon">✦</span>
-          <p class="hero__daily-text">正在接收今天的宇宙信号…</p>
+      <!-- 瀑布流 -->
+      <div class="masonry" id="masonryGrid"></div>
+      <div class="load-more" id="loadMore"></div>
+    </section>
+
+    <!-- ═══ 策展 Tab ═══ -->
+    <section class="tab-content" id="tab-curated">
+      <div class="curated-intro">
+        <h2 class="curated-title">星尘策展</h2>
+        <p class="curated-desc">由编辑精心挑选的文艺内容，诗歌、语录、随笔、音乐……让好文字遇见你。</p>
+      </div>
+      <div id="curatedContent"></div>
+    </section>
+
+    <!-- ═══ 书写 Tab ═══ -->
+    <section class="tab-content" id="tab-write">
+      <div class="write-panel">
+        <div class="write-header">
+          <h2>化作星尘</h2>
+          <p>把你的心事写下来。不完美也没关系。</p>
         </div>
-        <p class="hero__daily-attribution" id="dailyAttribution"></p>
-      </div>
-    </header>
-
-    <!-- ════════════════════════════════════════════════════════
-         Page Views (通过 data-view 控制显示/隐藏)
-         ════════════════════════════════════════════════════════ -->
-
-    <!-- ── View 1: 星尘流 ── -->
-    <main class="page-view page-view--active" data-view="stardust" id="viewStardust">
-      <!-- 顶部操作栏 -->
-      <div class="view-header">
-        <h2 class="view-header__title">星尘流</h2>
-        <button class="btn-icon btn-icon--ghost drift-bottle-btn" id="driftBottleBtn" aria-label="漂流瓶 - 随机一篇" title="捞一颗星星">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 3c-2.5 4-2.5 10 0 14 2.5-4 2.5-10 0-14Z"/>
-            <path d="M12 3c2.5 4 2.5 10 0 14"/>
-            <line x1="12" y1="3" x2="12" y2="17"/>
-            <circle cx="12" cy="10" r="1.5"/>
-            <path d="M5 10h14"/>
-          </svg>
-        </button>
-      </div>
-
-      <!-- 骨架屏 (加载状态) -->
-      <div class="skeleton-list" id="skeletonStardust">
-        <div class="skeleton-card">
-          <div class="skeleton-line skeleton-line--title"></div>
-          <div class="skeleton-line skeleton-line--body"></div>
-          <div class="skeleton-line skeleton-line--body skeleton-line--short"></div>
-          <div class="skeleton-line skeleton-line--meta"></div>
-        </div>
-        <div class="skeleton-card">
-          <div class="skeleton-line skeleton-line--title"></div>
-          <div class="skeleton-line skeleton-line--body"></div>
-          <div class="skeleton-line skeleton-line--body skeleton-line--short"></div>
-          <div class="skeleton-line skeleton-line--meta"></div>
-        </div>
-        <div class="skeleton-card">
-          <div class="skeleton-line skeleton-line--title"></div>
-          <div class="skeleton-line skeleton-line--body"></div>
-          <div class="skeleton-line skeleton-line--meta"></div>
-        </div>
-      </div>
-
-      <!-- 帖子卡片列表 (真实数据填充区) -->
-      <div class="post-feed" id="postFeedStardust">
-        <!-- JS动态渲染 post-card -->
-      </div>
-
-      <!-- 空状态 -->
-      <div class="empty-state" id="emptyStardust" style="display:none;">
-        <div class="empty-state__icon">🌌</div>
-        <p class="empty-state__text">星尘尚未洒落</p>
-        <p class="empty-state__hint">成为第一个留下痕迹的人</p>
-      </div>
-
-      <!-- 加载更多指示器 -->
-      <div class="load-more" id="loadMoreStardust" style="display:none;">
-        <div class="load-more__spinner"></div>
-        <span>正在捕捉更多星尘…</span>
-      </div>
-    </main>
-
-    <!-- ── View 2: 策展 ── -->
-    <main class="page-view" data-view="curated" id="viewCurated">
-      <div class="view-header">
-        <h2 class="view-header__title">策展</h2>
-      </div>
-
-      <!-- 骨架屏 -->
-      <div class="skeleton-curated" id="skeletonCurated">
-        <div class="skeleton-category">
-          <div class="skeleton-line skeleton-line--title"></div>
-          <div class="skeleton-category__cards">
-            <div class="skeleton-line skeleton-line--body"></div>
-            <div class="skeleton-line skeleton-line--body skeleton-line--short"></div>
-          </div>
-        </div>
-        <div class="skeleton-category">
-          <div class="skeleton-line skeleton-line--title"></div>
-          <div class="skeleton-category__cards">
-            <div class="skeleton-line skeleton-line--body"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 分类区块容器 -->
-      <div class="curated-sections" id="curatedSections">
-        <!-- JS动态渲染分类区块 .curated-section -->
-      </div>
-
-      <!-- 空状态 -->
-      <div class="empty-state" id="emptyCurated" style="display:none;">
-        <div class="empty-state__icon">📜</div>
-        <p class="empty-state__text">策展区暂无内容</p>
-        <p class="empty-state__hint">策展人正在精心挑选</p>
-      </div>
-    </main>
-
-    <!-- ── View 3: 书写 ── -->
-    <main class="page-view" data-view="write" id="viewWrite">
-      <div class="view-header">
-        <h2 class="view-header__title">书写</h2>
-      </div>
-
-      <form class="write-form" id="writeForm" autocomplete="off">
-        <!-- 文本输入区 -->
-        <div class="write-form__body">
-          <textarea
-            class="write-form__textarea"
-            id="writeContent"
-            name="content"
-            placeholder="此刻，你想留下什么…"
-            maxlength="2000"
-            rows="6"
-          ></textarea>
-          <div class="write-form__char-count">
-            <span id="charCount">0</span><span>/2000</span>
-          </div>
-        </div>
-
-        <!-- 情绪标签选择器 -->
-        <div class="write-form__moods" id="moodSelector">
-          <span class="write-form__label">此刻情绪</span>
-          <div class="mood-chips">
-            <button type="button" class="mood-chip" data-mood="calm" data-emoji="🌿" data-color="#7ca87c">🌿 平静</button>
-            <button type="button" class="mood-chip" data-mood="happy" data-emoji="🌟" data-color="#e4c36a">🌟 喜悦</button>
-            <button type="button" class="mood-chip" data-mood="melancholy" data-emoji="🌙" data-color="#7b8fce">🌙 忧郁</button>
-            <button type="button" class="mood-chip" data-mood="passionate" data-emoji="🔥" data-color="#c97a82">🔥 热烈</button>
-            <button type="button" class="mood-chip" data-mood="thoughtful" data-emoji="🪐" data-color="#a38cc9">🪐 沉思</button>
-            <button type="button" class="mood-chip" data-mood="wistful" data-emoji="🍂" data-color="#c99f6a">🍂 怀念</button>
-            <button type="button" class="mood-chip" data-mood="lonely" data-emoji="🕯️" data-color="#8a9bb5">🕯️ 孤独</button>
-            <button type="button" class="mood-chip" data-mood="hopeful" data-emoji="✨" data-color="#c9a045">✨ 期待</button>
-          </div>
-        </div>
-
-        <!-- 图片上传区 -->
-        <div class="write-form__image" id="imageUpload">
-          <span class="write-form__label">配图（可选）</span>
-          <div class="image-upload-area" id="imageUploadArea">
-            <input
-              type="file"
-              id="imageInput"
-              name="image"
-              accept="image/*"
-              class="image-upload-area__input"
-            />
-            <div class="image-upload-area__placeholder" id="imagePlaceholder">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                <circle cx="8.5" cy="8.5" r="1.5"/>
-                <polyline points="21 15 16 10 5 21"/>
-              </svg>
-              <span>点击添加图片</span>
-            </div>
-            <div class="image-upload-area__preview" id="imagePreview" style="display:none;">
-              <img id="previewImg" src="" alt="预览" />
-              <button type="button" class="image-upload-area__remove" id="removeImage" aria-label="移除图片">&times;</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 分类选择 -->
-        <div class="write-form__category" id="categorySelector">
-          <span class="write-form__label">分类</span>
-          <div class="category-select">
-            <button type="button" class="category-option category-option--active" data-category="poem">诗歌</button>
-            <button type="button" class="category-option" data-category="quote">语录</button>
-            <button type="button" class="category-option" data-category="essay">随笔</button>
-            <button type="button" class="category-option" data-category="letter">书信</button>
-            <button type="button" class="category-option" data-category="moment">瞬间</button>
-          </div>
-        </div>
-
-        <!-- 发布按钮 -->
-        <button type="submit" class="btn-publish" id="publishBtn">
-          <span class="btn-publish__icon">✦</span>
-          <span class="btn-publish__text">撒向星尘</span>
-        </button>
-      </form>
-    </main>
-
-    <!-- ── View 4: 我的 ── -->
-    <main class="page-view" data-view="profile" id="viewProfile">
-      <div class="view-header">
-        <h2 class="view-header__title">我的</h2>
-      </div>
-
-      <!-- 匿名头像区 (渐变圆形) -->
-      <div class="profile-avatar-section">
-        <div class="profile-avatar" id="profileAvatar">
-          <div class="profile-avatar__gradient"></div>
-          <span class="profile-avatar__initial">?</span>
-        </div>
-        <div class="profile-nickname" id="profileNickname">
-          <span class="profile-nickname__text">匿名旅人</span>
-          <button class="btn-icon btn-icon--small" id="editNicknameBtn" aria-label="编辑昵称">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-            </svg>
+        <textarea id="writeContent" placeholder="写下你的心事、一首诗、一句话……每一粒星尘都值得被看见" maxlength="1000"></textarea>
+        <div class="write-char-count"><span id="charCount">0</span>/1000</div>
+        <div class="write-image-row">
+          <input type="file" id="imageInput" accept="image/*" hidden>
+          <button class="btn-ghost" id="imageBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            添加图片
           </button>
+          <span class="write-image-name" id="imageName"></span>
+          <button class="btn-ghost btn-ghost-danger" id="imageClear" style="display:none">✕ 清除</button>
         </div>
-      </div>
-
-      <!-- 统计区 -->
-      <div class="profile-stats" id="profileStats">
-        <div class="stat-item">
-          <span class="stat-item__value" id="statPosts">0</span>
-          <span class="stat-item__label">星尘</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-item__value" id="statLikes">0</span>
-          <span class="stat-item__label">被喜欢</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-item__value" id="statHugs">0</span>
-          <span class="stat-item__label">被拥抱</span>
-        </div>
-      </div>
-
-      <!-- 我的帖子列表 -->
-      <div class="profile-posts" id="myPostsFeed">
-        <!-- JS动态渲染 -->
-      </div>
-
-      <!-- 空状态 -->
-      <div class="empty-state" id="emptyMyPosts" style="display:none;">
-        <div class="empty-state__icon">📭</div>
-        <p class="empty-state__text">还没有留下星尘</p>
-        <p class="empty-state__hint">去书写你的第一颗星星吧</p>
-      </div>
-
-      <!-- 菜单区 -->
-      <div class="profile-menu">
-        <button class="menu-item" id="menuMyPosts">
-          <span class="menu-item__icon">📝</span>
-          <span class="menu-item__label">我的星尘</span>
-          <svg class="menu-item__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-        <button class="menu-item" id="menuTheme">
-          <span class="menu-item__icon">🌓</span>
-          <span class="menu-item__label">主题设置</span>
-          <svg class="menu-item__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-        <button class="menu-item" id="menuAbout">
-          <span class="menu-item__icon">💫</span>
-          <span class="menu-item__label">关于唯一</span>
-          <svg class="menu-item__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <img id="imagePreview" class="write-image-preview" style="display:none">
+        <div class="mood-picker" id="moodPicker"></div>
+        <input class="input-nickname" id="writeNickname" placeholder="署名（不填则为「匿名星尘」）" maxlength="20">
+        <button class="btn-send" id="sendBtn">
+          <span>✨ 化作星尘</span>
         </button>
       </div>
-    </main>
+    </section>
 
-    <!-- ════════════════════════════════════════════════════════
-         FAB (浮动发布按钮，右下角)
-         ════════════════════════════════════════════════════════ -->
-    <button class="fab" id="fabPublish" aria-label="发布星尘">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="12" y1="5" x2="12" y2="19"/>
-        <line x1="5" y1="12" x2="19" y2="12"/>
-      </svg>
-    </button>
+    <!-- ═══ 我的 Tab ═══ -->
+    <section class="tab-content" id="tab-mine">
+      <div id="myPostsContainer"></div>
+    </section>
 
-    <!-- ════════════════════════════════════════════════════════
-         底部 Tab 导航 (毛玻璃效果)
-         ════════════════════════════════════════════════════════ -->
-    <nav class="tab-bar" id="tabBar">
-      <button class="tab-bar__item tab-bar__item--active" data-tab="stardust" aria-label="星尘">
-        <svg class="tab-bar__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="4"/>
-          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
-        </svg>
-        <span class="tab-bar__label">星尘</span>
-      </button>
-      <button class="tab-bar__item" data-tab="curated" aria-label="策展">
-        <svg class="tab-bar__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="7" height="7" rx="1"/>
-          <rect x="14" y="3" width="7" height="7" rx="1"/>
-          <rect x="3" y="14" width="7" height="7" rx="1"/>
-          <rect x="14" y="14" width="7" height="7" rx="1"/>
-        </svg>
-        <span class="tab-bar__label">策展</span>
-      </button>
-      <button class="tab-bar__item" data-tab="write" aria-label="书写">
-        <svg class="tab-bar__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 20h9"/>
-          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-        </svg>
-        <span class="tab-bar__label">书写</span>
-      </button>
-      <button class="tab-bar__item" data-tab="profile" aria-label="我的">
-        <svg class="tab-bar__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
-        <span class="tab-bar__label">我的</span>
-      </button>
-    </nav>
+  </main>
 
-    <!-- ════════════════════════════════════════════════════════
-         Toast 通知容器
-         ════════════════════════════════════════════════════════ -->
-    <div class="toast-container" id="toastContainer" aria-live="polite">
-      <!-- JS动态注入 .toast-item -->
-    </div>
+</div>
 
-    <!-- ════════════════════════════════════════════════════════
-         Modal 通用弹窗容器
-         ════════════════════════════════════════════════════════ -->
-    <div class="modal-overlay" id="modalOverlay" style="display:none;">
-      <div class="modal-content" id="modalContent">
-        <!-- JS动态渲染 -->
-      </div>
-    </div>
+<!-- ═══ 漂流瓶弹窗 ═══ -->
+<div class="modal-overlay" id="bottleModal" style="display:none">
+  <div class="modal-card" id="bottleContent"></div>
+</div>
 
-    <!-- ════════════════════════════════════════════════════════
-         漂流瓶弹窗 (随机帖子)
-         ════════════════════════════════════════════════════════ -->
-    <div class="drift-bottle-modal" id="driftBottleModal" style="display:none;">
-      <div class="drift-bottle-modal__backdrop"></div>
-      <div class="drift-bottle-modal__card" id="driftBottleCard">
-        <button class="drift-bottle-modal__close" id="driftBottleClose" aria-label="关闭">&times;</button>
-        <div class="drift-bottle-modal__content" id="driftBottleContent">
-          <!-- JS动态渲染随机帖子 -->
-        </div>
-        <button class="drift-bottle-modal__refresh" id="driftBottleRefresh" aria-label="再来一颗">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="23 4 23 10 17 10"/>
-            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-          </svg>
-          <span>换一颗星星</span>
-        </button>
-      </div>
-    </div>
+<!-- ═══ Toast ═══ -->
+<div class="toast-container" id="toastContainer"></div>
 
-  </div><!-- /app-shell -->
-
-  <!-- ============================================================
-       外部JS引用（最终将内联）
-       ============================================================ -->
 <script>
 /**
- * 「唯一」— 主逻辑 v5
- * 紫色系深空主题 · 480px移动端优先 · 底部4Tab导航
+ * 「唯一」— 前端应用逻辑
+ * 星空画布 · 瀑布流 · 策展交互 · 漂流瓶
  */
-(function(){
-'use strict';
 
+// ═══ Constants ═══
 const API = '';
-const FP = (()=>{ let f=localStorage.getItem('w_fp'); if(!f){ f='fp_'+Date.now()+'_'+Math.random().toString(36).slice(2,10); localStorage.setItem('w_fp',f); } return f; })();
-
 const MOODS = {
-  '平静':{emoji:'🌿',color:'#7ca87c'},'喜悦':{emoji:'🌟',color:'#e4c36a'},
-  '忧郁':{emoji:'🌙',color:'#7b8fce'},'热烈':{emoji:'🔥',color:'#c97a82'},
-  '沉思':{emoji:'🪐',color:'#a38cc9'},'怀念':{emoji:'🍂',color:'#c99f6a'},
-  '孤独':{emoji:'🕯️',color:'#8a9bb5'},'期待':{emoji:'✨',color:'#c9a045'}
+  '开心': { emoji: '😊', color: '#e8c76a' },
+  '难过': { emoji: '😢', color: '#7b9ec7' },
+  '愤怒': { emoji: '😡', color: '#c47a6e' },
+  '焦虑': { emoji: '😰', color: '#9b8ec4' },
+  '迷茫': { emoji: '🤔', color: '#8ba5a5' },
+  '感恩': { emoji: '🙏', color: '#e0b088' },
+  '其他': { emoji: '✨', color: '#c8963e' },
 };
-const CAT_ICONS = {'诗歌':'🌸','语录':'💡','随笔':'📝','音乐':'🎵','光影':'🎬'};
-const CAT_CLASS = {'诗歌':'cat-poetry','语录':'cat-quote','随笔':'cat-essay','音乐':'cat-music','光影':'cat-film'};
 
-let stardustPage=1, hasMore=true, loading=false, cardIdx=0;
-let uploadData='', selectedMood='期待', selectedCat='poem';
-let curPage='stardust';
+// 情绪SVG微光图标
+const MOOD_ICONS = {
+  '开心': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(232,199,106,0.8)" stroke-width="1.5"><circle cx="12" cy="12" r="4" fill="rgba(232,199,106,0.2)"/><path d="M12 1v2M12 21v2M1 12h2M21 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  '难过': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(123,158,199,0.7)" stroke-width="1.5"><path d="M12 3l2 5h5l-4 3 1.5 5L12 18l-4.5 2L9 11 5 8h5z" fill="rgba(123,158,199,0.15)"/></svg>',
+  '愤怒': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(196,122,110,0.7)" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M8 15c1.5 2 4 2 4 2s2.5 0 4-2"/><circle cx="8.5" cy="9" r="1.5" fill="rgba(196,122,110,0.5)"/><circle cx="15.5" cy="9" r="1.5" fill="rgba(196,122,110,0.5)"/></svg>',
+  '焦虑': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(155,142,196,0.7)" stroke-width="1.5"><path d="M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z" fill="rgba(155,142,196,0.12)"/></svg>',
+  '迷茫': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(139,165,165,0.7)" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5" fill="rgba(139,165,165,0.3)"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg>',
+  '感恩': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(224,176,136,0.7)" stroke-width="1.5"><path d="M12 4l2 5h5l-4 3 1.5 5L12 14l-4.5 3L9 12l-4-3h5z" fill="rgba(224,176,136,0.15)"/></svg>',
+  '其他': '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(200,150,62,0.7)" stroke-width="1.5"><circle cx="12" cy="12" r="3" fill="rgba(200,150,62,0.2)"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/></svg>',
+};
+
+// 图片点击放大
+function zoomImage(e, src) {
+  e.stopPropagation();
+  const overlay = document.createElement('div');
+  overlay.className = 'image-overlay';
+  overlay.innerHTML = `<img src="${src}" alt="放大预览">`;
+  overlay.addEventListener('click', () => overlay.remove());
+  document.body.appendChild(overlay);
+}
+
+// ═══ State ═══
+const state = {
+  fp: getFingerprint(),
+  currentTab: 'stardust',
+  currentCategory: 'all',
+  stardustPage: 1,
+  hasMoreStardust: true,
+  isLoading: false,
+  cardCounter: 0,
+  selectedMood: '其他',
+  uploadImageData: '',
+};
+
+// ═══ Fingerprint ═══
+function getFingerprint() {
+  let fp = localStorage.getItem('weiyi_fp');
+  if (!fp) {
+    fp = 'fp_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem('weiyi_fp', fp);
+  }
+  return fp;
+}
 
 // ═══ Init ═══
-document.addEventListener('DOMContentLoaded',()=>{
+document.addEventListener('DOMContentLoaded', () => {
+  initStarCanvas();
+  initHeroConstellation();
+  initNav();
   initTabs();
-  initFAB();
+  initCategoryBar();
+  initDailyMessage();
+  initMoodPicker();
+  initImageUpload();
+  initWriteForm();
   initBottle();
-  initCompose();
-  initMoods();
-  initImage();
-  initCategory();
-  loadDaily();
-  loadStardust(true);
+  initScrollEffects();
+  loadStardustPosts(true);
 });
 
-// ═══ Tab切换 ═══
-function initTabs(){
-  document.querySelectorAll('.tab-bar__item').forEach(t=>{
-    t.addEventListener('click',()=>switchTab(t.dataset.tab));
-  });
-}
-function switchTab(name){
-  curPage=name;
-  document.querySelectorAll('.tab-bar__item').forEach(t=>t.classList.toggle('tab-bar__item--active',t.dataset.tab===name));
-  document.querySelectorAll('.page-view').forEach(v=>v.classList.toggle('page-view--active',v.dataset.view===name));
-  if(name==='stardust' && !document.getElementById('postFeedStardust').children.length) loadStardust(true);
-  if(name==='curated' && !document.getElementById('curatedSections').children.length) loadCurated();
-  if(name==='profile') loadMyPosts();
+// ═══════════════════ Star Canvas ═══════════════════
+function initStarCanvas() {
+  const canvas = document.getElementById('starCanvas');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  let animFrame;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  function createStars() {
+    const count = Math.floor((canvas.width * canvas.height) / 3800);
+    stars = [];
+    for (let i = 0; i < count; i++) {
+      const r = Math.random() * 1.3 + 0.2;
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: r,
+        baseR: r,
+        vx: (Math.random() - 0.5) * 0.08,
+        vy: (Math.random() - 0.5) * 0.08,
+        twinkleSpeed: Math.random() * 0.012 + 0.005,
+        twinkleOffset: Math.random() * Math.PI * 2,
+        hue: Math.random() < 0.20 ? 38 + Math.random() * 18 : 0,
+        alpha: Math.random() * 0.55 + 0.25,
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const t = Date.now() * 0.001;
+
+    for (const s of stars) {
+      // 缓慢漂移
+      s.x += s.vx; s.y += s.vy;
+      if (s.x < 0 || s.x > canvas.width) s.vx *= -1;
+      if (s.y < 0 || s.y > canvas.height) s.vy *= -1;
+
+      const alpha = s.alpha + Math.sin(t * s.twinkleSpeed * 60 + s.twinkleOffset) * 0.35;
+      const clampedAlpha = Math.max(0.08, Math.min(0.9, alpha));
+      const pulseR = s.baseR * (1 + Math.sin(t * s.twinkleSpeed * 60 + s.twinkleOffset) * 0.3);
+
+      if (s.hue > 0) {
+        ctx.fillStyle = `hsla(${s.hue}, 60%, 75%, ${clampedAlpha})`;
+      } else {
+        ctx.fillStyle = `rgba(220,220,235,${clampedAlpha})`;
+      }
+
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, pulseR, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 偶尔加辉光
+      if (clampedAlpha > 0.6) {
+        ctx.fillStyle = s.hue > 0
+          ? `hsla(${s.hue}, 60%, 75%, ${clampedAlpha * 0.15})`
+          : `rgba(220,220,235,${clampedAlpha * 0.12})`;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, pulseR * 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    animFrame = requestAnimationFrame(draw);
+  }
+
+  resize();
+  createStars();
+  draw();
+  window.addEventListener('resize', () => { resize(); createStars(); });
 }
 
-// ═══ FAB ═══
-function initFAB(){
-  document.getElementById('fabBtn')?.addEventListener('click',()=>switchTab('write'));
+// ═══════════════════ Hero Constellation ═══════════════════
+function initHeroConstellation() {
+  const container = document.getElementById('heroConstellation');
+  const canvas = document.createElement('canvas');
+  container.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+
+  let points = [];
+  const CONNECT_DIST = 120;
+
+  function resize() {
+    canvas.width = container.offsetWidth;
+    canvas.height = container.offsetHeight;
+  }
+
+  function createPoints() {
+    const count = 25;
+    points = [];
+    for (let i = 0; i < count; i++) {
+      points.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        r: Math.random() * 1.5 + 0.5,
+        alpha: Math.random() * 0.5 + 0.2,
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 连线
+    for (let i = 0; i < points.length; i++) {
+      for (let j = i + 1; j < points.length; j++) {
+        const dx = points[i].x - points[j].x;
+        const dy = points[i].y - points[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < CONNECT_DIST) {
+          const alpha = (1 - dist / CONNECT_DIST) * 0.12;
+          ctx.strokeStyle = `rgba(212,168,83,${alpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(points[i].x, points[i].y);
+          ctx.lineTo(points[j].x, points[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // 点
+    for (const p of points) {
+      ctx.fillStyle = `rgba(232,199,106,${p.alpha})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 移动
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  createPoints();
+  draw();
+  window.addEventListener('resize', () => { resize(); createPoints(); });
 }
 
-// ═══ Toast ═══
-function toast(msg,type=''){
-  const c=document.getElementById('toastContainer')||(t=>{let d=document.createElement('div');d.id='toastContainer';d.className='toast-container';document.body.appendChild(d);return d;})();
-  const el=document.createElement('div');
-  el.className='toast-item'+(type?' toast--'+type:'');
-  el.textContent=msg;
-  c.appendChild(el);
-  requestAnimationFrame(()=>el.classList.add('toast--visible'));
-  setTimeout(()=>{el.classList.remove('toast--visible');setTimeout(()=>el.remove(),400);},2000);
+// ═══════════════════ Navigation ═══════════════════
+function initNav() {
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  }, { passive: true });
 }
 
-// ═══ 每日星语 ═══
-async function loadDaily(){
-  try{const r=await fetch(API+'/api/daily-message');const d=await r.json();
-    document.getElementById('dailyMessage').querySelector('.hero__daily-text').textContent='「'+d.message+'」';
-    document.getElementById('dailyAttribution').textContent=(d.author?'—— '+d.author:'')+(d.source?' 《'+d.source+'》':'');
-  }catch(e){}
-}
-
-// ═══ 情绪选择 ═══
-function initMoods(){
-  document.querySelectorAll('.mood-chip').forEach(c=>{
-    c.addEventListener('click',()=>{
-      document.querySelectorAll('.mood-chip').forEach(x=>x.classList.remove('mood-chip--active'));
-      c.classList.add('mood-chip--active');
-      selectedMood=c.dataset.mood;
+function initTabs() {
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const tabName = tab.dataset.tab;
+      switchTab(tabName);
     });
   });
 }
-function initCategory(){
-  document.querySelectorAll('.category-option').forEach(c=>{
-    c.addEventListener('click',()=>{
-      document.querySelectorAll('.category-option').forEach(x=>x.classList.remove('category-option--active'));
-      c.classList.add('category-option--active');
-      selectedCat=c.dataset.category;
+
+function switchTab(name) {
+  state.currentTab = name;
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.querySelectorAll('.tab-content').forEach(tc => tc.classList.toggle('active', tc.id === `tab-${name}`));
+
+  // 重新触发动画
+  const activeTC = document.getElementById(`tab-${name}`);
+  if (activeTC) {
+    activeTC.style.animation = 'none';
+    activeTC.offsetHeight;
+    activeTC.style.animation = '';
+  }
+
+  if (name === 'stardust' && document.getElementById('masonryGrid').children.length === 0) {
+    loadStardustPosts(true);
+  }
+  if (name === 'curated') loadCuratedContent();
+  if (name === 'mine') loadMyPosts();
+}
+
+// ═══════════════════ Category Filter ═══════════════════
+function initCategoryBar() {
+  document.querySelectorAll('.category-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      state.currentCategory = chip.dataset.cat;
+      document.querySelectorAll('.category-chip').forEach(c => c.classList.toggle('active', c === chip));
+      loadStardustPosts(true);
     });
   });
 }
-function initImage(){
-  const inp=document.getElementById('imageInput'), preview=document.getElementById('imagePreview'),
-        img=document.getElementById('previewImg'), rm=document.getElementById('removeImage'),
-        placeholder=document.getElementById('imagePlaceholder');
-  inp?.addEventListener('change',()=>{
-    const f=inp.files[0]; if(!f) return;
-    const r=new FileReader(); r.onload=function(e){
-      const i=new Image(); i.onload=function(){
-        const c=document.createElement('canvas'); let w=i.width,h=i.height,m=800;
-        if(w>m){h=h*m/w;w=m;} c.width=w;c.height=h;
-        c.getContext('2d').drawImage(i,0,0,w,h);
-        uploadData=c.toDataURL('image/jpeg',0.65); img.src=uploadData;
-        preview.style.display='block'; placeholder.style.display='none';
-      }; i.src=e.target.result;
-    }; r.readAsDataURL(f);
-  });
-  rm?.addEventListener('click',()=>{
-    uploadData=''; inp.value=''; preview.style.display='none'; placeholder.style.display='flex';
-  });
+
+// ═══════════════════ Daily Message ═══════════════════
+async function initDailyMessage() {
+  try {
+    const r = await fetch(API + '/api/daily-message');
+    const d = await r.json();
+    const el = document.getElementById('heroDaily');
+    const parts = [];
+    parts.push('「' + d.message + '」');
+    if (d.author) parts.push('—— ' + d.author);
+    if (d.source) {
+      const src = d.source;
+      const hasBrackets = src.startsWith('《') && src.endsWith('》');
+      parts.push(hasBrackets ? src : '《' + src + '》');
+    }
+    el.textContent = parts.join('\n');
+  } catch (e) {
+    document.getElementById('heroDaily').textContent = '「享受今晚。」';
+  }
 }
 
-// ═══ 书写表单 ═══
-function initCompose(){
-  const ta=document.getElementById('writeContent'), cc=document.getElementById('charCount'),
-        form=document.getElementById('writeForm');
-  ta?.addEventListener('input',()=>{cc.textContent=ta.value.length;});
-  form?.addEventListener('submit',async(e)=>{
-    e.preventDefault();
-    const c=ta.value.trim(); if(!c){toast('写点什么吧 ✨');return;}
-    const btn=document.getElementById('publishBtn'); btn.disabled=true; btn.querySelector('.btn-publish__text').textContent='化作星尘…';
-    try{
-      const r=await fetch(API+'/api/post',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({content:c,image:uploadData,mood:selectedMood,nickname:'匿名旅人',fingerprint:FP})});
-      const d=await r.json();
-      if(d.success){
-        ta.value=''; cc.textContent='0'; uploadData='';
-        document.getElementById('imageInput').value='';
-        document.getElementById('imagePreview').style.display='none';
-        document.getElementById('imagePlaceholder').style.display='flex';
-        toast('✨ 已化作星尘','success');
-        switchTab('stardust'); loadStardust(true);
-      }else toast(d.error||'发送失败');
-    }catch(e){toast('发送失败');}
-    btn.disabled=false; btn.querySelector('.btn-publish__text').textContent='撒向星尘';
+// ═══════════════════ Stardust Posts ═══════════════════
+async function loadStardustPosts(reset = false) {
+  if (state.isLoading) return;
+  if (reset) {
+    state.stardustPage = 1;
+    state.hasMoreStardust = true;
+    state.cardCounter = 0;
+    document.getElementById('masonryGrid').innerHTML = '';
+    document.getElementById('loadMore').innerHTML = '';
+  }
+  if (!state.hasMoreStardust) return;
+
+  state.isLoading = true;
+  const grid = document.getElementById('masonryGrid');
+
+  try {
+    const r = await fetch(API + '/api/posts?page=' + state.stardustPage + '&fingerprint=' + encodeURIComponent(state.fp));
+    const d = await r.json();
+
+    let posts = d.posts;
+    // 分类过滤（前端）
+    if (state.currentCategory !== 'all') {
+      posts = posts.filter(p => p.category === state.currentCategory || p.mood === state.currentCategory);
+    }
+
+    if (posts.length === 0 && reset) {
+      grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🌌</div><p class="empty-state-text">这个分类还没有星尘<br>去写点什么吧</p></div>';
+    } else {
+      posts.forEach((p, i) => {
+        // 分配卡片变体：每6张1张featured
+        if (i === 0 || (i > 0 && i % 6 === 0)) p.variant = 'featured';
+        const card = createPostCard(p);
+        card.style.animationDelay = (state.cardCounter * 0.05) + 's';
+        state.cardCounter++;
+        grid.appendChild(card);
+      });
+    }
+
+    state.hasMoreStardust = d.has_more;
+    state.stardustPage++;
+
+    const loadMore = document.getElementById('loadMore');
+    if (state.hasMoreStardust) {
+      loadMore.innerHTML = '<div class="load-more"><button class="load-more-btn" id="loadMoreBtn">✨ 更多星尘</button></div>';
+      document.getElementById('loadMoreBtn')?.addEventListener('click', () => loadStardustPosts());
+    } else {
+      loadMore.innerHTML = Array.from(grid.children).length > 0
+        ? '<div class="end-marker">— 已经到底啦 —</div>'
+        : '';
+    }
+  } catch (e) {
+    if (reset) grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🛰️</div><p class="empty-state-text">连接星尘失败<br>请检查网络</p></div>';
+  }
+
+  state.isLoading = false;
+}
+
+function createPostCard(p) {
+  const card = document.createElement('div');
+  const catClassMap = { '诗歌': 'cat-poetry', '语录': 'cat-quote', '随笔': 'cat-essay', '音乐': 'cat-music', '光影': 'cat-film' };
+  const catClass = catClassMap[p.category] || '';
+  const hasImg = p.image ? ' has-image' : '';
+  const shortTxt = p.content && p.content.length < 50 ? ' short-text' : '';
+  card.className = 'post-card' + (p.is_curated ? ' curated' : '') + (catClass ? ' ' + catClass : '') + hasImg + shortTxt + (p.variant ? ' ' + p.variant : '');
+
+  // Badge 类名映射
+  const badgeClassMap = { '诗歌': 'poetry', '语录': 'quote', '随笔': 'essay', '音乐': 'music', '光影': 'film' };
+  const badgeClass = badgeClassMap[p.category] || '';
+
+  // 情绪图标
+  const moodIcon = MOOD_ICONS[p.mood] || MOOD_ICONS['其他'];
+
+  card.innerHTML = `
+    ${p.image ? `<div class="post-card-image"><img src="${p.image.replace(/'/g, "\\'")}" alt="" loading="lazy"></div>` : ''}
+    <div class="post-card-inner">
+      <div class="post-card-header">
+        <div class="post-card-meta">
+          <span class="post-card-mood">${p.mood_emoji}</span>
+          <span class="post-card-author">${escHtml(p.nickname)}</span>
+          ${p.is_curated && p.category ? `<span class="post-card-badge ${badgeClass}">${p.category}</span>` : ''}
+        </div>
+        <span class="post-card-time">${timeAgo(p.created_at)}</span>
+      </div>
+      <div class="post-card-body">${escHtml(p.content)}</div>
+      ${p.source ? `<div class="post-card-source">—— ${escHtml(p.source)}</div>` : ''}
+      <div class="post-card-actions">
+        <button class="post-action like-btn${p.liked_by_me ? ' liked' : ''}" data-id="${p.id}">
+          ❤️ <span class="post-action-count">${p.like_count || 0}</span>
+        </button>
+        <button class="post-action hug-btn${p.hugged_by_me ? ' hugged' : ''}" data-id="${p.id}">
+          🫂 <span class="post-action-count">${p.hug_count || 0}</span>
+        </button>
+      </div>
+    </div>
+  `;
+
+  // Like
+  card.querySelector('.like-btn')?.addEventListener('click', async function(e) {
+    e.stopPropagation();
+    const id = this.dataset.id;
+    this.classList.add('just-liked');
+    setTimeout(() => this.classList.remove('just-liked'), 400);
+    try {
+      const r = await fetch(API + '/api/post/' + id + '/like', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fingerprint: state.fp })
+      });
+      const d = await r.json();
+      this.classList.toggle('liked', d.action === 'liked');
+      this.querySelector('.post-action-count').textContent = d.like_count;
+    } catch (e) {}
   });
-}
 
-// ═══ 时间格式化 ═══
-function timeAgo(iso){
-  const then=new Date(iso+(iso.endsWith('Z')?'':'Z')), now=new Date();
-  const diff=Math.floor((now-then)/1000);
-  if(diff<60)return'刚刚'; if(diff<3600)return Math.floor(diff/60)+'分钟前';
-  if(diff<86400)return Math.floor(diff/3600)+'小时前';
-  if(diff<604800)return Math.floor(diff/86400)+'天前';
-  return then.toLocaleDateString('zh-CN');
-}
-function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+  // Hug
+  card.querySelector('.hug-btn')?.addEventListener('click', async function(e) {
+    e.stopPropagation();
+    const id = this.dataset.id;
+    try {
+      const r = await fetch(API + '/api/post/' + id + '/hug', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fingerprint: state.fp })
+      });
+      const d = await r.json();
+      this.classList.toggle('hugged', d.action === 'hugged');
+      this.querySelector('.post-action-count').textContent = d.hug_count;
+    } catch (e) {}
+  });
 
-// ═══ 卡片渲染 ═══
-function renderCard(p,idx){
-  const catC=CAT_CLASS[p.category]||'';
-  const badgeC={'诗歌':'poetry','语录':'quote','随笔':'essay','音乐':'music','光影':'film'}[p.category]||'';
-  const isFeatured=idx===0||(idx>0&&idx%6===0);
-  const card=document.createElement('article');
-  card.className='post-card'+(p.is_curated?' post-card--curated':'')+(catC?' '+catC:'')+(isFeatured?' post-card--featured':'');
-  card.style.animationDelay=(cardIdx*0.05)+'s'; cardIdx++;
-
-  card.innerHTML=`
-    <div class="post-card__mood-icon">${p.mood_emoji||'✨'}</div>
-    <time class="post-card__time">${timeAgo(p.created_at)}</time>
-    <div class="post-card__body">${esc(p.content)}</div>
-    ${p.image?`<div class="post-card__image"><img src="${p.image}" alt="" loading="lazy"></div>`:''}
-    ${p.source?`<div class="post-card__source">—— ${esc(p.source)}</div>`:''}
-    <div class="post-card__actions">
-      <button class="post-action like-btn${p.liked_by_me?' liked':''}" data-id="${p.id}">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="${p.liked_by_me?'currentColor':'none'}" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        <span>${p.like_count||0}</span>
-      </button>
-      <button class="post-action hug-btn${p.hugged_by_me?' hugged':''}" data-id="${p.id}">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-        <span>${p.hug_count||0}</span>
-      </button>
-    </div>`;
   return card;
 }
 
-// 全局事件委托处理 like/hug
-document.addEventListener('click',async function(e){
-  const likeBtn=e.target.closest('.like-btn');
-  const hugBtn=e.target.closest('.hug-btn');
-  const btn=likeBtn||hugBtn;
-  if(!btn||btn.classList.contains('processing')) return;
-  btn.classList.add('processing');
-  const id=btn.dataset.id, type=likeBtn?'like':'hug';
-  try{
-    const r=await fetch(API+'/api/post/'+id+'/'+type,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fingerprint:FP})});
-    const d=await r.json();
-    btn.classList.toggle('liked',type==='like'&&d.action==='liked');
-    btn.classList.toggle('hugged',type==='hug'&&d.action==='hugged');
-    btn.querySelector('span').textContent=type==='like'?d.like_count:d.hug_count;
-    if(btn.classList.contains('liked')){btn.classList.add('just-liked');setTimeout(()=>btn.classList.remove('just-liked'),400);}
-  }catch(e){}
-  btn.classList.remove('processing');
-});
+// ═══════════════════ Curated Content ═══════════════════
+async function loadCuratedContent() {
+  const container = document.getElementById('curatedContent');
+  if (container.children.length > 0) return; // 已加载
 
-// ═══ 星尘流加载 ═══
-async function loadStardust(reset){
-  if(loading)return;
-  if(reset){stardustPage=1;hasMore=true;cardIdx=0;document.getElementById('postFeedStardust').innerHTML='';}
-  if(!hasMore)return;
-  loading=true;
-  const sk=document.getElementById('skeletonStardust');
-  const feed=document.getElementById('postFeedStardust');
-  sk.style.display='block';
-  try{
-    const r=await fetch(API+'/api/posts?page='+stardustPage+'&fingerprint='+encodeURIComponent(FP));
-    const d=await r.json();
-    sk.style.display='none';
-    d.posts.forEach((p,i)=>feed.appendChild(renderCard(p,stardustPage===1?i:50+i)));
-    hasMore=d.has_more; stardustPage++;
-    document.getElementById('emptyStardust').style.display=feed.children.length===0?'flex':'none';
-  }catch(e){sk.style.display='none';if(reset)document.getElementById('emptyStardust').style.display='flex';}
-  loading=false;
-}
+  container.innerHTML = '<div class="loading-state"><div class="loading-dots"><span></span><span></span><span></span></div><div>正在策展星尘……</div></div>';
 
-// 无限滚动
-window.addEventListener('scroll',()=>{
-  if(curPage!=='stardust'||loading||!hasMore)return;
-  const feed=document.getElementById('postFeedStardust');
-  if(!feed)return;
-  const rect=feed.getBoundingClientRect();
-  if(rect.bottom-window.innerHeight<400)loadStardust(false);
-},{passive:true});
+  try {
+    const r = await fetch(API + '/api/posts/curated?fingerprint=' + encodeURIComponent(state.fp));
+    const d = await r.json();
+    container.innerHTML = '';
 
-// ═══ 策展 ═══
-async function loadCurated(){
-  const sk=document.getElementById('skeletonCurated'), sections=document.getElementById('curatedSections');
-  if(sections.children.length)return;
-  sk.style.display='block';
-  try{
-    const r=await fetch(API+'/api/posts/curated?fingerprint='+encodeURIComponent(FP));
-    const d=await r.json(); sk.style.display='none';
-    for(const [cat,posts] of Object.entries(d.categories)){
-      if(!posts.length)continue;
-      const sec=document.createElement('section');
-      sec.className='curated-section';
-      sec.innerHTML=`<div class="curated-section__header"><span class="curated-section__icon">${CAT_ICONS[cat]||'✨'}</span><h3>${cat}</h3></div><div class="curated-section__grid"></div>`;
-      const grid=sec.querySelector('.curated-section__grid');
-      posts.forEach((p,i)=>{cardIdx=0;grid.appendChild(renderCard(p,i));});
-      sections.appendChild(sec);
+    const categoryIcons = {
+      '诗歌': '🌸', '语录': '💡', '随笔': '📝', '音乐': '🎵', '光影': '🎬'
+    };
+
+    for (const [category, posts] of Object.entries(d.categories)) {
+      if (posts.length === 0) continue;
+
+      const section = document.createElement('div');
+      section.className = 'curated-section';
+      section.innerHTML = `
+        <div class="curated-section-header">
+          <span class="curated-section-icon">${categoryIcons[category] || '✨'}</span>
+          <h3 class="curated-section-title">${category}</h3>
+          <span class="curated-section-count">${posts.length} 篇</span>
+        </div>
+        <div class="curated-grid"></div>
+      `;
+
+      const grid = section.querySelector('.curated-grid');
+      posts.forEach((p, i) => {
+        if (i === 0) p.variant = 'featured';
+        const card = createPostCard(p);
+        grid.appendChild(card);
+      });
+
+      container.appendChild(section);
     }
-    document.getElementById('emptyCurated').style.display=sections.children.length===0?'flex':'none';
-  }catch(e){sk.style.display='none';}
+
+    if (Object.keys(d.categories).length === 0) {
+      container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📖</div><p class="empty-state-text">策展内容正在筹备中</p></div>';
+    }
+  } catch (e) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🛰️</div><p class="empty-state-text">加载策展内容失败</p></div>';
+  }
 }
 
-// ═══ 我的帖子 ═══
-async function loadMyPosts(){
-  const feed=document.getElementById('postFeedStardust'); // 复用
-  feed.innerHTML='<div class="empty-state"><div class="empty-state__icon">📜</div><p class="empty-state__text">加载中…</p></div>';
-  try{
-    const r=await fetch(API+'/api/my-posts?fingerprint='+encodeURIComponent(FP));
-    const d=await r.json(); feed.innerHTML=''; cardIdx=0;
-    if(!d.posts.length){feed.innerHTML='<div class="empty-state"><div class="empty-state__icon">📜</div><p class="empty-state__text">还没有写过星尘</p></div>';return;}
-    d.posts.forEach((p,i)=>feed.appendChild(renderCard(p,i)));
-  }catch(e){feed.innerHTML='<div class="empty-state"><div class="empty-state__icon">🛰️</div><p class="empty-state__text">加载失败</p></div>';}
+// ═══════════════════ Write Form ═══════════════════
+function initMoodPicker() {
+  const container = document.getElementById('moodPicker');
+  container.innerHTML = Object.entries(MOODS).map(([k, v]) =>
+    `<span class="mood-chip${k === state.selectedMood ? ' selected' : ''}" data-mood="${k}">${v.emoji} ${k}</span>`
+  ).join('');
+
+  container.querySelectorAll('.mood-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      state.selectedMood = chip.dataset.mood;
+      container.querySelectorAll('.mood-chip').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+    });
+  });
 }
 
-// ═══ 漂流瓶 ═══
-function initBottle(){
-  document.getElementById('driftBottleBtn')?.addEventListener('click',openBottle);
-  document.getElementById('driftBottleModal')?.addEventListener('click',function(e){if(e.target===this)closeBottle();});
-}
-async function openBottle(){
-  const m=document.getElementById('driftBottleModal'), c=document.getElementById('bottleContent');
-  m.style.display='flex'; c.innerHTML='<div class="empty-state"><div class="empty-state__icon">🏺</div><p class="empty-state__text">正在打捞…</p></div>';
-  try{
-    const r=await fetch(API+'/api/posts/random?fingerprint='+encodeURIComponent(FP));
-    if(r.status===404){c.innerHTML=`<div class="empty-state"><div class="empty-state__icon">🏺</div><p class="empty-state__text">${(await r.json()).error}</p><button class="btn-ghost" onclick="openBottle()">再捞一个</button></div>`;return;}
-    const p=await r.json(); cardIdx=0;
-    c.innerHTML='<button class="modal-close" onclick="document.getElementById(\'driftBottleModal\').style.display=\'none\'">✕</button>'+renderCard(p,0).outerHTML+'<div style="text-align:center;margin-top:16px"><button class="btn-ghost" onclick="openBottle()">🫧 再捞一个</button></div>';
-  }catch(e){c.innerHTML='<div class="empty-state"><div class="empty-state__icon">🛰️</div><p class="empty-state__text">漂流瓶漂远了</p></div>';}
-}
-function closeBottle(){document.getElementById('driftBottleModal').style.display='none';}
+function initImageUpload() {
+  const input = document.getElementById('imageInput');
+  const btn = document.getElementById('imageBtn');
+  const nameEl = document.getElementById('imageName');
+  const clearBtn = document.getElementById('imageClear');
+  const preview = document.getElementById('imagePreview');
 
-// ═══ 涟漪效果 ═══
-document.addEventListener('click',function(e){
-  const el=e.target.closest('button,.tab-bar__item,.fab-btn,.mood-chip');
-  if(!el)return;
-  const rect=el.getBoundingClientRect(), ripple=document.createElement('span');
-  ripple.className='ripple-effect';
-  const s=Math.max(rect.width,rect.height);
-  ripple.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-rect.left-s/2}px;top:${e.clientY-rect.top-s/2}px`;
-  el.style.position=el.style.position||'relative'; el.style.overflow='hidden';
-  el.appendChild(ripple);
-  setTimeout(()=>ripple.remove(),600);
-});
+  btn.addEventListener('click', () => input.click());
 
-})();
+  input.addEventListener('change', () => {
+    const file = input.files[0];
+    if (!file) return;
+    nameEl.textContent = file.name;
+    clearBtn.style.display = 'inline-flex';
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        const maxW = 800;
+        if (w > maxW) { h = h * maxW / w; w = maxW; }
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        state.uploadImageData = canvas.toDataURL('image/jpeg', 0.65);
+        preview.src = state.uploadImageData;
+        preview.style.display = 'block';
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  clearBtn.addEventListener('click', () => {
+    state.uploadImageData = '';
+    input.value = '';
+    nameEl.textContent = '';
+    clearBtn.style.display = 'none';
+    preview.style.display = 'none';
+  });
+}
+
+function initWriteForm() {
+  const textarea = document.getElementById('writeContent');
+  const charCount = document.getElementById('charCount');
+
+  textarea.addEventListener('input', () => {
+    charCount.textContent = textarea.value.length;
+    charCount.style.color = textarea.value.length > 900 ? 'var(--rose)' : 'var(--text-muted)';
+  });
+
+  document.getElementById('sendBtn').addEventListener('click', async () => {
+    const content = textarea.value.trim();
+    if (!content) { toast('写点什么吧 ✨'); return; }
+
+    const btn = document.getElementById('sendBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span>正在化作星尘……</span>';
+
+    try {
+      const r = await fetch(API + '/api/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content,
+          image: state.uploadImageData,
+          mood: state.selectedMood,
+          nickname: document.getElementById('writeNickname').value.trim(),
+          fingerprint: state.fp,
+        })
+      });
+      const d = await r.json();
+      if (d.success) {
+        textarea.value = '';
+        document.getElementById('writeNickname').value = '';
+        state.uploadImageData = '';
+        document.getElementById('imageInput').value = '';
+        document.getElementById('imageName').textContent = '';
+        document.getElementById('imageClear').style.display = 'none';
+        document.getElementById('imagePreview').style.display = 'none';
+        charCount.textContent = '0';
+        charCount.style.color = 'var(--text-muted)';
+        toast('✨ 已化作星尘');
+        // 切回星尘页面
+        switchTab('stardust');
+        state.currentCategory = 'all';
+        document.querySelectorAll('.category-chip').forEach(c => c.classList.toggle('active', c.dataset.cat === 'all'));
+        loadStardustPosts(true);
+      } else {
+        toast(d.error || '发送失败');
+      }
+    } catch (e) {
+      toast('发送失败，请重试');
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '<span>✨ 化作星尘</span>';
+  });
+}
+
+// ═══════════════════ Drift Bottle ═══════════════════
+function initBottle() {
+  document.getElementById('navBottle').addEventListener('click', openBottle);
+  document.getElementById('bottleModal').addEventListener('click', function(e) {
+    if (e.target === this) closeBottle();
+  });
+}
+
+async function openBottle() {
+  const modal = document.getElementById('bottleModal');
+  const content = document.getElementById('bottleContent');
+
+  modal.style.display = 'flex';
+  content.innerHTML = `
+    <div style="text-align:center;padding:48px 0">
+      <div style="font-size:52px;animation:bottleFloat 1.5s ease-in-out infinite alternate">🏺</div>
+      <div style="margin-top:18px;color:var(--text-tertiary);font-size:14px">正在海面上搜寻漂流瓶……</div>
+    </div>
+  `;
+
+  try {
+    const r = await fetch(API + '/api/posts/random?fingerprint=' + encodeURIComponent(state.fp));
+    if (r.status === 404) {
+      content.innerHTML = `
+        <button class="modal-close" onclick="closeBottle()">✕</button>
+        <div style="text-align:center;padding:48px 0">
+          <div style="font-size:40px;margin-bottom:16px">🏺</div>
+          <div style="color:var(--text-tertiary);font-size:14px">${(await r.json()).error}</div>
+          <button class="load-more-btn" style="margin-top:20px" onclick="openBottle()">🫧 再捞一个</button>
+        </div>
+      `;
+      return;
+    }
+    const p = await r.json();
+
+    content.innerHTML = `
+      <button class="modal-close" onclick="closeBottle()">✕</button>
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:36px">🏺</div>
+        <div style="font-size:13px;color:var(--text-tertiary);margin-top:4px">你捡到了一个漂流瓶</div>
+      </div>
+      <div class="post-card" style="margin:0;box-shadow:none;background:rgba(255,255,255,0.02)">
+        <div class="post-card-header">
+          <div class="post-card-meta">
+            <span class="post-card-mood">${p.mood_emoji}</span>
+            <span class="post-card-author">${escHtml(p.nickname)}</span>
+          </div>
+          <span class="post-card-time">${timeAgo(p.created_at)}</span>
+        </div>
+        <div class="post-card-body">${escHtml(p.content)}</div>
+        ${p.image ? `<div class="post-card-image"><img src="${p.image}" alt="漂流瓶图片" loading="lazy"></div>` : ''}
+        <div style="text-align:center;margin-top:16px;color:var(--text-tertiary);font-size:13px">
+          ❤️ ${p.like_count || 0} · 🫂 ${p.hug_count || 0}
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:20px">
+        <button class="load-more-btn" onclick="openBottle()">🫧 再捞一个</button>
+      </div>
+    `;
+  } catch (e) {
+    content.innerHTML = `
+      <button class="modal-close" onclick="closeBottle()">✕</button>
+      <div style="text-align:center;padding:48px;color:var(--text-tertiary)">漂流瓶漂远了……再试一次吧</div>
+    `;
+  }
+}
+
+function closeBottle() {
+  document.getElementById('bottleModal').style.display = 'none';
+}
+
+// ═══════════════════ My Posts ═══════════════════
+async function loadMyPosts() {
+  const container = document.getElementById('myPostsContainer');
+  container.innerHTML = '<div class="loading-state"><div class="loading-dots"><span></span><span></span><span></span></div><div>寻找你的星尘……</div></div>';
+
+  try {
+    const r = await fetch(API + '/api/my-posts?fingerprint=' + encodeURIComponent(state.fp));
+    const d = await r.json();
+    container.innerHTML = '';
+
+    if (d.posts.length === 0) {
+      container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📜</div><p class="empty-state-text">你还没有写过星尘<br>每一段心事都值得被留下</p></div>';
+    } else {
+      d.posts.forEach(p => {
+        const card = createPostCard(p);
+        // 添加删除按钮
+        const actions = card.querySelector('.post-card-actions');
+        const delBtn = document.createElement('button');
+        delBtn.className = 'post-action';
+        delBtn.style.cssText = 'margin-left:auto;opacity:0.4;font-size:12px';
+        delBtn.innerHTML = '🗑️ <span>删除</span>';
+        delBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          if (!confirm('确定要删除这条星尘吗？')) return;
+          try {
+            const r = await fetch(API + '/api/post/' + p.id, {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ fingerprint: state.fp })
+            });
+            const d = await r.json();
+            if (d.success) {
+              card.style.transition = 'all 0.3s ease';
+              card.style.opacity = '0';
+              card.style.transform = 'scale(0.95)';
+              setTimeout(() => { card.remove(); if (container.children.length === 0) loadMyPosts(); }, 300);
+            } else {
+              toast(d.error || '删除失败');
+            }
+          } catch (e) { toast('删除失败'); }
+        });
+        actions.appendChild(delBtn);
+        container.appendChild(card);
+      });
+    }
+  } catch (e) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🛰️</div><p class="empty-state-text">连接失败</p></div>';
+  }
+}
+
+// ═══════════════════ Infinite Scroll ═══════════════════
+function initScrollEffects() {
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      if (state.currentTab === 'stardust' && !state.isLoading && state.hasMoreStardust) {
+        const main = document.getElementById('mainContent');
+        if (main) {
+          const rect = main.getBoundingClientRect();
+          if (rect.bottom - window.innerHeight < 400) {
+            loadStardustPosts();
+          }
+        }
+      }
+      ticking = false;
+    });
+  }, { passive: true });
+}
+
+// ═══════════════════ Utilities ═══════════════════
+function timeAgo(iso) {
+  const then = new Date(iso + (iso.endsWith('Z') ? '' : 'Z'));
+  const now = new Date();
+  const diff = Math.floor((now - then) / 1000);
+  if (diff < 60) return '刚刚';
+  if (diff < 3600) return Math.floor(diff / 60) + '分钟前';
+  if (diff < 86400) return Math.floor(diff / 3600) + '小时前';
+  if (diff < 604800) return Math.floor(diff / 86400) + '天前';
+  return then.toLocaleDateString('zh-CN');
+}
+
+function escHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function toast(msg) {
+  const container = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = 'toast-item';
+  el.textContent = msg;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 2300);
+}
+
+// ═══ Bottle float animation ═══
+const bottleFloatStyle = document.createElement('style');
+bottleFloatStyle.textContent = `
+  @keyframes bottleFloat {
+    from { transform: translateY(0px) rotate(-3deg); }
+    to { transform: translateY(-10px) rotate(3deg); }
+  }
+`;
+document.head.appendChild(bottleFloatStyle);
 
 </script>
 </body>
